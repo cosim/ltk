@@ -78,6 +78,9 @@ public:
     void SetCaretPos(Gdiplus::RectF rc);
     void HideCaret();
 
+    void BeginAnimation();
+    void EndAnimation();
+
     virtual bool OnEvent(Event *ev);
 
     virtual bool OnPaint            (PaintEvent *ev) { return false; }

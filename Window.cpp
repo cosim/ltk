@@ -197,6 +197,12 @@ LRESULT CALLBACK Window::WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM 
 		break;
 	case WM_ERASEBKGND:
 		return TRUE;
+    case WM_TIMER:
+        if (wparam == TIMER_ANIMATION)
+        {
+            ::InvalidateRect(hwnd, NULL, FALSE);
+        }
+        return 0;
 	case WM_SIZE:
         do
         {
@@ -523,6 +529,34 @@ void Window::TrackMouseLeave( Sprite *sp )
 		m_setTrackMouseLeave.insert(sp);
 	}
 	// TODO Track for the HWND
+}
+
+void Window::BeginAnimation(Sprite *sp)
+{
+    if (m_setAnimation.size() == 0)
+    {
+        ::SetTimer(m_hwnd, TIMER_ANIMATION, 33, NULL);
+        LOG("SetTimer");
+    }
+    m_setAnimation.insert(sp);
+}
+
+void Window::EndAnimation(Sprite *sp)
+{
+    if (m_setAnimation.size() == 0)
+    {
+        return;
+    }
+    auto iter = m_setAnimation.find(sp);
+    if (iter != m_setAnimation.end())
+    {
+        m_setAnimation.erase(iter);
+        if (m_setAnimation.size() == 0)
+        {
+            ::KillTimer(m_hwnd, TIMER_ANIMATION);
+            LOG("KillTimer");
+        }
+    }
 }
 
 } // namespace cs

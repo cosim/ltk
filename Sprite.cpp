@@ -117,12 +117,12 @@ void Sprite::SetHostWnd( Window *wnd )
 	// FIXME 可能有性能问题 AddChild时候跑这里 会使算法复杂度暴增
 	m_hostWnd = wnd;
 	// m_hostWnd->Ref(); 应该是弱引用
-	//Sprite *sp = m_firstChild;
-	//while(sp)
-	//{
-	//	sp->SetHostWnd(wnd);
-	//	sp = sp->m_nextSibling;
-	//}
+	Sprite *sp = m_firstChild;
+	while(sp)
+	{
+		sp->SetHostWnd(wnd);
+		sp = sp->m_nextSibling;
+	}
 	LOG("END");
 }
 
@@ -589,6 +589,16 @@ void Sprite::HandleRecreateResouce(ID2D1RenderTarget *target)
         sp = sp->m_nextSibling;
     }
     this->RecreateResouce(target);
+}
+
+void Sprite::BeginAnimation()
+{
+    m_hostWnd->BeginAnimation(this);
+}
+
+void Sprite::EndAnimation()
+{
+    m_hostWnd->EndAnimation(this);
 }
 
 } // namespace cs

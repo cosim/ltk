@@ -49,6 +49,9 @@ public:
 
 	void TrackMouseLeave(Sprite *sp);
 
+    void BeginAnimation(Sprite *sp);
+    void EndAnimation(Sprite *sp);
+
     virtual bool OnSize(float cx, float cy, DWORD flag) { return false; }
     virtual bool OnClose(bool &proceed) { proceed = true; return true; }
     virtual bool OnDestroy() { return false; }
@@ -56,7 +59,7 @@ public:
 private:
 	void HandleMouseMessage(UINT message, WPARAM wparam, LPARAM lparam);
 	LRESULT OnImeEvent(UINT message, WPARAM wparam, LPARAM lparam);
-
+    enum { TIMER_ANIMATION = 100 };
 private:
 	DWORD m_style;
 	DWORD m_exStyle;
@@ -70,6 +73,7 @@ private:
 	Sprite *m_spCapture;
 	Sprite *m_spHover;
 	std::unordered_set<Sprite *> m_setTrackMouseLeave;
+    std::unordered_set<Sprite *> m_setAnimation;
     ID2D1HwndRenderTarget *m_target = nullptr;
 };
 

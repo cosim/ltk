@@ -14,10 +14,22 @@ void TestClass1::OnBtn1Clicked(LPCWSTR text)
 MainWindow::MainWindow()
 {
     m_test = new TestClass1;
-    auto btn = new Button;
-    btn->SetText(L"Hello World!");
-    btn->SetRect(Gdiplus::RectF(20, 20, 200, 40));
-    this->AttachSprite(btn);
+
+    const int btn_w = 40;
+    const int padding = 20;
+
+    Sprite *sp = new Sprite;
+
+    for (int i = 0; i < 12; i ++)
+    {
+        auto btn = new Button;
+        btn->SetText(L"X");
+        btn->SetRect(Gdiplus::RectF(
+            (float)padding + (btn_w + padding) * (i % 3), 
+            (float)padding + (btn_w + padding) * (i / 3), (float)btn_w, (float)btn_w));
+        sp->AddChild(btn);
+    }
+    this->AttachSprite(sp);
 /*
     m_bg = new RectangleSprite;
     m_bg->SetColor(Gdiplus::Color(255, 255, 255));

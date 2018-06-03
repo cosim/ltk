@@ -25,12 +25,20 @@ public:
 
     Delegate<void()> Clicked;
 
+    D2D1_COLOR_F GetColor();
+
 private:
     bool m_bMouseIn = false;
     bool m_bMousePress = false;
     wstring m_strText;
     IDWriteTextFormat *m_text_format = nullptr;
     ID2D1SolidColorBrush *m_brush = nullptr;
+
+    enum AniState { stStoped, stNormal2Hover, stHover2Normal };
+    AniState m_state = stStoped;
+    int m_aniCounter = 0;
+    enum { AniDuration = 200 };
+    DWORD m_lastTick = 0;
 };
 
 } // namespace
