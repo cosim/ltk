@@ -7,7 +7,7 @@
 #include "LuaUI2.h"
 #include <cmath>
 
-namespace cs {
+namespace ltk {
 
 Sprite::Sprite(void)
 {
@@ -601,4 +601,4 @@ void Sprite::EndAnimation()
     m_hostWnd->EndAnimation(this);
 }
 
-} // namespace cs
+} // namespace ltk

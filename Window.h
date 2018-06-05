@@ -5,7 +5,7 @@
 #include "stdafx.h"
 #include "ImeInput.h"
 
-namespace cs {
+namespace ltk {
 
 class Sprite;
 
@@ -77,4 +77,4 @@ private:
     ID2D1HwndRenderTarget *m_target = nullptr;
 };
 
-} // namespace cs
+} // namespace ltk

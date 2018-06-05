@@ -31,7 +31,7 @@
 #define LUAUI2_API __declspec(dllimport)
 #endif
 
-namespace cs {
+namespace ltk {
     ID2D1Factory *GetD2DFactory();
     IWICImagingFactory *GetWICFactory();
     IDWriteFactory *GetDWriteFactory();

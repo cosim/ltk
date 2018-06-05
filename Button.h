@@ -3,7 +3,7 @@
 #include "Sprite.h"
 #include "Delegate.h"
 
-namespace cs {
+namespace ltk {
 
 class Button : public Sprite
 {

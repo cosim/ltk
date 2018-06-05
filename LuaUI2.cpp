@@ -17,7 +17,7 @@ static IDWriteFactory *g_dw_factory = NULL;
 
 HINSTANCE g_hInstance;
 
-namespace cs {
+namespace ltk {
     ID2D1Factory *GetD2DFactory() { return g_d2d_factory; }
     IWICImagingFactory *GetWICFactory() { return g_wic_factory; }
     IDWriteFactory *GetDWriteFactory() { return g_dw_factory; }
@@ -43,7 +43,7 @@ namespace cs {
 
 }
 
-using namespace cs;
+using namespace ltk;
 
 /*
 void test_gdip_font()

@@ -3,7 +3,7 @@
 #include "Window.h"
 #include "Delegate.h"
 
-namespace cs {
+namespace ltk {
 
 
 class TestClass1

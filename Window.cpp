@@ -10,7 +10,7 @@
 
 extern HINSTANCE g_hInstance;
 
-namespace cs {
+namespace ltk {
 
 Window::Window(void)
 {
@@ -559,4 +559,4 @@ void Window::EndAnimation(Sprite *sp)
     }
 }
 
-} // namespace cs
+} // namespace ltk

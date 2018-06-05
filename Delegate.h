@@ -1,6 +1,6 @@
 #pragma once
 
-namespace cs {
+namespace ltk {
 
 template<typename T>
 class Delegate;
@@ -87,4 +87,4 @@ private:
     size_t m_nextId = 0;
 };
 
-} // namespace cs
+} // namespace ltk

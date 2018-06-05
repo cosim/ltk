@@ -3,7 +3,7 @@
 #include "Button.h"
 #include "Common.h"
 
-namespace cs {
+namespace ltk {
 
 void TestClass1::OnBtn1Clicked(LPCWSTR text)
 {
@@ -16,14 +16,16 @@ MainWindow::MainWindow()
     m_test = new TestClass1;
 
     const int btn_w = 40;
-    const int padding = 20;
+    const int padding = 10;
 
     Sprite *sp = new Sprite;
+    wchar_t buf[64];
 
     for (int i = 0; i < 12; i ++)
     {
         auto btn = new Button;
-        btn->SetText(L"X");
+        wsprintf(buf, L"%d", i);
+        btn->SetText(buf);
         btn->SetRect(Gdiplus::RectF(
             (float)padding + (btn_w + padding) * (i % 3), 
             (float)padding + (btn_w + padding) * (i / 3), (float)btn_w, (float)btn_w));

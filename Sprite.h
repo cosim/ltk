@@ -7,7 +7,7 @@
 #include "Window.h"
 #include "Event.h"
 
-namespace cs {
+namespace ltk {
 
 class Sprite
 {
@@ -122,4 +122,4 @@ private:
 	DISALLOW_COPY_AND_ASSIGN(Sprite);
 };
 
-} // namespace cs
+} // namespace ltk

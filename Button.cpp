@@ -2,7 +2,7 @@
 #include "Button.h"
 #include "LuaUI2.h"
 
-namespace cs {
+namespace ltk {
 
 Button::Button()
 {
