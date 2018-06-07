@@ -1,12 +1,11 @@
 
 /*
-** LuaUI2.cpp : Defines the exported functions for the DLL application.
-** Copyright (C) 2015-2016 Chen Shi. See Copyright Notice in LuaUI2.h
+** Copyright (C) 2015-2016 Chen Shi. See Copyright Notice in ltk.h
 */
 
 #include "stdafx.h"
 #include "atlstr.h"
-#include "LuaUI2.h"
+#include "ltk.h"
 #include "MainWindow.h"
 #include "Common.h"
 

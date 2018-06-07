@@ -1,16 +1,18 @@
 /*
-** Copyright (C) 2015-2016 Chen Shi. See Copyright Notice in LuaUI2.h
+** Copyright (C) 2015-2016 Chen Shi. See Copyright Notice in ltk.h
 */
 
 #include "StdAfx.h"
 #include "Window.h"
 #include "Common.h"
 #include "Sprite.h"
-#include "LuaUI2.h"
+#include "ltk.h"
 
 extern HINSTANCE g_hInstance;
 
 namespace ltk {
+
+const wchar_t * Window::ClsName = L"ltk_cls";
 
 Window::Window(void)
 {
@@ -56,7 +58,7 @@ void Window::Create(Window *parent, Gdiplus::RectF rc, DWORD style, DWORD exStyl
         hParent = parent->m_hwnd;
     }
 
-    ::CreateWindowEx(exStyle, L"LuaUI2", L"LuaUI2", style,
+    ::CreateWindowEx(exStyle, ClsName, L"", style,
         (int)rc.X, (int)rc.Y, (int)rc.Width, (int)rc.Height,
         hParent, NULL, g_hInstance, this);
 }
@@ -81,7 +83,7 @@ void Window::RegisterWndClass()
 	wc.hCursor       = LoadCursor(NULL, IDC_ARROW);
 	wc.hbrBackground = NULL;// (HBRUSH)(COLOR_WINDOW + 1); // TODO 改成NULL 防止系统去擦除背景(闪烁) 双缓冲 还有clip children clip sibling
 	wc.lpszMenuName  = NULL;
-	wc.lpszClassName = L"LuaUI2";
+	wc.lpszClassName = ClsName;
 
 	ATOM a = RegisterClass(&wc);
     assert(a);

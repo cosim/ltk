@@ -1,7 +1,7 @@
 #pragma once
 
 /*
-** Copyright (C) 2015-2016 Chen Shi. See Copyright Notice in LuaUI2.h
+** Copyright (C) 2015-2016 Chen Shi. See Copyright Notice in ltk.h
 */
 
 

@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "Button.h"
-#include "LuaUI2.h"
+#include "ltk.h"
 
 namespace ltk {
 

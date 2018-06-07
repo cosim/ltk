@@ -1,5 +1,5 @@
 /*
-** LuaUI2 -- a DirectUI Toolkit for Lua.
+** LTK -- a lightweight GUI toolkit based on Direct2D
 **
 ** Copyright (C) 2015-2016 Chen Shi. All rights reserved.
 **
@@ -25,10 +25,10 @@
 ** [ MIT license: http://www.opensource.org/licenses/mit-license.php ]
 */
 
-#ifdef LUAUI2_EXPORTS
-#define LUAUI2_API __declspec(dllexport)
+#ifdef LTK_EXPORTS
+#define LTK_API __declspec(dllexport)
 #else
-#define LUAUI2_API __declspec(dllimport)
+#define LTK_API __declspec(dllimport)
 #endif
 
 namespace ltk {

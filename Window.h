@@ -1,5 +1,5 @@
 /*
-** Copyright (C) 2015-2016 Chen Shi. See Copyright Notice in LuaUI2.h
+** Copyright (C) 2015-2016 Chen Shi. See Copyright Notice in ltk.h
 */
 #pragma once
 #include "stdafx.h"
@@ -60,6 +60,8 @@ private:
 	void HandleMouseMessage(UINT message, WPARAM wparam, LPARAM lparam);
 	LRESULT OnImeEvent(UINT message, WPARAM wparam, LPARAM lparam);
     enum { TIMER_ANIMATION = 100 };
+    static const wchar_t * ClsName;
+
 private:
 	DWORD m_style;
 	DWORD m_exStyle;

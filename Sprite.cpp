@@ -1,10 +1,10 @@
 /*
-** Copyright (C) 2015-2016 Chen Shi. See Copyright Notice in LuaUI2.h
+** Copyright (C) 2015-2016 Chen Shi. See Copyright Notice in ltk.h
 */
 
 #include "StdAfx.h"
 #include "Sprite.h"
-#include "LuaUI2.h"
+#include "ltk.h"
 #include <cmath>
 
 namespace ltk {
