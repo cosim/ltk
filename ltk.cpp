@@ -8,6 +8,8 @@
 #include "ltk.h"
 #include "MainWindow.h"
 #include "Common.h"
+#include "Delegate.h"
+#include "Sprite.h"
 
 
 static ID2D1Factory *g_d2d_factory = NULL;
@@ -95,6 +97,21 @@ void test_enum_cast()
     StringMessage *wwn = enum_cast<StringMessage>(base);
 }
 
+void size_test()
+{
+    std::map<int, void*> map1;
+    LOG("map1: " << sizeof(map1));
+    Delegate<void(void)> dlgt1;
+    LOG("dlgt1: " << sizeof(dlgt1));
+    std::function<void(void)> fn1;
+    LOG("fn1: " << sizeof(fn1));
+    Delegate<void(int, float, std::string)> dlgt2;
+    LOG("dlgt2: " << sizeof(dlgt2));
+    std::function<void(int, float, std::string)> fn2;
+    LOG("fn2: " << sizeof(fn2));
+    LOG("Sprite: " << sizeof(Sprite));
+}
+
 int CALLBACK WinMain(
     _In_ HINSTANCE hInstance,
     _In_ HINSTANCE hPrevInstance,
@@ -103,6 +120,7 @@ int CALLBACK WinMain(
     )
 {
     //test_enum_cast();
+    size_test();
     g_hInstance = hInstance;
 
     ::CoInitialize(NULL);

@@ -42,6 +42,12 @@
     <ClCompile Include="ltk.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Slide.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SpriteEx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common.h">
@@ -84,6 +90,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ltk.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Slide.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SpriteEx.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

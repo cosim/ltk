@@ -30,6 +30,8 @@ MainWindow::MainWindow()
             (float)padding + (btn_w + padding) * (i % 3), 
             (float)padding + (btn_w + padding) * (i / 3), (float)btn_w, (float)btn_w));
         sp->AddChild(btn);
+        std::wstring text = buf;
+        btn->Clicked.Attach([this, text](){ ::MessageBox(this->Handle(), text.c_str(), L"lambda test", 0); });
     }
     this->AttachSprite(sp);
 /*

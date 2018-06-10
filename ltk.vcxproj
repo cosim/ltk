@@ -102,6 +102,8 @@
     <ClCompile Include="Common.cpp" />
     <ClCompile Include="ltk.cpp" />
     <ClCompile Include="MainWindow.cpp" />
+    <ClCompile Include="Slide.cpp" />
+    <ClCompile Include="SpriteEx.cpp" />
     <ClCompile Include="Window.cpp" />
     <ClCompile Include="ImeInput.cpp" />
     <ClCompile Include="Sprite.cpp" />
@@ -120,6 +122,8 @@
     <ClInclude Include="Event.h" />
     <ClInclude Include="ltk.h" />
     <ClInclude Include="MainWindow.h" />
+    <ClInclude Include="Slide.h" />
+    <ClInclude Include="SpriteEx.h" />
     <ClInclude Include="Window.h" />
     <ClInclude Include="ImeInput.h" />
     <ClInclude Include="Sprite.h" />
