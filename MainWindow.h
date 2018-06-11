@@ -27,7 +27,7 @@ public:
 
 private:
     TestClass1 *m_test = nullptr;
-    ConnectionTracker m_testConn;
+    DelegateTracker m_testConn;
 };
 
 } // namespace

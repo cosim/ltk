@@ -13,16 +13,16 @@ public:
     virtual ~IConnection() {}
 };
 
-class ConnectionTracker
+class DelegateTracker
 {
 public:
-    ConnectionTracker() {}
-    explicit ConnectionTracker(IConnection *conn) : m_conn(conn) {}
-    ConnectionTracker(ConnectionTracker &&rhs) { m_conn = rhs.m_conn; rhs.m_conn = nullptr; }
-    void operator=(ConnectionTracker &&rhs) { m_conn = rhs.m_conn; rhs.m_conn = nullptr; }
-    ConnectionTracker(const ConnectionTracker &rhs) = delete;
-    void operator=(const ConnectionTracker &rhs) = delete;
-    ~ConnectionTracker() {
+    DelegateTracker() {}
+    explicit DelegateTracker(IConnection *conn) : m_conn(conn) {}
+    DelegateTracker(DelegateTracker &&rhs) { m_conn = rhs.m_conn; rhs.m_conn = nullptr; }
+    void operator=(DelegateTracker &&rhs) { m_conn = rhs.m_conn; rhs.m_conn = nullptr; }
+    DelegateTracker(const DelegateTracker &rhs) = delete;
+    void operator=(const DelegateTracker &rhs) = delete;
+    ~DelegateTracker() {
         int i = 0;
         i = 1;
         delete m_conn; 
@@ -43,7 +43,7 @@ public:
     ~Connection() {}
     void Close() { m_d->Remove(m_key); }
     IConnection *Copy() { return new Connection(m_d, m_key); }
-    //void Track(ConnectionTracker *tracker) { tracker->Add(this); }
+    //void Track(DelegateTracker *tracker) { tracker->Add(this); }
 
 private:
     Delegate<T> *m_d;
@@ -54,12 +54,12 @@ template<typename T>
 class Delegate
 {
 public:
-    ConnectionTracker Attach(const std::function<T> &cb)
+    DelegateTracker Attach(const std::function<T> &cb)
     {
         size_t key = m_nextId;
         m_nextId++;
         m_listeners[key] = cb;
-        return std::move(ConnectionTracker(new Connection<T>(this, key)));
+        return std::move(DelegateTracker(new Connection<T>(this, key)));
     }
 
     bool Remove(size_t key)
