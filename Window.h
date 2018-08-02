@@ -4,16 +4,21 @@
 #pragma once
 #include "stdafx.h"
 #include "ImeInput.h"
+#include "DukObject.h"
 
 namespace ltk {
 
 class Sprite;
 
-class Window
+class Window : public DukObject
 {
-public:
-    Window(void);
+protected:
     virtual ~Window(void);
+
+public:
+    RTTI_DECLARATIONS(Window, DukObject)
+
+    Window(void);
 
     void SetRect(Gdiplus::RectF rc);
 
@@ -56,6 +61,17 @@ public:
     virtual bool OnClose(bool &proceed) { proceed = true; return true; }
     virtual bool OnDestroy() { return false; }
 
+#ifndef LTK_DISABLE_DUKTAPE
+    static duk_ret_t DukInit(duk_context *ctx);
+    static duk_ret_t DukConstructor(duk_context *ctx);
+    static duk_ret_t Create(duk_context *ctx);
+
+    BEGIN_DUK_METHOD_MAP(Window)
+        DUK_METHOD_ENTRY(Create, 0);
+    END_DUK_METHOD_MAP()
+
+#endif // LTK_DISABLE_DUKTAPE
+
 private:
 	void HandleMouseMessage(UINT message, WPARAM wparam, LPARAM lparam);
 	LRESULT OnImeEvent(UINT message, WPARAM wparam, LPARAM lparam);
@@ -70,7 +86,7 @@ private:
 	ImeInput m_ime;
 	RECT m_rectComposition;
 	int m_caretHeight;
-	unique_ptr<Sprite> m_sprite;
+	Sprite *m_sprite; // owner
 	Sprite *m_spFocus;
 	Sprite *m_spCapture;
 	Sprite *m_spHover;

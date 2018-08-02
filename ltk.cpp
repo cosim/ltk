@@ -10,6 +10,7 @@
 #include "Common.h"
 #include "Delegate.h"
 #include "Sprite.h"
+#include "duktape.h"
 
 
 static ID2D1Factory *g_d2d_factory = NULL;
@@ -42,6 +43,33 @@ namespace ltk {
         return rc2;
     }
 
+
+	HRESULT LoadBitmapFromFile(ID2D1RenderTarget *target, LPCWSTR path, ID2D1Bitmap **bitmap)
+	{
+		IWICBitmapDecoder *decorder = NULL;
+		IWICBitmapFrameDecode *frame = NULL;
+		IWICFormatConverter *converter = NULL;
+		assert(*bitmap == nullptr);
+
+		HRESULT hr = g_wic_factory->CreateDecoderFromFilename(path, NULL, GENERIC_READ, WICDecodeMetadataCacheOnDemand, &decorder);
+		if (SUCCEEDED(hr))
+		{
+			hr = decorder->GetFrame(0, &frame);
+			assert(SUCCEEDED(hr));
+			hr = g_wic_factory->CreateFormatConverter(&converter);
+			assert(SUCCEEDED(hr));
+			hr = converter->Initialize(frame, GUID_WICPixelFormat32bppPBGRA, WICBitmapDitherTypeNone,
+				NULL, 0.0, WICBitmapPaletteTypeMedianCut);
+			assert(SUCCEEDED(hr));
+			hr = target->CreateBitmapFromWicBitmap(converter, NULL, bitmap);
+			assert(SUCCEEDED(hr));
+			SAFE_RELEASE(converter);
+			SAFE_RELEASE(frame);
+			SAFE_RELEASE(decorder);
+			return S_OK;
+		}
+		return E_FAIL;
+	}
 }
 
 using namespace ltk;
@@ -144,6 +172,8 @@ int CALLBACK WinMain(
         );
     assert(SUCCEEDED(hr));
 
+    duk_context *ctx = duk_create_heap_default();
+
     Window::RegisterWndClass();
     auto wnd = new MainWindow;
     wnd->Create(nullptr, Gdiplus::RectF(0, 0, 1000, 700), WS_OVERLAPPEDWINDOW, 0);
@@ -171,6 +201,8 @@ int CALLBACK WinMain(
     g_dw_factory->Release();
     g_wic_factory->Release();
     g_d2d_factory->Release();
+
+    duk_destroy_heap(ctx);
 
     ::CoUninitialize();
 

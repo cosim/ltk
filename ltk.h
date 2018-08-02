@@ -37,4 +37,5 @@ namespace ltk {
     IDWriteFactory *GetDWriteFactory();
     void TranslateTransform(ID2D1RenderTarget *target, float dx, float dy);
     D2D1_RECT_F GdipRectF2D2D1RectF(const Gdiplus::RectF &rc);
+	HRESULT LoadBitmapFromFile(ID2D1RenderTarget * target, LPCWSTR path, ID2D1Bitmap ** bitmap);
 }

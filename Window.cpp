@@ -40,10 +40,13 @@ Window::Window(void)
 
 Window::~Window(void)
 {
+    m_sprite->Unref();
+    m_sprite = INVALID_POINTER(Sprite);
     m_spFocus = INVALID_POINTER(Sprite);
     m_spCapture = INVALID_POINTER(Sprite);
     m_spHover = INVALID_POINTER(Sprite);
-    SAFE_RELEASE(m_target);
+    m_target->Release();
+    m_target = INVALID_POINTER(ID2D1HwndRenderTarget);
 }
 
 void Window::Create(Window *parent, Gdiplus::RectF rc, DWORD style, DWORD exStyle)
@@ -389,8 +392,10 @@ HWND Window::Handle()
 
 void Window::AttachSprite( Sprite *sp )
 {
-	m_sprite.reset(sp);
+	m_sprite->Unref();
+    sp->Ref();
 	sp->SetHostWnd(this);
+    m_sprite = sp;
 }
 
 LRESULT Window::OnImeEvent( UINT uMsg, WPARAM wParam, LPARAM lParam )
@@ -560,5 +565,38 @@ void Window::EndAnimation(Sprite *sp)
         }
     }
 }
+
+#ifndef LTK_DISABLE_DUKTAPE
+
+duk_ret_t Window::DukInit(duk_context *ctx)
+{
+    duk_push_c_function(ctx, DukConstructor, 0);
+    duk_push_object(ctx);
+    RegisterMethods(ctx);
+    duk_put_prop_string(ctx, -2, "prototype");
+    duk_put_global_string(ctx, "Window");
+ }
+
+duk_ret_t Window::DukConstructor(duk_context *ctx)
+{
+    if (!duk_is_constructor_call(ctx)) {
+        return DUK_RET_TYPE_ERROR;
+    }
+    duk_push_this(ctx);
+    Window *wnd = new Window();
+    duk_push_pointer(ctx, wnd);
+    duk_put_prop_string(ctx, -2, DukPropName);
+    return 0;
+}
+
+duk_ret_t Window::Create(duk_context *ctx)
+{
+    auto thiz = (Window *)CheckType(ctx, 0, Window::TypeIdClass());
+    if (!thiz) return DUK_RET_TYPE_ERROR;
+    thiz->Create(nullptr, Gdiplus::RectF(0, 0, 100, 100), WS_OVERLAPPEDWINDOW, 0);
+    return 0;
+}
+
+#endif // LTK_DISABLE_DUKTAPE
 
 } // namespace ltk

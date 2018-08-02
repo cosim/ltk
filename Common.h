@@ -8,8 +8,6 @@
 CStringW Utf8ToUtf16(LPCSTR strA, int len = -1);
 CStringA Utf16ToUtf8(LPCTSTR strW, int len);
 
-void LuaLog(LPCSTR strLogA);
-
 static void DebugOutputLine(CString line);
 
 #define LOG(msg) do\
@@ -34,3 +32,33 @@ static void DebugOutputLine(CString line);
 #ifndef INVALID_POINTER
 #define INVALID_POINTER(type) reinterpret_cast<type *>(0xDEADBEEF)
 #endif
+
+class DukStackChecker
+{
+public:
+    DukStackChecker(duk_context *ctx_)
+    {
+        ctx = ctx_;
+        init_top = duk_get_top(ctx);
+        num_ret = 0;
+    }
+
+    ~DukStackChecker()
+    {
+        if (duk_get_top(ctx) - num_ret != init_top)
+        {
+            __debugbreak();
+        }
+    }
+
+    duk_idx_t Return(duk_idx_t num)
+    {
+        num_ret = num;
+        return num_ret;
+    }
+
+private:
+    duk_context *ctx;
+    duk_idx_t init_top;
+    duk_idx_t num_ret;
+};

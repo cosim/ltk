@@ -5,16 +5,21 @@
 #include "Common.h"
 #include "Window.h"
 #include "Event.h"
+#include "DukObject.h"
 
 namespace ltk {
 
-class Sprite
+class Sprite : public DukObject
 {
-public:
-    Sprite(void);
+protected:
     virtual ~Sprite(void);
 
+public:
+    Sprite(void);
+
 	Gdiplus::RectF GetRect();
+
+	Gdiplus::RectF GetClientRect();
 
 	void SetRect( Gdiplus::RectF rect );
 
@@ -113,8 +118,8 @@ private:
     Window *m_hostWnd;
 
 	Sprite *m_prevSibling; // 控件树结构 要高大上一点 zorder隐含在树结构中 避免排序
-	Sprite *m_nextSibling; // 平级的的关系用双链表
-	Sprite *m_firstChild;
+	Sprite *m_nextSibling; // owner 平级的的关系用双链表
+	Sprite *m_firstChild;  // owner
 	Sprite *m_lastChild;
 	Sprite *m_parent;
 

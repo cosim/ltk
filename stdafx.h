@@ -43,6 +43,8 @@ using std::unique_ptr;
 #define SAFE_RELEASE(p) if (p) { p->Release(); p = NULL; }
 #define DEF_SMART_PTR(type) typedef std::shared_ptr<type> type##Ptr; typedef std::weak_ptr<type> type##Weak;
 
+#include "duktape.h"
+
 //#include <boost/signals2.hpp>
 //#include <boost/shared_ptr.hpp>
 //#include <boost/enable_shared_from_this.hpp>
