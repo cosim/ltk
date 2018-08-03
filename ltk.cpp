@@ -140,6 +140,32 @@ void size_test()
     LOG("Sprite: " << sizeof(Sprite));
 }
 
+bool DukDoFile(duk_context *ctx, const wchar_t *path)
+{
+    bool ret = false;
+    CStringA pathA;
+    char *buf = nullptr;
+    FILE *fp = _wfopen(path, L"rb");
+    if (!fp) {
+        goto leave;
+    }
+    if (fseek(fp, 0, SEEK_END) != 0) goto leave;
+    long size = ftell(fp);
+    if (fseek(fp, 0, SEEK_SET) != 0) goto leave;
+    buf = new char[size];
+    fread(buf, 1, size, fp);
+    pathA = Utf16ToUtf8(path, -1);
+    duk_push_string(ctx, pathA);
+    duk_compile_lstring_filename(ctx, 0, buf, size);
+    duk_call(ctx, 0);
+    ret = true;
+
+leave:
+    delete[] buf;
+    if (fp) fclose(fp);
+    return ret;
+}
+
 int CALLBACK WinMain(
     _In_ HINSTANCE hInstance,
     _In_ HINSTANCE hPrevInstance,
@@ -177,7 +203,9 @@ int CALLBACK WinMain(
     Window::RegisterWndClass();
     Window::DukInit(ctx);
 
-    duk_eval_string(ctx, "var wnd = new Window(); wnd.Create(); wnd.Show();");
+    DukDoFile(ctx, L"script\\main.js");
+
+    //duk_eval_string(ctx, "var wnd = new Window(); wnd.Create(); wnd.Show();");
     //auto wnd = new MainWindow;
     //wnd->Create(nullptr, Gdiplus::RectF(0, 0, 1000, 700), WS_OVERLAPPEDWINDOW, 0);
     //::ShowWindow(wnd->Handle(), SW_SHOW);

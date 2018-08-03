@@ -22,6 +22,9 @@ CStringW Utf8ToUtf16(LPCSTR strA, int len)
 
 CStringA Utf16ToUtf8(LPCTSTR strW, int len)
 {
+    if (len < 0) {
+        len = wcslen(strW);
+    }
 	CStringA strA;
 	int lenA = UTF8Length(strW, len);
 	char *pbuff = strA.GetBuffer(lenA + 1);
