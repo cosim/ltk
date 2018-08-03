@@ -167,6 +167,21 @@ leave:
     return ret;
 }
 
+static duk_ret_t native_print(duk_context *ctx) {
+    duk_push_string(ctx, "\r\n");
+    duk_concat(ctx, duk_get_top(ctx));
+    ::OutputDebugStringA(duk_safe_to_string(ctx, -1));
+    return 0;
+}
+
+static void fatal_handler(void *udata, const char *msg)
+{
+    CStringA log;
+    log.Format("<FATAL> %s\r\n", msg);
+    ::OutputDebugStringA(log);
+    ::TerminateProcess(::GetCurrentProcess(), 0);
+}
+
 int CALLBACK WinMain(
     _In_ HINSTANCE hInstance,
     _In_ HINSTANCE hPrevInstance,
@@ -199,7 +214,10 @@ int CALLBACK WinMain(
         );
     assert(SUCCEEDED(hr));
 
-    duk_context *ctx = duk_create_heap_default();
+    duk_context *ctx = duk_create_heap(NULL, NULL, NULL, NULL, fatal_handler);
+
+    duk_push_c_function(ctx, native_print, DUK_VARARGS);
+    duk_put_global_string(ctx, "print");
 
     ApiBindInit(ctx);
     Window::RegisterWndClass();
