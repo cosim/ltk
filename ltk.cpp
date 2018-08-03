@@ -11,6 +11,7 @@
 #include "Delegate.h"
 #include "Sprite.h"
 #include "duktape.h"
+#include "ApiBind.h"
 
 
 static ID2D1Factory *g_d2d_factory = NULL;
@@ -200,6 +201,7 @@ int CALLBACK WinMain(
 
     duk_context *ctx = duk_create_heap_default();
 
+    ApiBindInit(ctx);
     Window::RegisterWndClass();
     Window::DukInit(ctx);
 
