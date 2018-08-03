@@ -175,9 +175,12 @@ int CALLBACK WinMain(
     duk_context *ctx = duk_create_heap_default();
 
     Window::RegisterWndClass();
-    auto wnd = new MainWindow;
-    wnd->Create(nullptr, Gdiplus::RectF(0, 0, 1000, 700), WS_OVERLAPPEDWINDOW, 0);
-    ::ShowWindow(wnd->Handle(), SW_SHOW);
+    Window::DukInit(ctx);
+
+    duk_eval_string(ctx, "var wnd = new Window(); wnd.Create();");
+    //auto wnd = new MainWindow;
+    //wnd->Create(nullptr, Gdiplus::RectF(0, 0, 1000, 700), WS_OVERLAPPEDWINDOW, 0);
+    //::ShowWindow(wnd->Handle(), SW_SHOW);
 
     //test_gdip_font();
     MSG msg;
@@ -197,7 +200,6 @@ int CALLBACK WinMain(
     }
     LOG(<< "WM_QUIT");
 
-    delete wnd;
     g_dw_factory->Release();
     g_wic_factory->Release();
     g_d2d_factory->Release();

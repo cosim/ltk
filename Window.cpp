@@ -570,12 +570,14 @@ void Window::EndAnimation(Sprite *sp)
 
 duk_ret_t Window::DukInit(duk_context *ctx)
 {
-    duk_push_c_function(ctx, DukConstructor, 0);
-    duk_push_object(ctx);
+    DukStackChecker check(ctx);
+    duk_push_c_function(ctx, DukConstructor, 0); // ctor
+    duk_push_object(ctx); // ctor proto
     RegisterMethods(ctx);
-    duk_put_prop_string(ctx, -2, "prototype");
-    duk_put_global_string(ctx, "Window");
- }
+    duk_put_prop_string(ctx, -2, "prototype"); // ctor
+    duk_put_global_string(ctx, "Window"); // empty
+    return 0;
+}
 
 duk_ret_t Window::DukConstructor(duk_context *ctx)
 {
@@ -591,7 +593,8 @@ duk_ret_t Window::DukConstructor(duk_context *ctx)
 
 duk_ret_t Window::Create(duk_context *ctx)
 {
-    auto thiz = (Window *)CheckType(ctx, 0, Window::TypeIdClass());
+    duk_push_this(ctx);
+    auto thiz = (Window *)CheckType(ctx, -1, Window::TypeIdClass());
     if (!thiz) return DUK_RET_TYPE_ERROR;
     thiz->Create(nullptr, Gdiplus::RectF(0, 0, 100, 100), WS_OVERLAPPEDWINDOW, 0);
     return 0;

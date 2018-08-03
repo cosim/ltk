@@ -67,7 +67,7 @@ public:
     static duk_ret_t Create(duk_context *ctx);
 
     BEGIN_DUK_METHOD_MAP(Window)
-        DUK_METHOD_ENTRY(Create, 0);
+        DUK_METHOD_ENTRY(Create, 1);
     END_DUK_METHOD_MAP()
 
 #endif // LTK_DISABLE_DUKTAPE
