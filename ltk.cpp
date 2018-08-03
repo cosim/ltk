@@ -177,7 +177,7 @@ int CALLBACK WinMain(
     Window::RegisterWndClass();
     Window::DukInit(ctx);
 
-    duk_eval_string(ctx, "var wnd = new Window(); wnd.Create();");
+    duk_eval_string(ctx, "var wnd = new Window(); wnd.Create(); wnd.Show();");
     //auto wnd = new MainWindow;
     //wnd->Create(nullptr, Gdiplus::RectF(0, 0, 1000, 700), WS_OVERLAPPEDWINDOW, 0);
     //::ShowWindow(wnd->Handle(), SW_SHOW);

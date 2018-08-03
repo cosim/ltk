@@ -14,7 +14,7 @@ public:
 
     DukObject();
 
-    static DukObject *CheckType(duk_context *ctx, duk_idx_t idx, size_t type_id);
+    static DukObject *DukCheckType(duk_context *ctx, duk_idx_t idx, size_t type_id);
 
     // regiseter motheds to prototype object which is on the top of stack.
     // virtual void RegisterMethods(duk_context *ctx) = 0;
@@ -36,5 +36,7 @@ static void RegisterMethods(duk_context *ctx) {
 #define DUK_CHAIN_METHOD_MAP(parentType) parentType::RegisterMethods(L);
 
 #define END_DUK_METHOD_MAP() }
+
+void DukPrintStack(duk_context *ctx);
 
 } // namespace ltk

@@ -45,7 +45,8 @@ public:
 
     ~DukStackChecker()
     {
-        if (duk_get_top(ctx) - num_ret != init_top)
+        auto top = duk_get_top(ctx);
+        if (top - num_ret != init_top)
         {
             __debugbreak();
         }
