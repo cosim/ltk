@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "ApiBind.h"
-#include "Common.h"
+#include "DukObject.h"
 
 namespace ltk {
 
