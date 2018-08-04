@@ -2,6 +2,13 @@ for (var k in win32) {
 	print(k, " = ", win32[k]);
 }
 
+function test1() {
+	var a = void null;
+	a.b();
+}
+
+test1();
+
 var wnd = new Window();
 wnd.Create({
 	style : win32.WS_OVERLAPEDWINDOW,

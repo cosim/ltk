@@ -143,8 +143,10 @@ void size_test()
 
 bool DukDoFile(duk_context *ctx, const wchar_t *path)
 {
+    DukStackChecker chk(ctx);
     bool ret = false;
     CStringA pathA;
+    CStringA error;
     char *buf = nullptr;
     FILE *fp = _wfopen(path, L"rb");
     if (!fp) {
@@ -155,10 +157,17 @@ bool DukDoFile(duk_context *ctx, const wchar_t *path)
     if (fseek(fp, 0, SEEK_SET) != 0) goto leave;
     buf = new char[size];
     fread(buf, 1, size, fp);
+
     pathA = Utf16ToUtf8(path, -1);
     duk_push_string(ctx, pathA);
-    duk_compile_lstring_filename(ctx, 0, buf, size);
-    duk_call(ctx, 0);
+    if (duk_pcompile_lstring_filename(ctx, 0, buf, size) != 0) {
+        error.Format("[%s] %s\n", pathA, duk_safe_to_string(ctx, -1));
+        ::OutputDebugStringA(error);
+        duk_pop(ctx);
+        goto leave;
+    }
+    DukPCall(ctx, 0);
+    duk_pop(ctx);
     ret = true;
 
 leave:

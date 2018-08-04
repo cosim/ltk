@@ -58,6 +58,8 @@ T *DukCheckThis(duk_context *ctx)
 
 void DukPrintStack(duk_context *ctx);
 
+bool DukPCall(duk_context *ctx, duk_idx_t nargs);
+
 class DukStackChecker
 {
 public:

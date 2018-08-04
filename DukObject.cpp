@@ -50,6 +50,29 @@ void DukPrintStack(duk_context *ctx)
     }
 }
 
+bool DukPCall(duk_context *ctx, duk_idx_t nargs)
+{
+    auto ret = duk_pcall(ctx, nargs);
+    if (ret == DUK_EXEC_SUCCESS) {
+        return true;
+    }
+    else {
+        if (duk_is_error(ctx, -1)) {
+            /* Accessing .stack might cause an error to be thrown, so wrap this
+            * access in a duk_safe_call() if it matters.
+            */
+            duk_get_prop_string(ctx, -1, "stack");
+            ::OutputDebugStringA(duk_safe_to_string(ctx, -1));
+            duk_pop(ctx);
+        }
+        else {
+            /* Non-Error value, coerce safely to string. */
+            ::OutputDebugStringA(duk_safe_to_string(ctx, -1));
+        }
+        ::PostQuitMessage(0);
+    }
+    return false;
+}
 
 DukObject::DukObject()
 {
