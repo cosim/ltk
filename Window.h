@@ -69,7 +69,7 @@ public:
 
     BEGIN_DUK_METHOD_MAP(Window)
         DUK_METHOD_ENTRY(Create, 1);
-        DUK_METHOD_ENTRY(Show, 0);
+        DUK_METHOD_ENTRY(Show, 1);
     END_DUK_METHOD_MAP()
 
 #endif // LTK_DISABLE_DUKTAPE

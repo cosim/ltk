@@ -7,6 +7,7 @@
 #include "Common.h"
 #include "Sprite.h"
 #include "ltk.h"
+#include "ApiBind.h"
 
 extern HINSTANCE g_hInstance;
 
@@ -595,14 +596,39 @@ duk_ret_t Window::DukConstructor(duk_context *ctx)
 duk_ret_t Window::Create(duk_context *ctx)
 {
     auto thiz = DukCheckThis<Window>(ctx); if (!thiz) return DUK_RET_TYPE_ERROR;
-    thiz->Create(nullptr, Gdiplus::RectF(0, 0, 100, 100), WS_OVERLAPPEDWINDOW, 0);
+    Gdiplus::RectF rc(0, 0, 100, 100);
+    DWORD style = WS_OVERLAPPEDWINDOW;
+    if (duk_is_object(ctx, 0))
+    {
+        duk_get_prop_string(ctx, 0, "rect");
+        if (duk_is_object(ctx, -1))
+        {
+            if (!DukGetRect(ctx, -1, rc)) {
+                rc = Gdiplus::RectF(0, 0, 100, 100);
+            }
+        }
+        duk_pop(ctx); // rect
+
+        duk_get_prop_string(ctx, 0, "style");
+        if (duk_is_number(ctx, -1))
+        {
+            style = (DWORD) duk_get_number(ctx, -1);
+        }
+        duk_pop(ctx); // style
+    }
+    thiz->Create(nullptr, rc, style, 0);
     return 0;
 }
 
 duk_ret_t Window::Show(duk_context *ctx)
 {
     auto thiz = DukCheckThis<Window>(ctx); if (!thiz) return DUK_RET_TYPE_ERROR;
-    ::ShowWindow(thiz->Handle(), SW_SHOW);
+    int cmd = SW_SHOW;
+    if (duk_is_number(ctx, 0))
+    {
+        cmd = (int)duk_get_number(ctx, 0);
+    }
+    ::ShowWindow(thiz->Handle(), cmd);
     return 0;
 }
 

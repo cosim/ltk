@@ -30,6 +30,19 @@ static const duk_number_list_entry w32_consts[] = {
     CONSTANT_ENTRY(WS_TABSTOP),
     CONSTANT_ENTRY(WS_MINIMIZEBOX),
     CONSTANT_ENTRY(WS_MAXIMIZEBOX),
+    //////////////////////////////////////////
+    CONSTANT_ENTRY(SW_HIDE),
+    CONSTANT_ENTRY(SW_SHOWNORMAL),
+    CONSTANT_ENTRY(SW_SHOWMINIMIZED),
+    CONSTANT_ENTRY(SW_SHOWMAXIMIZED),
+    CONSTANT_ENTRY(SW_SHOWNOACTIVATE),
+    CONSTANT_ENTRY(SW_SHOW),
+    CONSTANT_ENTRY(SW_MINIMIZE),
+    CONSTANT_ENTRY(SW_SHOWMINNOACTIVE),
+    CONSTANT_ENTRY(SW_SHOWNA),
+    CONSTANT_ENTRY(SW_RESTORE),
+    CONSTANT_ENTRY(SW_SHOWDEFAULT),
+    CONSTANT_ENTRY(SW_FORCEMINIMIZE),
     { NULL, 0.0 }
 };
 
@@ -47,6 +60,47 @@ duk_ret_t ApiBindInit(duk_context *ctx)
     duk_put_number_list(ctx, -1, w32_consts);
     duk_put_global_string(ctx, "win32");
     return 0;
+}
+
+bool DukGetRect(duk_context *ctx, duk_idx_t idx, Gdiplus::RectF &out)
+{
+    DukStackChecker chk(ctx);
+
+    if (!duk_is_object(ctx, idx)) return false;
+
+    duk_get_prop_string(ctx, idx, "x");
+    if (!duk_is_number(ctx, -1)) {
+        duk_pop(ctx);
+        return false;
+    }
+    out.X = (float)duk_get_number(ctx, -1);
+    duk_pop(ctx);
+
+    duk_get_prop_string(ctx, idx, "y");
+    if (!duk_is_number(ctx, -1)) {
+        duk_pop(ctx);
+        return false;
+    }
+    out.Y = (float)duk_get_number(ctx, -1);
+    duk_pop(ctx);
+
+    duk_get_prop_string(ctx, idx, "w");
+    if (!duk_is_number(ctx, -1)) {
+        duk_pop(ctx);
+        return false;
+    }
+    out.Width = (float)duk_get_number(ctx, -1);
+    duk_pop(ctx);
+
+    duk_get_prop_string(ctx, idx, "h");
+    if (!duk_is_number(ctx, -1)) {
+        duk_pop(ctx);
+        return false;
+    }
+    out.Height = (float)duk_get_number(ctx, -1);
+    duk_pop(ctx);
+
+    return true;
 }
 
 } // namespace ltk
