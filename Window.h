@@ -64,7 +64,6 @@ public:
 #ifndef LTK_DISABLE_DUKTAPE
     static duk_ret_t DukInit(duk_context *ctx);
     static duk_ret_t DukConstructor(duk_context *ctx);
-    static Window *DukCheckThis(duk_context *ctx);
     static duk_ret_t Create(duk_context *ctx);
     static duk_ret_t Show(duk_context *ctx);
 

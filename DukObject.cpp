@@ -3,19 +3,11 @@
 
 namespace ltk {
 
-const char * DukObject::DukPropName = DUK_HIDDEN_SYMBOL("LtkObject");
+const char * DukThisSymbol = DUK_HIDDEN_SYMBOL("LtkObject");
 
-DukObject::DukObject()
+DukObject * DukCheckType(duk_context *ctx, duk_idx_t idx, size_t type_id)
 {
-}
-
-DukObject::~DukObject()
-{
-}
-
-DukObject * DukObject::DukCheckType(duk_context *ctx, duk_idx_t idx, size_t type_id)
-{
-    duk_get_prop_string(ctx, idx, DukPropName);
+    duk_get_prop_string(ctx, idx, DukThisSymbol);
     RTTI *rtti = (RTTI *)duk_require_pointer(ctx, idx);
     duk_pop(ctx);
 
@@ -58,5 +50,30 @@ void DukPrintStack(duk_context *ctx)
     }
 }
 
+
+DukObject::DukObject()
+{
+}
+
+DukObject::~DukObject()
+{
+}
+
+DWORD DukObject::GetNextId()
+{
+    return _InterlockedIncrement(&m_sNextId);
+}
+
+duk_ret_t DukObject::AddListener(duk_context *ctx)
+{
+    DukObject *thiz = DukCheckThis<DukObject>(ctx);
+    if (!thiz) return DUK_RET_TYPE_ERROR;
+    auto pszEvent = duk_require_string(ctx, 0);
+    if (!pszEvent) return DUK_RET_TYPE_ERROR;
+
+    return 0;
+}
+
+DWORD DukObject::m_sNextId = 0;
 
 } // namespace ltk

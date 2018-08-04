@@ -588,33 +588,20 @@ duk_ret_t Window::DukConstructor(duk_context *ctx)
     duk_push_this(ctx);
     Window *wnd = new Window();
     duk_push_pointer(ctx, wnd);
-    duk_put_prop_string(ctx, -2, DukPropName);
+    duk_put_prop_string(ctx, -2, DukThisSymbol);
     return 0;
-}
-
-Window *Window::DukCheckThis(duk_context *ctx)
-{
-    DukStackChecker check(ctx);
-    duk_push_this(ctx);
-    auto thiz = (Window *)DukCheckType(ctx, -1, Window::TypeIdClass());
-    duk_pop(ctx); // for this
-    return thiz;
 }
 
 duk_ret_t Window::Create(duk_context *ctx)
 {
-    if (duk_is_object(ctx, 0))
-    {
-        __debugbreak();
-    }
-    auto thiz = DukCheckThis(ctx); if (!thiz) return DUK_RET_TYPE_ERROR;
+    auto thiz = DukCheckThis<Window>(ctx); if (!thiz) return DUK_RET_TYPE_ERROR;
     thiz->Create(nullptr, Gdiplus::RectF(0, 0, 100, 100), WS_OVERLAPPEDWINDOW, 0);
     return 0;
 }
 
 duk_ret_t Window::Show(duk_context *ctx)
 {
-    auto thiz = DukCheckThis(ctx); if (!thiz) return DUK_RET_TYPE_ERROR;
+    auto thiz = DukCheckThis<Window>(ctx); if (!thiz) return DUK_RET_TYPE_ERROR;
     ::ShowWindow(thiz->Handle(), SW_SHOW);
     return 0;
 }
