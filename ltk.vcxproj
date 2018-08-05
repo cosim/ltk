@@ -65,6 +65,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <DisableSpecificWarnings>4996;4250;4100;4189</DisableSpecificWarnings>
       <TreatWarningAsError>false</TreatWarningAsError>
+      <ExceptionHandling>SyncCThrow</ExceptionHandling>
     </ClCompile>
     <Link>
       <AdditionalDependencies>gdiplus.lib;D2d1.lib;Windowscodecs.lib;Dwrite.lib;duktape.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -87,6 +88,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <DisableSpecificWarnings>4996;4250;4100;4189</DisableSpecificWarnings>
       <TreatWarningAsError>false</TreatWarningAsError>
+      <ExceptionHandling>SyncCThrow</ExceptionHandling>
     </ClCompile>
     <Link>
       <AdditionalDependencies>gdiplus.lib;D2d1.lib;Windowscodecs.lib;Dwrite.lib;duktape.lib;%(AdditionalDependencies)</AdditionalDependencies>

@@ -48,8 +48,17 @@ static const duk_number_list_entry w32_consts[] = {
 
 #undef CONSTANT_ENTRY
 
+class DtorTest
+{
+public:
+    ~DtorTest() { LOG("."); }
+};
+
 duk_ret_t _PostQuitMessage(duk_context *ctx)
 {
+    DtorTest d;
+    duk_push_error_object(ctx, DUK_ERR_TYPE_ERROR, "test");
+    duk_throw(ctx);
     ::PostQuitMessage(0);
     return 0;
 }
