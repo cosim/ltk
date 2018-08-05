@@ -4,12 +4,11 @@
 
 namespace ltk {
 
-#define BEGIN_DUK_METHOD_MAP(cls) virtual const char *DukClassName() { return #cls; } \
-static void RegisterMethods(duk_context *ctx) {
+#define BEGIN_DUK_METHOD_MAP(cls) static void DukRegisterMethods(duk_context *ctx) {
 
 #define DUK_METHOD_ENTRY(x, nargs) duk_push_c_function(ctx, x, nargs); duk_put_prop_string(ctx, -2, #x);
 
-#define DUK_CHAIN_METHOD_MAP(parentType) parentType::RegisterMethods(ctx);
+#define DUK_CHAIN_METHOD_MAP(parentType) parentType::DukRegisterMethods(ctx);
 
 #define END_DUK_METHOD_MAP() }
 
@@ -67,6 +66,19 @@ T *DukCheckThis(duk_context *ctx)
 void DukPrintStack(duk_context *ctx);
 
 bool DukPCall(duk_context *ctx, duk_idx_t nargs);
+
+template<typename T>
+void DukRegisterClass(duk_context *ctx, const char *name)
+{
+    DukStackChecker check(ctx);
+    duk_push_c_function(ctx, T::DukConstructor, 0); // ctor
+    duk_push_object(ctx); // ctor proto
+    duk_push_c_function(ctx, DukObject::DukFinalizer, 2);
+    duk_set_finalizer(ctx, -2);
+    T::DukRegisterMethods(ctx);
+    duk_put_prop_string(ctx, -2, "prototype"); // ctor
+    duk_put_global_string(ctx, name); // empty
+}
 
 class DukStackChecker
 {

@@ -568,19 +568,6 @@ void Window::EndAnimation(Sprite *sp)
 
 #ifndef LTK_DISABLE_DUKTAPE
 
-duk_ret_t Window::DukInit(duk_context *ctx)
-{
-    DukStackChecker check(ctx);
-    duk_push_c_function(ctx, DukConstructor, 0); // ctor
-    duk_push_object(ctx); // ctor proto
-    duk_push_c_function(ctx, DukFinalizer, 2);
-    duk_set_finalizer(ctx, -2);
-    RegisterMethods(ctx);
-    duk_put_prop_string(ctx, -2, "prototype"); // ctor
-    duk_put_global_string(ctx, "Window"); // empty
-    return 0;
-}
-
 duk_ret_t Window::DukConstructor(duk_context *ctx)
 {
     if (!duk_is_constructor_call(ctx)) {

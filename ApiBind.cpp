@@ -56,9 +56,9 @@ public:
 
 duk_ret_t _PostQuitMessage(duk_context *ctx)
 {
-    DtorTest d;
-    duk_push_error_object(ctx, DUK_ERR_TYPE_ERROR, "test");
-    duk_throw(ctx);
+    //DtorTest d;
+    //duk_push_error_object(ctx, DUK_ERR_TYPE_ERROR, "test");
+    //duk_throw(ctx);
     ::PostQuitMessage(0);
     return 0;
 }

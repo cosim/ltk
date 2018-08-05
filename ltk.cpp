@@ -236,7 +236,7 @@ int CALLBACK WinMain(
 
     ApiBindInit(ctx);
     Window::RegisterWndClass();
-    Window::DukInit(ctx);
+    DukRegisterClass<Window>(ctx, "Window");
 
     DukDoFile(ctx, L"script\\main.js");
 
