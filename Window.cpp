@@ -10,6 +10,7 @@
 #include "ApiBind.h"
 
 extern HINSTANCE g_hInstance;
+extern duk_context *g_duk_ctx;
 
 namespace ltk {
 
@@ -17,14 +18,6 @@ const wchar_t * Window::ClsName = L"ltk_cls";
 
 Window::Window(void)
 {
-	m_style = WS_OVERLAPPEDWINDOW|WS_VISIBLE|WS_CLIPCHILDREN|WS_CLIPSIBLINGS;
-	m_exStyle = 0;
-
-	m_rect.X = 0;
-	m_rect.Y = 0;
-	m_rect.Width = 800;
-	m_rect.Height = 600;
-
 	m_hwnd = NULL;
 
 	m_rectComposition.left = 0;
@@ -163,6 +156,8 @@ void Window::HandleMouseMessage(UINT message, WPARAM wparam, LPARAM lparam)
 LRESULT CALLBACK Window::WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
 {
 	Window *thiz;
+    duk_context *ctx = g_duk_ctx;
+
 	if (WM_NCCREATE == message)
 	{
 		LPCREATESTRUCT lpcs = reinterpret_cast<LPCREATESTRUCT>(lparam);
@@ -279,6 +274,7 @@ LRESULT CALLBACK Window::WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM 
         return 0;
 	case WM_DESTROY:
         thiz->OnDestroy();
+        thiz->DispatchEvent(ctx, "OnDestroy", 0);
 		return 0;
 	}
     return ::DefWindowProc(hwnd, message, wparam, lparam);

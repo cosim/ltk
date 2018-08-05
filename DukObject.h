@@ -4,7 +4,16 @@
 
 namespace ltk {
 
-struct DukCallback
+#define BEGIN_DUK_METHOD_MAP(cls) virtual const char *DukClassName() { return #cls; } \
+static void RegisterMethods(duk_context *ctx) {
+
+#define DUK_METHOD_ENTRY(x, nargs) duk_push_c_function(ctx, x, nargs); duk_put_prop_string(ctx, -2, #x);
+
+#define DUK_CHAIN_METHOD_MAP(parentType) parentType::RegisterMethods(ctx);
+
+#define END_DUK_METHOD_MAP() }
+
+struct DukCallbackInfo
 {
     DWORD stashId;
 };
@@ -27,20 +36,17 @@ public:
 
     static duk_ret_t RemoveAllListeners(duk_context *ctx);
 
+    void DispatchEvent(duk_context *ctx, const char *event_name, duk_idx_t nargs);
+
     RTTI_DECLARATIONS(DukObject, RefCounted)
 
+    BEGIN_DUK_METHOD_MAP(DukObject)
+        DUK_METHOD_ENTRY(AddListener, 2)
+    END_DUK_METHOD_MAP()
+
 private:
-    std::unordered_map<std::string, std::vector<DukCallback>> m_callbackMap;
+    std::unordered_map<std::string, std::vector<DukCallbackInfo>> m_callbackMap;
 };
-
-#define BEGIN_DUK_METHOD_MAP(cls) virtual const char *DukClassName() { return #cls; } \
-static void RegisterMethods(duk_context *ctx) {
-
-#define DUK_METHOD_ENTRY(x, nargs) duk_push_c_function(ctx, x, nargs); duk_put_prop_string(ctx, -2, #x);
-
-#define DUK_CHAIN_METHOD_MAP(parentType) parentType::RegisterMethods(L);
-
-#define END_DUK_METHOD_MAP() }
 
 extern const char *DukThisSymbol;
 

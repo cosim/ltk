@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "DukObject.h"
+#include "Common.h"
 
 namespace ltk {
 
@@ -89,12 +90,73 @@ DWORD DukObject::GetNextId()
 
 duk_ret_t DukObject::AddListener(duk_context *ctx)
 {
+    DukStackChecker chk(ctx);
+
     DukObject *thiz = DukCheckThis<DukObject>(ctx);
     if (!thiz) return DUK_RET_TYPE_ERROR;
+
     auto pszEvent = duk_require_string(ctx, 0);
     if (!pszEvent) return DUK_RET_TYPE_ERROR;
 
+    duk_require_function(ctx, 1);
+
+    std::string strEvent(pszEvent);
+    DukCallbackInfo cb_info;
+    cb_info.stashId = GetNextId();
+    duk_push_heap_stash(ctx);
+    duk_dup(ctx, 1);
+    // stack: event_name func stash func
+    duk_put_prop_index(ctx, -1, cb_info.stashId); // stack -1
+    duk_pop(ctx); // pop stash
+
+    auto &cb_map = thiz->m_callbackMap;
+    auto iter = cb_map.find(strEvent);
+    if (iter == cb_map.end())
+    {
+        auto res = cb_map.emplace(std::make_pair(strEvent, std::vector<DukCallbackInfo>()));
+        assert(res.second); // inserted 
+        iter = res.first;
+    }
+    iter->second.push_back(cb_info);
+
     return 0;
+}
+
+void DukObject::DispatchEvent(duk_context *ctx, const char *event_name, duk_idx_t nargs)
+{
+    DukStackChecker chk(ctx);
+    std::string strEvent(event_name);
+    auto &cb_map = m_callbackMap;
+    auto iter = cb_map.find(strEvent);
+    if (iter != cb_map.end())
+    {
+        auto first_arg = duk_get_top(ctx) - nargs;
+        duk_push_heap_stash(ctx);
+        auto &cb_vec = iter->second;
+        for (UINT i = 0; i < cb_vec.size(); i++)
+        {
+            // duk_push_number(ctx, (double)cb_vec[i].stashId);
+            duk_get_prop_index(ctx, -1, (duk_uarridx_t)cb_vec[i].stashId);
+            if (duk_is_function(ctx, -1))
+            {
+                // stack: nargs stash func
+                for (int j = 0; j < nargs; j++)
+                {
+                    duk_dup(ctx, j + first_arg);
+                }
+                DukPCall(ctx, nargs);
+                duk_pop(ctx); // discard func return
+            }
+            else
+            {
+                LOG("type:" << duk_get_type(ctx, -1)); // DUK_TYPE_UNDEFINED
+                // TODO: if not exists remove current entry
+            }
+            duk_pop(ctx); // pop func
+        }
+        duk_pop(ctx); // pop stash
+    }
+    duk_pop_n(ctx, nargs); // pop nargs
 }
 
 DWORD DukObject::m_sNextId = 0;

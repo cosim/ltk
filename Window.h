@@ -68,8 +68,9 @@ public:
     static duk_ret_t Show(duk_context *ctx);
 
     BEGIN_DUK_METHOD_MAP(Window)
-        DUK_METHOD_ENTRY(Create, 1);
-        DUK_METHOD_ENTRY(Show, 1);
+        DUK_METHOD_ENTRY(Create, 1)
+        DUK_METHOD_ENTRY(Show, 1)
+        DUK_CHAIN_METHOD_MAP(DukObject)
     END_DUK_METHOD_MAP()
 
 #endif // LTK_DISABLE_DUKTAPE
@@ -81,9 +82,6 @@ private:
     static const wchar_t * ClsName;
 
 private:
-	DWORD m_style;
-	DWORD m_exStyle;
-	Gdiplus::RectF m_rect;
 	HWND m_hwnd;
 	ImeInput m_ime;
 	RECT m_rectComposition;

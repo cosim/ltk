@@ -7,9 +7,11 @@ function test1() {
 	a.b();
 }
 
-test1();
-
 var wnd = new Window();
+wnd.AddListener("OnDestroy", function() {
+	print("OnDestroy");
+});
+
 wnd.Create({
 	style : win32.WS_OVERLAPEDWINDOW,
 	rect : {x : 0, y : 0, w : 800, h : 600}

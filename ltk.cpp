@@ -141,6 +141,8 @@ void size_test()
     LOG("Sprite: " << sizeof(Sprite));
 }
 
+duk_context *g_duk_ctx = nullptr;
+
 bool DukDoFile(duk_context *ctx, const wchar_t *path)
 {
     DukStackChecker chk(ctx);
@@ -224,6 +226,7 @@ int CALLBACK WinMain(
     assert(SUCCEEDED(hr));
 
     duk_context *ctx = duk_create_heap(NULL, NULL, NULL, NULL, fatal_handler);
+    g_duk_ctx = ctx;
 
     duk_push_c_function(ctx, native_print, DUK_VARARGS);
     duk_put_global_string(ctx, "print");
