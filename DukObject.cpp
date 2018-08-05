@@ -137,7 +137,8 @@ duk_ret_t DukObject::AddListener(duk_context *ctx)
     }
     iter->second.push_back(cb_info);
 
-    return 0;
+    duk_push_uint(ctx, cb_info.stashId);
+    return chk.Return(1);
 }
 
 void DukObject::DispatchEvent(duk_context *ctx, const char *event_name, duk_idx_t nargs)
@@ -151,7 +152,7 @@ void DukObject::DispatchEvent(duk_context *ctx, const char *event_name, duk_idx_
         auto first_arg = duk_get_top(ctx) - nargs;
         duk_get_global_string(ctx, "__ltk_callbacks");
         auto &cb_vec = iter->second;
-        for (UINT i = 0; i < cb_vec.size(); i++)
+        for (UINT i = 0; i < cb_vec.size();)
         {
             // duk_push_number(ctx, (double)cb_vec[i].stashId);
             duk_get_prop_index(ctx, -1, (duk_uarridx_t)cb_vec[i].stashId);
@@ -164,12 +165,18 @@ void DukObject::DispatchEvent(duk_context *ctx, const char *event_name, duk_idx_
                 }
                 DukPCall(ctx, nargs);
                 duk_pop(ctx); // discard func return
+                i ++;
             }
             else
             {
-                LOG("type:" << duk_get_type(ctx, -1)); // DUK_TYPE_UNDEFINED
+                LOG("remove listener:" << cb_vec[i].stashId); // DUK_TYPE_UNDEFINED
                 duk_pop(ctx); // pop undefined
-                // TODO: if not exists remove current entry
+                // if not exists remove current entry
+                for (UINT j = i; j + 1 < cb_vec.size(); j++)
+                {
+                    cb_vec[j] = cb_vec[j + 1];
+                }
+                cb_vec.pop_back();
             }
         }
         duk_pop(ctx); // pop stash
