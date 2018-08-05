@@ -35,7 +35,9 @@ Window::Window(void)
 
 Window::~Window(void)
 {
-    m_sprite->Unref();
+    if (m_sprite) {
+        m_sprite->Unref();
+    }
     m_sprite = INVALID_POINTER(Sprite);
     m_spFocus = INVALID_POINTER(Sprite);
     m_spCapture = INVALID_POINTER(Sprite);
@@ -571,6 +573,8 @@ duk_ret_t Window::DukInit(duk_context *ctx)
     DukStackChecker check(ctx);
     duk_push_c_function(ctx, DukConstructor, 0); // ctor
     duk_push_object(ctx); // ctor proto
+    duk_push_c_function(ctx, DukFinalizer, 2);
+    duk_set_finalizer(ctx, -2);
     RegisterMethods(ctx);
     duk_put_prop_string(ctx, -2, "prototype"); // ctor
     duk_put_global_string(ctx, "Window"); // empty

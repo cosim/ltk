@@ -88,6 +88,24 @@ DWORD DukObject::GetNextId()
     return _InterlockedIncrement(&m_sNextId);
 }
 
+duk_ret_t DukObject::DukFinalizer(duk_context *ctx)
+{
+    DukStackChecker chk(ctx);
+    duk_get_prop_string(ctx, 0, DukThisSymbol);
+    if (!duk_is_pointer(ctx, -1)) {
+        duk_pop(ctx); // pop undefined
+        return 0; // prototype itself
+    }
+    RTTI *rtti = (RTTI *)duk_get_pointer(ctx, -1);
+    duk_pop(ctx); // pop pointer
+    if (!rtti || !rtti->Is(DukObject::TypeIdClass())) {
+        __debugbreak();
+    }
+    auto thiz = (DukObject *)rtti;
+    thiz->Unref();
+    return 0;
+}
+
 duk_ret_t DukObject::AddListener(duk_context *ctx)
 {
     DukStackChecker chk(ctx);

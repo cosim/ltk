@@ -30,6 +30,8 @@ public:
 
     static DWORD GetNextId();
 
+    static duk_ret_t DukFinalizer(duk_context *ctx);
+
     static duk_ret_t AddListener(duk_context *ctx);
 
     static duk_ret_t RemoveListener(duk_context *ctx);
