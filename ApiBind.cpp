@@ -48,6 +48,17 @@ static const duk_number_list_entry w32_consts[] = {
 
 #undef CONSTANT_ENTRY
 
+duk_ret_t _PostQuitMessage(duk_context *ctx)
+{
+    ::PostQuitMessage(0);
+    return 0;
+}
+
+static const duk_function_list_entry api_list[] = {
+    {"PostQuitMessage", _PostQuitMessage, 0},
+    {nullptr, nullptr, 0}
+};
+
 duk_ret_t RunMessageLoop(duk_context *ctx)
 {
     
@@ -58,6 +69,7 @@ duk_ret_t ApiBindInit(duk_context *ctx)
 {
     duk_push_object(ctx);
     duk_put_number_list(ctx, -1, w32_consts);
+    duk_put_function_list(ctx, -1, api_list);
     duk_put_global_string(ctx, "win32");
     return 0;
 }

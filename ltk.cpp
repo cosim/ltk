@@ -231,6 +231,9 @@ int CALLBACK WinMain(
     duk_push_c_function(ctx, native_print, DUK_VARARGS);
     duk_put_global_string(ctx, "print");
 
+    duk_push_array(ctx);
+    duk_put_global_string(ctx, "__ltk_callbacks");
+
     ApiBindInit(ctx);
     Window::RegisterWndClass();
     Window::DukInit(ctx);

@@ -103,10 +103,10 @@ duk_ret_t DukObject::AddListener(duk_context *ctx)
     std::string strEvent(pszEvent);
     DukCallbackInfo cb_info;
     cb_info.stashId = GetNextId();
-    duk_push_heap_stash(ctx);
+    duk_get_global_string(ctx, "__ltk_callbacks");
     duk_dup(ctx, 1);
     // stack: event_name func stash func
-    duk_put_prop_index(ctx, -1, cb_info.stashId); // stack -1
+    auto ret = duk_put_prop_index(ctx, -2, cb_info.stashId); // stack -1
     duk_pop(ctx); // pop stash
 
     auto &cb_map = thiz->m_callbackMap;
@@ -131,7 +131,7 @@ void DukObject::DispatchEvent(duk_context *ctx, const char *event_name, duk_idx_
     if (iter != cb_map.end())
     {
         auto first_arg = duk_get_top(ctx) - nargs;
-        duk_push_heap_stash(ctx);
+        duk_get_global_string(ctx, "__ltk_callbacks");
         auto &cb_vec = iter->second;
         for (UINT i = 0; i < cb_vec.size(); i++)
         {
@@ -150,15 +150,15 @@ void DukObject::DispatchEvent(duk_context *ctx, const char *event_name, duk_idx_
             else
             {
                 LOG("type:" << duk_get_type(ctx, -1)); // DUK_TYPE_UNDEFINED
+                duk_pop(ctx); // pop undefined
                 // TODO: if not exists remove current entry
             }
-            duk_pop(ctx); // pop func
         }
         duk_pop(ctx); // pop stash
     }
     duk_pop_n(ctx, nargs); // pop nargs
 }
 
-DWORD DukObject::m_sNextId = 0;
+DWORD DukObject::m_sNextId = (DWORD)(-1);
 
 } // namespace ltk

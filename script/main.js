@@ -9,7 +9,8 @@ function test1() {
 
 var wnd = new Window();
 wnd.AddListener("OnDestroy", function() {
-	print("OnDestroy");
+	print("js OnDestroy");
+	win32.PostQuitMessage();
 });
 
 wnd.Create({
