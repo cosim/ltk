@@ -12,6 +12,7 @@
 #include "Sprite.h"
 #include "duktape.h"
 #include "ApiBind.h"
+#include "duk_trans_socket.h"
 
 
 static ID2D1Factory *g_d2d_factory = NULL;
@@ -229,6 +230,16 @@ int CALLBACK WinMain(
     duk_context *ctx = duk_create_heap(NULL, NULL, NULL, NULL, fatal_handler);
     g_duk_ctx = ctx;
 
+    duk_trans_socket_init();
+    duk_debugger_attach(ctx,
+        duk_trans_socket_read_cb,
+        duk_trans_socket_write_cb,
+        duk_trans_socket_peek_cb,
+        duk_trans_socket_read_flush_cb,
+        duk_trans_socket_write_flush_cb,
+        nullptr, nullptr, nullptr);
+    duk_trans_socket_waitconn();
+
     duk_push_c_function(ctx, native_print, DUK_VARARGS);
     duk_put_global_string(ctx, "print");
 
@@ -268,6 +279,7 @@ int CALLBACK WinMain(
     g_wic_factory->Release();
     g_d2d_factory->Release();
 
+    duk_trans_socket_finish();
     duk_destroy_heap(ctx);
 
     ::CoUninitialize();

@@ -105,7 +105,10 @@
     <ClCompile Include="Button.cpp" />
     <ClCompile Include="Common.cpp" />
     <ClCompile Include="DukObject.cpp" />
-    <ClCompile Include="duk_trans_socket_windows.cpp" />
+    <ClCompile Include="duk_trans_socket_windows.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="ltk.cpp" />
     <ClCompile Include="MainWindow.cpp" />
     <ClCompile Include="Slide.cpp" />
