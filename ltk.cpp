@@ -164,7 +164,7 @@ bool DukDoFile(duk_context *ctx, const wchar_t *path)
     duk_push_string(ctx, pathA);
     if (duk_pcompile_lstring_filename(ctx, 0, buf, size) != 0) {
         error.Format("[%s] %s\n", pathA, duk_safe_to_string(ctx, -1));
-        ::OutputDebugStringA(error);
+        DukLog(error);
         duk_pop(ctx);
         goto leave;
     }
@@ -181,7 +181,7 @@ leave:
 static duk_ret_t native_print(duk_context *ctx) {
     duk_push_string(ctx, "\r\n");
     duk_concat(ctx, duk_get_top(ctx));
-    ::OutputDebugStringA(duk_safe_to_string(ctx, -1));
+    DukLog(duk_safe_to_string(ctx, -1));
     return 0;
 }
 
@@ -189,7 +189,8 @@ static void fatal_handler(void *udata, const char *msg)
 {
     CStringA log;
     log.Format("<FATAL> %s\r\n", msg);
-    ::OutputDebugStringA(log);
+    DukLog(log);
+    // TODO flush log to disk
     ::TerminateProcess(::GetCurrentProcess(), 0);
 }
 

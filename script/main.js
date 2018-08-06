@@ -23,4 +23,4 @@ wnd.Create({
 });
 wnd.Show(win32.SW_SHOWNOACTIVATE);
 
-Disconnect(cookie);
+//Disconnect(cookie);

@@ -65,6 +65,8 @@ T *DukCheckThis(duk_context *ctx)
 
 void DukPrintStack(duk_context *ctx);
 
+void DukLog(const char *psz);
+
 bool DukPCall(duk_context *ctx, duk_idx_t nargs);
 
 template<typename T>

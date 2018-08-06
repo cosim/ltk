@@ -20,35 +20,18 @@ DukObject * DukCheckType(duk_context *ctx, duk_idx_t idx, size_t type_id)
 
 void DukPrintStack(duk_context *ctx)
 {
-    auto top = duk_get_top(ctx);
-    std::stringstream out;
+    DukStackChecker chk(ctx);
+    duk_push_context_dump(ctx);
+    CStringA log;
+    log.Format("%s\r\n", duk_to_string(ctx, -1));
+    DukLog(log);
+    duk_pop(ctx);
+}
 
-    for (duk_idx_t i = 0; i < top; i++)
-    {
-        auto type = duk_get_type(ctx, i);
-        switch (type)
-        {
-        case DUK_TYPE_STRING:
-        {
-            auto str = duk_get_string(ctx, i);
-            out << "[" << i << "] str:\"" << str << "\"\r\n";
-        }
-        break;
-        case DUK_TYPE_NUMBER:
-        {
-            auto num = duk_get_number(ctx, i);
-            out << "[" << i << "] num: " << num << "\r\n";
-        }
-        break;
-        case DUK_TYPE_OBJECT:
-        {
-            // TODO 
-        }
-        break;
-        default:
-            break;
-        }
-    }
+void DukLog(const char *psz)
+{
+    ::OutputDebugStringA(psz);
+    // TODO log to file
 }
 
 bool DukPCall(duk_context *ctx, duk_idx_t nargs)
@@ -63,12 +46,12 @@ bool DukPCall(duk_context *ctx, duk_idx_t nargs)
             * access in a duk_safe_call() if it matters.
             */
             duk_get_prop_string(ctx, -1, "stack");
-            ::OutputDebugStringA(duk_safe_to_string(ctx, -1));
+            DukLog(duk_safe_to_string(ctx, -1));
             duk_pop(ctx);
         }
         else {
             /* Non-Error value, coerce safely to string. */
-            ::OutputDebugStringA(duk_safe_to_string(ctx, -1));
+            DukLog(duk_safe_to_string(ctx, -1));
         }
         ::PostQuitMessage(0);
     }
@@ -124,6 +107,7 @@ duk_ret_t DukObject::AddListener(duk_context *ctx)
     duk_get_global_string(ctx, "__ltk_callbacks");
     duk_dup(ctx, 1);
     // stack: event_name func stash func
+    DukPrintStack(ctx);
     auto ret = duk_put_prop_index(ctx, -2, cb_info.stashId); // stack -1
     duk_pop(ctx); // pop stash
 
