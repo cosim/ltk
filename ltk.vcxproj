@@ -105,6 +105,7 @@
     <ClCompile Include="Button.cpp" />
     <ClCompile Include="Common.cpp" />
     <ClCompile Include="DukObject.cpp" />
+    <ClCompile Include="duk_trans_socket_windows.cpp" />
     <ClCompile Include="ltk.cpp" />
     <ClCompile Include="MainWindow.cpp" />
     <ClCompile Include="Slide.cpp" />
@@ -125,6 +126,7 @@
     <ClInclude Include="Common.h" />
     <ClInclude Include="Delegate.h" />
     <ClInclude Include="DukObject.h" />
+    <ClInclude Include="duk_trans_socket.h" />
     <ClInclude Include="EditSprite.h" />
     <ClInclude Include="Event.h" />
     <ClInclude Include="ltk.h" />
