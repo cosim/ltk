@@ -10,7 +10,6 @@
 #include "Common.h"
 #include "Delegate.h"
 #include "Sprite.h"
-#include "duktape.h"
 #include "ApiBind.h"
 
 
@@ -138,61 +137,10 @@ void size_test()
     LOG("dlgt2: " << sizeof(dlgt2));
     std::function<void(int, float, std::string)> fn2;
     LOG("fn2: " << sizeof(fn2));
-    LOG("Sprite: " << sizeof(Sprite));
+    //LOG("Sprite: " << sizeof(Sprite));
 }
 
-duk_context *g_duk_ctx = nullptr;
 
-bool DukDoFile(duk_context *ctx, const wchar_t *path)
-{
-    DukStackChecker chk(ctx);
-    bool ret = false;
-    CStringA pathA;
-    CStringA error;
-    char *buf = nullptr;
-    FILE *fp = _wfopen(path, L"rb");
-    if (!fp) {
-        goto leave;
-    }
-    if (fseek(fp, 0, SEEK_END) != 0) goto leave;
-    long size = ftell(fp);
-    if (fseek(fp, 0, SEEK_SET) != 0) goto leave;
-    buf = new char[size];
-    fread(buf, 1, size, fp);
-
-    pathA = Utf16ToUtf8(path, -1);
-    duk_push_string(ctx, pathA);
-    if (duk_pcompile_lstring_filename(ctx, 0, buf, size) != 0) {
-        error.Format("[%s] %s\n", pathA, duk_safe_to_string(ctx, -1));
-        DukLog(error);
-        duk_pop(ctx);
-        goto leave;
-    }
-    DukPCall(ctx, 0);
-    duk_pop(ctx);
-    ret = true;
-
-leave:
-    delete[] buf;
-    if (fp) fclose(fp);
-    return ret;
-}
-
-static duk_ret_t native_print(duk_context *ctx) {
-    duk_push_string(ctx, "\r\n");
-    duk_concat(ctx, duk_get_top(ctx));
-    DukLog(duk_safe_to_string(ctx, -1));
-    return 0;
-}
-
-static void fatal_handler(void *udata, const char *msg)
-{
-    CStringA log;
-    log.Format("<FATAL> %s\r\n", msg);
-    DukLog(log);
-    // TODO flush log to disk
-    ::TerminateProcess(::GetCurrentProcess(), 0);
-}
 
 int CALLBACK WinMain(
     _In_ HINSTANCE hInstance,
@@ -226,25 +174,11 @@ int CALLBACK WinMain(
         );
     assert(SUCCEEDED(hr));
 
-    duk_context *ctx = duk_create_heap(NULL, NULL, NULL, NULL, fatal_handler);
-    g_duk_ctx = ctx;
 
-    duk_push_c_function(ctx, native_print, DUK_VARARGS);
-    duk_put_global_string(ctx, "print");
+    //ApiBindInit(ctx);
+    //Window::RegisterWndClass();
+    //DukRegisterClass<Window>(ctx, "Window");
 
-    duk_push_array(ctx);
-    duk_put_global_string(ctx, "__ltk_callbacks");
-
-    ApiBindInit(ctx);
-    Window::RegisterWndClass();
-    DukRegisterClass<Window>(ctx, "Window");
-
-    DukDoFile(ctx, L"script\\main.js");
-
-    //duk_eval_string(ctx, "var wnd = new Window(); wnd.Create(); wnd.Show();");
-    //auto wnd = new MainWindow;
-    //wnd->Create(nullptr, Gdiplus::RectF(0, 0, 1000, 700), WS_OVERLAPPEDWINDOW, 0);
-    //::ShowWindow(wnd->Handle(), SW_SHOW);
 
     //test_gdip_font();
     MSG msg;
@@ -268,9 +202,23 @@ int CALLBACK WinMain(
     g_wic_factory->Release();
     g_d2d_factory->Release();
 
-    duk_destroy_heap(ctx);
-
     ::CoUninitialize();
 
     return 0;
+}
+
+BOOL APIENTRY DllMain(HMODULE hModule,
+    DWORD  ul_reason_for_call,
+    LPVOID lpReserved
+    )
+{
+    switch (ul_reason_for_call)
+    {
+    case DLL_PROCESS_ATTACH:
+    case DLL_THREAD_ATTACH:
+    case DLL_THREAD_DETACH:
+    case DLL_PROCESS_DETACH:
+        break;
+    }
+    return TRUE;
 }

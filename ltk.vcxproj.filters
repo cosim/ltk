@@ -48,13 +48,7 @@
     <ClCompile Include="SpriteEx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="DukObject.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ApiBind.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="duk_trans_socket_windows.cpp">
+    <ClCompile Include="LuaObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -113,13 +107,7 @@
     <ClInclude Include="RTTI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="DukObject.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ApiBind.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="duk_trans_socket.h">
+    <ClInclude Include="LuaObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

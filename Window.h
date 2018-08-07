@@ -4,19 +4,19 @@
 #pragma once
 #include "stdafx.h"
 #include "ImeInput.h"
-#include "DukObject.h"
+#include "RTTI.h"
 
 namespace ltk {
 
 class Sprite;
 
-class Window : public DukObject
+class Window : public RTTI
 {
 protected:
     virtual ~Window(void);
 
 public:
-    RTTI_DECLARATIONS(Window, DukObject)
+    RTTI_DECLARATIONS(Window, RTTI)
 
     Window(void);
 
@@ -60,19 +60,6 @@ public:
     virtual bool OnSize(float cx, float cy, DWORD flag) { return false; }
     virtual bool OnClose(bool &proceed) { proceed = true; return true; }
     virtual bool OnDestroy() { return false; }
-
-#ifndef LTK_DISABLE_DUKTAPE
-    static duk_ret_t DukConstructor(duk_context *ctx);
-    static duk_ret_t Create(duk_context *ctx);
-    static duk_ret_t Show(duk_context *ctx);
-
-    BEGIN_DUK_METHOD_MAP(Window)
-        DUK_METHOD_ENTRY(Create, 1)
-        DUK_METHOD_ENTRY(Show, 1)
-        DUK_CHAIN_METHOD_MAP(DukObject)
-    END_DUK_METHOD_MAP()
-
-#endif // LTK_DISABLE_DUKTAPE
 
 private:
 	void HandleMouseMessage(UINT message, WPARAM wparam, LPARAM lparam);

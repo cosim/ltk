@@ -5,16 +5,19 @@
 #include "Common.h"
 #include "Window.h"
 #include "Event.h"
-#include "DukObject.h"
+#include "RefCounted.h"
+//#include "DukObject.h"
 
 namespace ltk {
 
-class Sprite : public DukObject
+class Sprite : public RefCounted
 {
 protected:
     virtual ~Sprite(void);
 
 public:
+    RTTI_DECLARATIONS(Sprite, RefCounted)
+
     Sprite(void);
 
 	Gdiplus::RectF GetRect();
