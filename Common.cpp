@@ -33,6 +33,63 @@ CStringA Utf16ToUtf8(LPCTSTR strW, int len)
 	return strA;
 }
 
+// http://stackoverflow.com/questions/12256455/print-stacktrace-from-c-code-with-embedded-lua
+int LuaTraceBack(lua_State *L) {
+    if (!lua_isstring(L, 1))  /* 'message' not a string? */
+        return 1;  /* keep it intact */
+    // lua_getfield(L, LUA_GLOBALSINDEX, "debug");
+    lua_getglobal(L, "debug");
+    if (!lua_istable(L, -1)) {
+        lua_pop(L, 1);
+        return 1;
+    }
+    lua_getfield(L, -1, "traceback");
+    if (!lua_isfunction(L, -1)) {
+        lua_pop(L, 2);
+        return 1;
+    }
+    lua_pushvalue(L, 1);  /* pass error message */
+    lua_pushinteger(L, 2);  /* skip this function and traceback */
+    lua_call(L, 2, 1);  /* call debug.traceback */
+    return 1;
+}
+
+bool LuaPCall(lua_State *L, int nargs, int nresults)
+{
+    lua_pushcfunction(L, LuaTraceBack);
+    lua_insert(L, lua_gettop(L) - nargs - 1);
+    int error = lua_pcall(L, nargs, nresults, lua_gettop(L) - nargs - 1);
+    if (error == 0) {
+        //lua_pop(L, 1);
+        lua_remove(L, lua_gettop(L) - nresults);
+    }
+    else {
+        assert(lua_isstring(L, -1));
+        const char *pszError = lua_tostring(L, -1);//luaL_checkstring(L, -1);
+        int msg = lua_gettop(L); // msg
+        // 3种错误输出的选择 选那个?
+        lua_getglobal(L, "print"); // msg, print
+        if (lua_isfunction(L, -1))
+        {
+            lua_pushvalue(L, msg); // msg, print, msg
+            lua_call(L, 1, 0); // msg
+        }
+        //LuaLog(pszError);
+#ifdef _DEBUG
+        ::PostQuitMessage(1); // 多么的简单粗暴 不用去关程序了 直接挂掉
+#else
+        // 弹框的给黑盒测试
+        // TODO 要弄个开关 防止发布版弹框
+        CStringW strError = Utf8ToUtf16(pszError);
+        ::MessageBox(NULL, strError, NULL, 0);
+#endif
+        lua_pop(L, 2); // stack trace string and the LuaTraceBack function
+    }
+    //LuaCheckStack(L);
+    return error == 0;
+}
+
+
 CString LuaCheckWString(lua_State *L, int index)
 {
     size_t len;

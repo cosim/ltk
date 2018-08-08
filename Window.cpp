@@ -158,7 +158,7 @@ void Window::HandleMouseMessage(UINT message, WPARAM wparam, LPARAM lparam)
 LRESULT CALLBACK Window::WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
 {
 	Window *thiz;
-    //duk_context *ctx = g_duk_ctx;
+    lua_State *L = GetGlobalLuaState();
 
 	if (WM_NCCREATE == message)
 	{
@@ -276,6 +276,7 @@ LRESULT CALLBACK Window::WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM 
         return 0;
 	case WM_DESTROY:
         thiz->OnDestroy();
+        thiz->InvokeCallback(L, "OnDestroy", 0, 0);
 		return 0;
 	}
     return ::DefWindowProc(hwnd, message, wparam, lparam);
@@ -584,9 +585,9 @@ public:
 int Window::Create(lua_State *L)
 {
     DtorTest test;
-    auto thiz = CheckLuaObject<Window>(L, 0);
-    auto rc = LuaCheckRectF(L, 1);
-    thiz->Create(nullptr, rc, WS_OVERLAPPEDWINDOW, 0);
+    auto thiz = CheckLuaObject<Window>(L, 1);
+    auto rc = LuaCheckRectF(L, 2);
+    thiz->Create(nullptr, rc, WS_OVERLAPPEDWINDOW|WS_VISIBLE, 0);
     return 0;
 }
 

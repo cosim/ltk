@@ -16,10 +16,13 @@ static ID2D1Factory *g_d2d_factory = NULL;
 static IWICImagingFactory  *g_wic_factory = NULL;
 static IDWriteFactory *g_dw_factory = NULL;
 
+static lua_State *g_luaState = NULL;
+
 namespace ltk {
     ID2D1Factory *GetD2DFactory() { return g_d2d_factory; }
     IWICImagingFactory *GetWICFactory() { return g_wic_factory; }
     IDWriteFactory *GetDWriteFactory() { return g_dw_factory; }
+    lua_State *GetGlobalLuaState() { return g_luaState; }
 
     void TranslateTransform(ID2D1RenderTarget *target, float dx, float dy)
     {
@@ -171,6 +174,8 @@ int luaopen_ltk(lua_State *L)
 {
     #pragma EXPORT
     
+    g_luaState = L;
+    LtkInitialize();
     ApiBindingInit(L);
     Window::RegisterWndClass();
     LuaRegisterClass<Window>(L, "Window");

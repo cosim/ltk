@@ -5,6 +5,7 @@
 #include "StdAfx.h"
 #include "LuaObject.h"
 #include "UniConversion.h"
+#include "Common.h"
 
 namespace ltk {
 
@@ -34,18 +35,17 @@ void LuaObject::PushToLua( lua_State *L, const char* clsName )
 int LuaObject::GCMethod( lua_State *L )
 {
 	LuaObject **ppObj = (LuaObject **)lua_touserdata(L, 1);
-	if (ppObj) // 是不是userdata
+    LuaObject* thiz = nullptr;
+    if (ppObj) // 是不是userdata
 	{
-		LuaObject* obj = *ppObj;
-		if(!obj->Is(TypeIdClass()))
+        thiz = *ppObj;
+        if (!thiz->Is(TypeIdClass()))
 		{
 			assert(false);
-			OutputDebugStringA("GCMethod IsValid failed\r\n");
+			OutputDebugStringA("GCMethod TypeError\r\n");
 			return 0;
 		}
 	}
-	LuaObject *thiz = CheckLuaObject<LuaObject>(L, 1); // WTF??
-	assert(thiz);
 	if (thiz->RefCount() == 1)
 	{
 		if (LUA_NOREF != thiz->m_refUserData)
@@ -86,7 +86,7 @@ int LuaObject::SetCallbacks( lua_State *L )
 	lua_pushvalue(L, 2);
 	thiz->m_refUserData = luaL_ref(L, ref_table);
 	lua_pop(L, 1); // for ref_table
-	return 0;
+	return 0; // TODO return the event table
 }
 
 bool LuaObject::InvokeCallback( lua_State *L, const char *name, int nargs, int nresult )
@@ -108,8 +108,8 @@ bool LuaObject::InvokeCallback( lua_State *L, const char *name, int nargs, int n
 	{
 		lua_remove(L, -2);              // callback
 		lua_insert(L, lua_gettop(L) - nargs);
-		lua_call(L, nargs, nresult);
-		//LuaPCall(L, nargs, nresult);
+		//lua_call(L, nargs, nresult);
+		LuaPCall(L, nargs, nresult);
 	}
 	else
 	{

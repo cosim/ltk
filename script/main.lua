@@ -26,4 +26,12 @@ LtkApi.Trace("hi ZeroBrane");
 
 local wnd = Window:new();
 wnd:Create({x = 10, y = 10, w = 800, h = 600});
+g_wnd_event = {
+	OnDestroy = function()
+		print('OnDestroy');
+		LtkApi.PostQuitMessage(0);
+	end
+}
+wnd:SetCallbacks(g_wnd_event);
+
 LtkApi.RunMessageLoop();

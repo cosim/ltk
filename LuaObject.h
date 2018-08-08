@@ -98,8 +98,8 @@ T* CheckLuaObject( lua_State *L, int idx)
 			return (T*)obj;
 		}
 	}
-    LOG("type:" << lua_typename(L, idx));
-	luaL_error(L, "C object type checking failed: #%d is not a %s", idx, T::TypeName().c_str());
+    //LOG("type:" << lua_typename(L, idx));
+	luaL_error(L, "LuaObject TypeError: #%d is not a %s", idx, T::TypeName().c_str());
 	return NULL;
 }
 

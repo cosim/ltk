@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "ApiBinding.h"
 #include "Common.h"
+#include "ltk.h"
 
 
 static int l_PostQuitMessage(lua_State *L)
@@ -29,6 +30,7 @@ static int l_RunMessageLoop(lua_State *L)
         }
     }
     LOG(<< "WM_QUIT");
+    ltk::LtkUninitialize();
     return 0;
 }
 
