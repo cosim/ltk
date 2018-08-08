@@ -10,7 +10,7 @@ CStringW Utf8ToUtf16(LPCSTR strA, int len)
 {
 	if(len < 0)
 	{
-		len = strlen(strA);
+		len = (int)strlen(strA);
 	}
 	CStringW strW;
 	int lenW = UTF16Length(strA, len);
@@ -23,7 +23,7 @@ CStringW Utf8ToUtf16(LPCSTR strA, int len)
 CStringA Utf16ToUtf8(LPCTSTR strW, int len)
 {
     if (len < 0) {
-        len = wcslen(strW);
+        len = (int)wcslen(strW);
     }
 	CStringA strA;
 	int lenA = UTF8Length(strW, len);
@@ -33,39 +33,24 @@ CStringA Utf16ToUtf8(LPCTSTR strW, int len)
 	return strA;
 }
 
-// 网上说有点不安全 希望能找到更好的版本 比如gtk内部带的  TODO fltk里面有 (2016-08-23)
-///Returns -1 if string is valid. Invalid character is put to ch.
-int GetInvalidUtf8SymbolPosition(const char *input, char &ch) {
-	int                 nb = 0, na = 0;
-	const char *c = input;
+CString LuaCheckWString(lua_State *L, int index)
+{
+    size_t len;
+    const char *pText = luaL_checklstring(L, index, &len);
+    char ivc;
+    if (GetInvalidUtf8SymbolPosition(pText, ivc) == -1)
+        return Utf8ToUtf16(pText, (int)len);
+    else
+        return L"invalide utf8 string";
+}
 
-	for (c = input; *c; c += (nb + 1)) {
-		if (!(*c & 0x80))
-			nb = 0;
-		else if ((*c & 0xc0) == 0x80)
-		{
-			ch = *c;
-			return (int)c - (int)input;
-		}
-		else if ((*c & 0xe0) == 0xc0)
-			nb = 1;
-		else if ((*c & 0xf0) == 0xe0)
-			nb = 2;
-		else if ((*c & 0xf8) == 0xf0)
-			nb = 3;
-		else if ((*c & 0xfc) == 0xf8)
-			nb = 4;
-		else if ((*c & 0xfe) == 0xfc)
-			nb = 5;
-		na = nb;
-		while (na-- > 0)
-			if ((*(c + nb) & 0xc0) != 0x80)
-			{
-				ch = *(c + nb);
-				return (int)(c + nb) - (int)input;
-			}
-	}
-
-	return -1;
+void LuaPushWString(lua_State *L, LPCTSTR psz, int len /* = -1 */)
+{
+    if (len < 0)
+    {
+        len = (int)wcslen(psz);
+    }
+    CStringA strA = Utf16ToUtf8(psz, len);
+    lua_pushlstring(L, strA, strA.GetLength());
 }
 

@@ -4,6 +4,7 @@
 
 #include "StdAfx.h"
 #include "LuaObject.h"
+#include "UniConversion.h"
 
 namespace ltk {
 

@@ -9,8 +9,6 @@
 #include "ltk.h"
 #include "ApiBind.h"
 
-extern HINSTANCE g_hInstance;
-
 namespace ltk {
 
 const wchar_t * Window::ClsName = L"ltk_cls";
@@ -59,7 +57,7 @@ void Window::Create(Window *parent, Gdiplus::RectF rc, DWORD style, DWORD exStyl
 
     ::CreateWindowEx(exStyle, ClsName, L"", style,
         (int)rc.X, (int)rc.Y, (int)rc.Width, (int)rc.Height,
-        hParent, NULL, g_hInstance, this);
+        hParent, NULL, HINST_THISCOMPONENT, this);
 }
 
 void Window::SetRect(Gdiplus::RectF rc)
@@ -77,7 +75,7 @@ void Window::RegisterWndClass()
 	wc.lpfnWndProc   = WndProc;
 	wc.cbClsExtra    = 0;
 	wc.cbWndExtra    = 0;
-	wc.hInstance     = g_hInstance;
+	wc.hInstance     = HINST_THISCOMPONENT;
 	wc.hIcon         = NULL;
 	wc.hCursor       = LoadCursor(NULL, IDC_ARROW);
 	wc.hbrBackground = NULL;// (HBRUSH)(COLOR_WINDOW + 1); // TODO ¸Ä³ÉNULL ·ÀÖ¹ÏµÍ³È¥²Á³ý±³¾°(ÉÁË¸) Ë«»º³å »¹ÓÐclip children clip sibling
@@ -216,7 +214,7 @@ LRESULT CALLBACK Window::WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM 
             {
                 thiz->m_target->Resize(D2D1::SizeU(cx, cy));
             }
-            thiz->OnSize((float)cx, (float)cy, wparam);
+            thiz->OnSize((float)cx, (float)cy, (DWORD)wparam);
         } while (0);
 		return 0;
 	case WM_KEYDOWN:

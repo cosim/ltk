@@ -8,16 +8,14 @@
 #include "ltk.h"
 #include "MainWindow.h"
 #include "Common.h"
-#include "Delegate.h"
 #include "Sprite.h"
 #include "ApiBind.h"
+#include "ApiBinding.h"
 
 
 static ID2D1Factory *g_d2d_factory = NULL;
 static IWICImagingFactory  *g_wic_factory = NULL;
 static IDWriteFactory *g_dw_factory = NULL;
-
-HINSTANCE g_hInstance;
 
 namespace ltk {
     ID2D1Factory *GetD2DFactory() { return g_d2d_factory; }
@@ -70,6 +68,44 @@ namespace ltk {
 		}
 		return E_FAIL;
 	}
+
+    void LtkInitialize()
+    {
+        ::CoInitialize(NULL);
+
+        if (g_d2d_factory) {
+            LOG("already initialized.");
+            return;
+        }
+
+        HRESULT hr = D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &g_d2d_factory);
+        assert(SUCCEEDED(hr));
+
+        hr = CoCreateInstance(
+            CLSID_WICImagingFactory,
+            NULL,
+            CLSCTX_INPROC_SERVER,
+            IID_IWICImagingFactory,
+            (LPVOID*)&g_wic_factory
+            );
+        assert(SUCCEEDED(hr));
+
+        hr = DWriteCreateFactory(
+            DWRITE_FACTORY_TYPE_SHARED,
+            __uuidof(IDWriteFactory),
+            reinterpret_cast<IUnknown**>(&g_dw_factory)
+            );
+        assert(SUCCEEDED(hr));
+    }
+
+    void LtkUninitialize()
+    {
+        g_dw_factory->Release();
+        g_wic_factory->Release();
+        g_d2d_factory->Release();
+
+        ::CoUninitialize();
+    }
 }
 
 using namespace ltk;
@@ -84,46 +120,6 @@ void test_gdip_font()
     }
 }
 */
-
-struct EnumBase
-{
-    EnumBase(UINT id_) : id(id_) {}
-    UINT id;
-};
-
-enum {
-    eStringMessage,
-    eIntMessage
-};
-
-struct StringMessage : EnumBase
-{
-    static const UINT tag = eStringMessage;
-    StringMessage(const std::string& t) : EnumBase(tag), text(t) {}
-    std::string text;
-};
-
-struct IntMessage : EnumBase
-{
-    static const UINT tag = eIntMessage;
-    IntMessage(int i) : EnumBase(tag), data(i) {}
-    int data;
-};
-
-template<typename T>
-T *enum_cast(EnumBase *base)
-{
-    assert(base->id == T::tag);
-    return static_cast<T*>(base);
-}
-
-void test_enum_cast()
-{
-    //StringMessage msg("hello enum");
-    IntMessage msg(123);
-    EnumBase *base = &msg;
-    StringMessage *wwn = enum_cast<StringMessage>(base);
-}
 
 void size_test()
 {
@@ -149,60 +145,9 @@ int CALLBACK WinMain(
     _In_ int       nCmdShow
     )
 {
-    //test_enum_cast();
-    size_test();
-    g_hInstance = hInstance;
-
-    ::CoInitialize(NULL);
-
-    HRESULT hr = D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &g_d2d_factory);
-    assert(SUCCEEDED(hr));
-
-    hr = CoCreateInstance(
-        CLSID_WICImagingFactory,
-        NULL,
-        CLSCTX_INPROC_SERVER,
-        IID_IWICImagingFactory,
-        (LPVOID*)&g_wic_factory
-        );
-    assert(SUCCEEDED(hr));
-
-    hr = DWriteCreateFactory(
-        DWRITE_FACTORY_TYPE_SHARED,
-        __uuidof(IDWriteFactory),
-        reinterpret_cast<IUnknown**>(&g_dw_factory)
-        );
-    assert(SUCCEEDED(hr));
-
-
     //ApiBindInit(ctx);
     //Window::RegisterWndClass();
     //DukRegisterClass<Window>(ctx, "Window");
-
-
-    //test_gdip_font();
-    MSG msg;
-    BOOL bRet;
-    while ((bRet = GetMessage(&msg, NULL, 0, 0)) != 0)
-    {
-        if (bRet == -1)
-        {
-            // handle the error and possibly exit
-            LOG(<< "ERROR");
-        }
-        else
-        {
-            TranslateMessage(&msg);
-            DispatchMessage(&msg);
-        }
-    }
-    LOG(<< "WM_QUIT");
-
-    g_dw_factory->Release();
-    g_wic_factory->Release();
-    g_d2d_factory->Release();
-
-    ::CoUninitialize();
 
     return 0;
 }
@@ -222,3 +167,15 @@ BOOL APIENTRY DllMain(HMODULE hModule,
     }
     return TRUE;
 }
+
+#define EXPORT comment(linker, "/EXPORT:" __FUNCTION__ "=" __FUNCDNAME__)
+
+int luaopen_ltk(lua_State *L)
+{
+    #pragma EXPORT
+    
+    ApiBindingInit(L);
+
+    return 0;
+}
+

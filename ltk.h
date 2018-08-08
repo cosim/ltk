@@ -32,6 +32,8 @@
 #endif
 
 namespace ltk {
+    void LtkInitialize();
+    void LtkUninitialize();
     ID2D1Factory *GetD2DFactory();
     IWICImagingFactory *GetWICFactory();
     IDWriteFactory *GetDWriteFactory();

@@ -57,7 +57,7 @@ bool Button::OnPaint(PaintEvent *ev)
     ev->target->DrawRectangle(rc2, m_brush);
 
     m_brush->SetColor(D2D1::ColorF(D2D1::ColorF::Black));
-    ev->target->DrawText(m_strText.c_str(), m_strText.length(), m_text_format, rc2, m_brush);
+    ev->target->DrawText(m_strText.c_str(), (UINT32)m_strText.length(), m_text_format, rc2, m_brush);
 
 /*
     brush.SetColor(Color(0,0,0));

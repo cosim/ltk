@@ -88,7 +88,7 @@ UINT Slide::GetLeftIdx()
 	UINT idx = 0;
 	if (m_idx < 1)
 	{
-		idx = m_vecPages.size() - 1;
+		idx = (UINT)m_vecPages.size() - 1;
 	}
 	else
 	{
