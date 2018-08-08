@@ -10,7 +10,10 @@ CStringA Utf16ToUtf8(LPCTSTR strW, int len);
 CString LuaCheckWString(lua_State *L, int index);
 void LuaPushWString(lua_State *L, LPCTSTR psz, int len  = -1);
 
-static void DebugOutputLine(CString line);
+void LuaShowStack(lua_State *L);
+Gdiplus::Color LuaCheckColor(lua_State *L, int index);
+Gdiplus::RectF LuaCheckRectF(lua_State *L, int index);
+void RectF2LuaRect(lua_State *L, const Gdiplus::RectF &rc);
 
 #define LOG(msg) do\
 {\

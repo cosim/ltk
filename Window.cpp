@@ -39,7 +39,10 @@ Window::~Window(void)
     m_spFocus = INVALID_POINTER(Sprite);
     m_spCapture = INVALID_POINTER(Sprite);
     m_spHover = INVALID_POINTER(Sprite);
-    m_target->Release();
+
+    if (m_target) {
+        m_target->Release();
+    }
     m_target = INVALID_POINTER(ID2D1HwndRenderTarget);
 }
 
@@ -561,5 +564,32 @@ void Window::EndAnimation(Sprite *sp)
         }
     }
 }
+
+#ifndef LTK_DISABLE_LUA
+
+int Window::LuaConstructor(lua_State *L)
+{
+    Window *wnd = new Window();
+    wnd->PushToLua(L, "Window");
+    wnd->Unref();
+    return 1;
+}
+
+class DtorTest
+{
+public:
+    ~DtorTest() { LOG("..."); }
+};
+
+int Window::Create(lua_State *L)
+{
+    DtorTest test;
+    auto thiz = CheckLuaObject<Window>(L, 0);
+    auto rc = LuaCheckRectF(L, 1);
+    thiz->Create(nullptr, rc, WS_OVERLAPPEDWINDOW, 0);
+    return 0;
+}
+
+#endif
 
 } // namespace ltk

@@ -17,10 +17,6 @@ public:
 
     RTTI_DECLARATIONS(LuaObject, RefCounted);
 
-	virtual const char* GetClassName() = 0;
-
-	virtual void RegisterMethods(lua_State *L, int tblMethod) = 0;
-
 	static int GCMethod(lua_State *L);
 
 	static int GetCallbacks(lua_State *L);
@@ -28,7 +24,7 @@ public:
 	static int SetCallbacks(lua_State *L);
 
 	// 把这个对象放入lua中 创建一个新的userdata包裹之 引用计数+1 lua栈+1
-	void PushToLua(lua_State *L);
+    void PushToLua(lua_State *L, const char* clsName);
 
 	// nargs 参数个数 不包括this
 	//void CallLuaMethod(lua_State *L, const char *method, int nargs, int nresult);
@@ -42,8 +38,7 @@ private:
 	int m_refUserData;
 };
 
-#define BEGIN_LUA_METHOD_MAP(x)  virtual const char *GetClassName() {return #x;} \
-virtual void RegisterMethods( lua_State *L, int metatable) {
+#define BEGIN_LUA_METHOD_MAP(x)  static void RegisterMethods(lua_State *L, int metatable) {
 
 #define LUA_METHOD_ENTRY(x) 	lua_pushcfunction(L, x); lua_setfield(L, metatable, #x);
 
@@ -52,7 +47,7 @@ virtual void RegisterMethods( lua_State *L, int metatable) {
 #define LUA_CHAIN_METHOD_MAP(parentType) parentType::RegisterMethods(L, metatable);
 
 template<typename T>
-T* LuaRegisterClass(lua_State *L, const char *className)
+void LuaRegisterClass(lua_State *L, const char *className)
 {
     LuaStackCheck check(L);
 
@@ -65,7 +60,7 @@ T* LuaRegisterClass(lua_State *L, const char *className)
     lua_pushvalue(L, methods);
     lua_setfield(L, metatable, "__index");  // metatable.__index = methods
 
-    lua_pushcfunction(L, GCMethod);
+    lua_pushcfunction(L, T::GCMethod);
     lua_setfield(L, metatable, "__gc"); // metatable.__gc = GCMethod
 
     lua_pushvalue(L, methods);
@@ -74,10 +69,10 @@ T* LuaRegisterClass(lua_State *L, const char *className)
     lua_pushcfunction(L, T::LuaConstructor);
     lua_setfield(L, methods, "new");
 
-    lua_pushcfunction(L, GetCallbacks);
+    lua_pushcfunction(L, T::GetCallbacks);
     lua_setfield(L, methods, "GetCallbacks");
 
-    lua_pushcfunction(L, SetCallbacks);
+    lua_pushcfunction(L, T::SetCallbacks);
     lua_setfield(L, methods, "SetCallbacks");
 
     // 注册方法
@@ -88,8 +83,6 @@ T* LuaRegisterClass(lua_State *L, const char *className)
     
     lua_pop(L, 1); // for metatable
     lua_pop(L, 1); // for methods
-
-    return check.SetReturn(0);
 }
 
 template<class T>
@@ -105,6 +98,7 @@ T* CheckLuaObject( lua_State *L, int idx)
 			return (T*)obj;
 		}
 	}
+    LOG("type:" << lua_typename(L, idx));
 	luaL_error(L, "C object type checking failed: #%d is not a %s", idx, T::TypeName().c_str());
 	return NULL;
 }

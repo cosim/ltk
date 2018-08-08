@@ -4,19 +4,19 @@
 #pragma once
 #include "stdafx.h"
 #include "ImeInput.h"
-#include "RTTI.h"
+#include "LuaObject.h"
 
 namespace ltk {
 
 class Sprite;
 
-class Window : public RTTI
+class Window : public LuaObject
 {
 protected:
     virtual ~Window(void);
 
 public:
-    RTTI_DECLARATIONS(Window, RTTI)
+    RTTI_DECLARATIONS(Window, LuaObject)
 
     Window(void);
 
@@ -60,6 +60,15 @@ public:
     virtual bool OnSize(float cx, float cy, DWORD flag) { return false; }
     virtual bool OnClose(bool &proceed) { proceed = true; return true; }
     virtual bool OnDestroy() { return false; }
+
+#ifndef LTK_DISABLE_LUA
+    static int LuaConstructor(lua_State *L);
+    static int Create(lua_State *L);
+
+    BEGIN_LUA_METHOD_MAP(Window)
+        LUA_METHOD_ENTRY(Create)
+    END_LUA_METHOD_MAP()
+#endif
 
 private:
 	void HandleMouseMessage(UINT message, WPARAM wparam, LPARAM lparam);

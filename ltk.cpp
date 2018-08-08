@@ -9,9 +9,8 @@
 #include "MainWindow.h"
 #include "Common.h"
 #include "Sprite.h"
-#include "ApiBind.h"
 #include "ApiBinding.h"
-
+#include "LuaObject.h"
 
 static ID2D1Factory *g_d2d_factory = NULL;
 static IWICImagingFactory  *g_wic_factory = NULL;
@@ -146,8 +145,6 @@ int CALLBACK WinMain(
     )
 {
     //ApiBindInit(ctx);
-    //Window::RegisterWndClass();
-    //DukRegisterClass<Window>(ctx, "Window");
 
     return 0;
 }
@@ -175,6 +172,8 @@ int luaopen_ltk(lua_State *L)
     #pragma EXPORT
     
     ApiBindingInit(L);
+    Window::RegisterWndClass();
+    LuaRegisterClass<Window>(L, "Window");
 
     return 0;
 }

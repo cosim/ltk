@@ -16,10 +16,14 @@ function SetupPrintWithLineInfo()
 	end
 end
 
-SetupPrintWithLineInfo()
+SetupPrintWithLineInfo();
 
 print("hello world", _VERSION);
 
 require("ltk");
 
 LtkApi.Trace("hi ZeroBrane");
+
+local wnd = Window:new();
+wnd:Create({x = 10, y = 10, w = 800, h = 600});
+LtkApi.RunMessageLoop();

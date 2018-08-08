@@ -8,7 +8,7 @@
 
 namespace ltk {
 
-void LuaObject::PushToLua( lua_State *L )
+void LuaObject::PushToLua( lua_State *L, const char* clsName )
 {
 	LuaStackCheck check(L);
 	this->Ref();
@@ -17,10 +17,10 @@ void LuaObject::PushToLua( lua_State *L )
 	int udata = lua_gettop(L);
 
 	// 检查下是不是已经注册过了
-	luaL_getmetatable(L, GetClassName());
+	luaL_getmetatable(L, clsName);
 	if(!lua_istable(L, -1))
 	{
-        LOG("NOT REGISTERD!!! " << GetClassName());
+        LOG("NOT REGISTERD!!! " << clsName);
 		lua_pop(L, 1); // pop nil
 		lua_pushnil(L);
         check.SetReturn(1);
