@@ -56,16 +56,16 @@ void Slide::MoveCards()
 	auto szRight = m_spRight->GetImageSize();
 	if (m_state == statNone)
 	{
-		m_spLeft->SetRect(Gdiplus::RectF(0.0f, UpMargin, szLeft.width, szLeft.height));
-		m_spMid->SetRect(Gdiplus::RectF((rc.Width - szMid.width) / 2.0f, 0.0f, szMid.width, szMid.height));
-		m_spRight->SetRect(Gdiplus::RectF(rc.Width - szRight.width, UpMargin, szRight.width, szRight.height));
+		m_spLeft->SetRect(RectF(0.0f, UpMargin, szLeft.width, szLeft.height));
+		m_spMid->SetRect(RectF((rc.Width - szMid.width) / 2.0f, 0.0f, szMid.width, szMid.height));
+		m_spRight->SetRect(RectF(rc.Width - szRight.width, UpMargin, szRight.width, szRight.height));
 	}
 	else if (m_state == statTurnRight)
 	{
 		float moveLeft = (rc.Width - szMid.width) / 2.0f;
-		m_spLeft->SetRect(Gdiplus::RectF(moveLeft * m_counter / AniDuration,
+		m_spLeft->SetRect(RectF(moveLeft * m_counter / AniDuration,
 			UpMargin * m_counter / AniDuration, szLeft.width, szLeft.height));
-		//m_spMid->SetRect(Gdiplus::RectF())
+		//m_spMid->SetRect(RectF())
 	}
 }
 

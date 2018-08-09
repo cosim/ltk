@@ -20,13 +20,13 @@ public:
 
     Sprite(void);
 
-	Gdiplus::RectF GetRect();
+	RectF GetRect();
 
-	Gdiplus::RectF GetClientRect();
+	RectF GetClientRect();
 
-	void SetRect( Gdiplus::RectF rect );
+	void SetRect( RectF rect );
 
-	Gdiplus::RectF GetAbsRect();
+	RectF GetAbsRect();
 
 	void Invalidate();
 
@@ -82,7 +82,7 @@ public:
 	Sprite *GetLastChild();
 
     void ShowCaret();
-    void SetCaretPos(Gdiplus::RectF rc);
+    void SetCaretPos(RectF rc);
     void HideCaret();
 
     void BeginAnimation();
@@ -117,7 +117,7 @@ private:
 	bool m_bClipChildren;
     bool m_bShowCaret;
 
-    Gdiplus::RectF m_rect;
+    RectF m_rect;
     Window *m_hostWnd;
 
 	Sprite *m_prevSibling; // 控件树结构 要高大上一点 zorder隐含在树结构中 避免排序

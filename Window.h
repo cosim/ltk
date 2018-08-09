@@ -20,9 +20,9 @@ public:
 
     Window(void);
 
-    void SetRect(Gdiplus::RectF rc);
+    void SetRect(RectF rc);
 
-    void Create(Window *parent, Gdiplus::RectF rc, DWORD style, DWORD exStyle);
+    void Create(Window *parent, RectF rc, DWORD style, DWORD exStyle);
 
 	static void RegisterWndClass();
 

@@ -50,24 +50,24 @@ Sprite::~Sprite(void)
 	LOG(<<"sprite deleted"); // TODO 加个名字
 }
 
-Gdiplus::RectF Sprite::GetRect()
+RectF Sprite::GetRect()
 {
 	return m_rect;
 }
 
-Gdiplus::RectF Sprite::GetClientRect()
+RectF Sprite::GetClientRect()
 {
-	Gdiplus::RectF rc = this->GetRect();
+	RectF rc = this->GetRect();
 	rc.X = 0.0f;
 	rc.Y = 0.0f;
 	return rc;
 }
 
-Gdiplus::RectF Sprite::GetAbsRect()
+RectF Sprite::GetAbsRect()
 {
 	Sprite *sp = m_parent;
-	Gdiplus::RectF rcSelf = GetRect();
-	Gdiplus::RectF rcParent;
+	RectF rcSelf = GetRect();
+	RectF rcParent;
 	while(sp)
 	{
 		rcParent = sp->GetRect();
@@ -77,14 +77,14 @@ Gdiplus::RectF Sprite::GetAbsRect()
 	return rcSelf;
 }
 
-void Sprite::SetRect( Gdiplus::RectF rect )
+void Sprite::SetRect( RectF rect )
 {
 	// 检查下宽高是否小于0 是则设为0 然后0宽或0高要在OnDraw这些里面特殊处理一下
 	rect.Width = max(0.0f, rect.Width);
 	rect.Height = max(0.0f, rect.Height);
 	if (!m_rect.Equals(rect))
 	{
-		Gdiplus::RectF rcOld = m_rect;
+		RectF rcOld = m_rect;
 		// TODO OnMove
 		Invalidate(); // 旧矩形
 		m_rect = rect;
@@ -108,7 +108,7 @@ void Sprite::Invalidate()
 	if (wnd)
 	{
 		RECT rc;
-		Gdiplus::RectF rf = GetAbsRect();
+		RectF rf = GetAbsRect();
 		rc.left = (LONG)(rf.GetLeft() - 0.5f);
 		rc.top = (LONG)(rf.GetTop() - 0.5f);  // TODO FIXME 这个值是试出来的 不知其所以然
 		rc.right = (LONG)(rf.GetRight() + 1.5f); // 缩小窗口TabCtrl会有拖影 这里改成2 就可以消除拖影现象
@@ -140,7 +140,7 @@ void Sprite::HandlePaint( ID2D1RenderTarget *target )
 		return; // 子节点也不会被绘制
 	}
 	// 前序遍历 让父节点先绘制
-	//Gdiplus::RectF rc = GetRect();
+	//RectF rc = GetRect();
 	//if (10 == rc.Width && 10 == rc.Height)
 	//{
 	//	LOGW(<<L"Orignal Size 10 10"); // 检查下有没有多余的重绘
@@ -148,7 +148,7 @@ void Sprite::HandlePaint( ID2D1RenderTarget *target )
 /*
 	if (m_bClipChildren)
 	{
-		Gdiplus::RectF rcClip = GetRect();
+		RectF rcClip = GetRect();
 		rcClip.X = 0.0f;
 		rcClip.Y = 0.0f;
 		g.SetClip(rcClip);
@@ -161,7 +161,7 @@ void Sprite::HandlePaint( ID2D1RenderTarget *target )
 	Sprite *sp = m_firstChild;
 	while(sp)
 	{
-		Gdiplus::RectF rc2 = sp->GetRect();
+		RectF rc2 = sp->GetRect();
 
 		TranslateTransform(target, rc2.X, rc2.Y);
 		sp->HandlePaint(target);
@@ -400,7 +400,7 @@ Sprite * Sprite::DispatchMouseEvent(MouseEvent *event)
 		sp = reverse.top();
 		reverse.pop();
 
-		Gdiplus::RectF rc = sp->GetAbsRect();
+		RectF rc = sp->GetAbsRect();
 		//LOG("HitTest:"<< rc.X << "," <<rc.Y << "," << rc.Width << "," << rc.Height);
 		if (rc.Contains(event->x, event->y))
 		{
@@ -507,9 +507,9 @@ void Sprite::ShowCaret()
     m_bShowCaret = true;
 }
 
-void Sprite::SetCaretPos(Gdiplus::RectF rc)
+void Sprite::SetCaretPos(RectF rc)
 {
-    Gdiplus::RectF arc = Sprite::GetAbsRect();
+    RectF arc = Sprite::GetAbsRect();
     GetHostWindow()->SetImePosition(rc.X + arc.X, rc.Y + arc.Y);
     HWND hwnd = GetHostWindow()->Handle();
     ::DestroyCaret(); // 这里销毁重新建立 才能改变高度

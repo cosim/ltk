@@ -111,12 +111,12 @@ void LuaPushWString(lua_State *L, LPCTSTR psz, int len /* = -1 */)
     lua_pushlstring(L, strA, strA.GetLength());
 }
 
-Gdiplus::Color LuaCheckColor(lua_State *L, int index)
+Color LuaCheckColor(lua_State *L, int index)
 {
     double r = luaL_checknumber(L, index + 0);
     double g = luaL_checknumber(L, index + 1);
     double b = luaL_checknumber(L, index + 2);
-    return Gdiplus::Color((BYTE)r, (BYTE)g, (BYTE)b);
+    return Color((BYTE)r, (BYTE)g, (BYTE)b);
 }
 
 void LuaShowStack(lua_State *L)
@@ -139,9 +139,9 @@ void LuaShowStack(lua_State *L)
     OutputDebugStringA(msg);
 }
 
-Gdiplus::RectF LuaCheckRectF(lua_State *L, int index)
+RectF LuaCheckRectF(lua_State *L, int index)
 {
-    Gdiplus::RectF rc;
+    RectF rc;
     luaL_checktype(L, index, LUA_TTABLE);
     lua_getfield(L, index, "x");
     if (lua_isnumber(L, -1))
@@ -187,7 +187,7 @@ Gdiplus::RectF LuaCheckRectF(lua_State *L, int index)
     return rc;
 }
 
-void RectF2LuaRect(lua_State *L, const Gdiplus::RectF &rc)
+void RectF2LuaRect(lua_State *L, const RectF &rc)
 {
     lua_newtable(L);
     int tRect = lua_gettop(L);

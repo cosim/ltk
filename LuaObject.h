@@ -78,9 +78,16 @@ void LuaRegisterClass(lua_State *L, const char *className)
     // 注册方法
     T::RegisterMethods(L, methods);
 
-    lua_pushvalue(L, methods);
-    lua_setglobal(L, className); // 设置成全局这样lua也可以添加方法在上面
-    
+    lua_getglobal(L, "Ltk");
+    if (!lua_istable(L, -1)) {
+        LOG("<FATAL> Ltk is missing.");
+        __debugbreak();
+    }
+    else{
+        lua_pushvalue(L, methods);
+        lua_setfield(L, -2, className);
+    }
+    lua_pop(L, 1); // for Ltk
     lua_pop(L, 1); // for metatable
     lua_pop(L, 1); // for methods
 }

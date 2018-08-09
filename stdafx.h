@@ -30,6 +30,9 @@ using std::unique_ptr;
 #include <atlstr.h>
 
 #include <GdiPlus.h>
+using Gdiplus::RectF;
+using Gdiplus::Color;
+
 #include <ShlObj.h>
 #include <vld.h>
 #include <atlconv.h>

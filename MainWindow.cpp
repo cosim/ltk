@@ -26,7 +26,7 @@ MainWindow::MainWindow()
         auto btn = new Button;
         wsprintf(buf, L"%d", i);
         btn->SetText(buf);
-        btn->SetRect(Gdiplus::RectF(
+        btn->SetRect(RectF(
             (float)padding + (btn_w + padding) * (i % 3), 
             (float)padding + (btn_w + padding) * (i / 3), (float)btn_w, (float)btn_w));
         sp->AddChild(btn);
@@ -36,19 +36,19 @@ MainWindow::MainWindow()
     this->AttachSprite(sp);
 /*
     m_bg = new RectangleSprite;
-    m_bg->SetColor(Gdiplus::Color(255, 255, 255));
-    m_bg->SetBorderColor(Gdiplus::Color(127, 127, 127));
+    m_bg->SetColor(Color(255, 255, 255));
+    m_bg->SetBorderColor(Color(127, 127, 127));
     this->AttachSprite(m_bg);
     auto btn = new Button;
     btn->SetText(L"Hello World!");
-    btn->SetRect(Gdiplus::RectF(20, 20, 200, 40));
+    btn->SetRect(RectF(20, 20, 200, 40));
     m_testConn = btn->Clicked.Attach(std::bind(&TestClass1::OnBtn1Clicked, m_test, L"Hello World!!"));
     m_bg->AddChild(btn);
     m_testConn.Close();
     delete m_test;
 
     m_text = new TextView;
-    m_text->SetRect(Gdiplus::RectF(20, 70, 500, 400));
+    m_text->SetRect(RectF(20, 70, 500, 400));
     FILE *fp = _wfopen(L"res\\test.txt", L"rb");
     if (fp)
     {
@@ -74,8 +74,8 @@ MainWindow::~MainWindow()
 bool MainWindow::OnSize(float cx, float cy, DWORD flag)
 {
 /*
-    m_bg->SetRect(Gdiplus::RectF(1.0f, 1.0f, cx - 1.0f, cy - 1.0f));
-    m_text->SetRect(Gdiplus::RectF(20, 70, cx - 40, cy - 90));
+    m_bg->SetRect(RectF(1.0f, 1.0f, cx - 1.0f, cy - 1.0f));
+    m_text->SetRect(RectF(20, 70, cx - 40, cy - 90));
 */
     return true;
 }

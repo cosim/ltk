@@ -46,7 +46,7 @@ Window::~Window(void)
     m_target = INVALID_POINTER(ID2D1HwndRenderTarget);
 }
 
-void Window::Create(Window *parent, Gdiplus::RectF rc, DWORD style, DWORD exStyle)
+void Window::Create(Window *parent, RectF rc, DWORD style, DWORD exStyle)
 {
     HWND hParent = NULL;
     if (!parent)
@@ -63,7 +63,7 @@ void Window::Create(Window *parent, Gdiplus::RectF rc, DWORD style, DWORD exStyl
         hParent, NULL, HINST_THISCOMPONENT, this);
 }
 
-void Window::SetRect(Gdiplus::RectF rc)
+void Window::SetRect(RectF rc)
 {
     ::MoveWindow(m_hwnd, (int)rc.X, (int)rc.Y, (int)rc.Width, (int)rc.Height, TRUE);
 }
@@ -119,7 +119,7 @@ void Window::HandleMouseMessage(UINT message, WPARAM wparam, LPARAM lparam)
 
 	if (m_spCapture)
 	{
-		Gdiplus::RectF rc = m_spCapture->GetAbsRect();
+		RectF rc = m_spCapture->GetAbsRect();
 		event.x -= rc.X;
 		event.y -= rc.Y;
 		m_spCapture->HandleCapturedMouseEvent(&event);
@@ -135,7 +135,7 @@ void Window::HandleMouseMessage(UINT message, WPARAM wparam, LPARAM lparam)
 				iter != m_setTrackMouseLeave.end(); ++iter)
 			{
 				Sprite *sp = *iter;
-				Gdiplus::RectF rc = sp->GetAbsRect();
+				RectF rc = sp->GetAbsRect();
 				if (!rc.Contains(event.x, event.y))
 				{
 					MouseEvent e2 = event;
@@ -315,7 +315,7 @@ void Window::OnPaint(HWND hwnd )
 
     if (m_sprite)
     {
-        Gdiplus::RectF rc = m_sprite->GetRect();
+        RectF rc = m_sprite->GetRect();
         TranslateTransform(m_target, rc.X, rc.Y);
         m_sprite->HandlePaint(m_target);
         TranslateTransform(m_target, -rc.X, -rc.Y);
@@ -328,61 +328,6 @@ void Window::OnPaint(HWND hwnd )
         SAFE_RELEASE(m_target);
     }
     EndPaint(hwnd, &ps);
-/*
-	int x = ps.rcPaint.left;
-	int y = ps.rcPaint.top;
-	int width = ps.rcPaint.right - ps.rcPaint.left;
-	int height = ps.rcPaint.bottom - ps.rcPaint.top;
-	Gdiplus::RectF rcDirty((float)x, (float) y, (float)width, (float)height);
-
-	// http://www.codeproject.com/Tips/66909/Rendering-fast-with-GDI-What-to-do-and-what-not-to
-	Gdiplus::Graphics gScreen(hwnd, FALSE);
-	SetGdipMode(gScreen);
-	Gdiplus::Bitmap bmp(width, height, PixelFormat32bppPARGB);
-	Gdiplus::Graphics gDoubleBuffer(&bmp);
-	SetGdipMode(gDoubleBuffer);
-	//Gdiplus::Graphics gDoubleBuffer(dcMem);
-    gDoubleBuffer.TranslateTransform(0.5f, 0.5f);
-	gDoubleBuffer.TranslateTransform(-(float)x, -(float)y);
-	if (m_sprite)
-	{
-		Gdiplus::RectF rc = m_sprite->GetRect();
-		gDoubleBuffer.TranslateTransform(rc.X, rc.Y);
-		m_sprite->HandlePaint(gDoubleBuffer, rcDirty);
-		gDoubleBuffer.TranslateTransform(-rc.X, -rc.Y);
-	}
-	do 
-	{
-		// œ‘ æFPS
-		/ *
-		gDoubleBuffer.TranslateTransform(rcDirty.X, rcDirty.Y);
-		CStringW speed;
-		speed.Format(L"%dms", ::GetTickCount() - startTime);
-		Gdiplus::Font font(L"Œ¢»Ì—≈∫⁄", 12.0f, Gdiplus::FontStyleRegular, Gdiplus::UnitPixel);
-		Gdiplus::StringFormat format;
-		format.SetFormatFlags(Gdiplus::StringFormatFlagsMeasureTrailingSpaces | Gdiplus::StringFormatFlagsNoWrap | Gdiplus::StringFormatFlagsBypassGDI);
-		Gdiplus::SolidBrush brush(Gdiplus::Color(255,0,255));
-		Gdiplus::PointF pt(0.0f, 0.0f);
-		gDoubleBuffer.DrawString(speed, speed.GetLength(), &font, pt, &format, &brush);
-		* /
-	} while (0);
-	do 
-	{
-		// ≤‚ ‘µƒ ±∫Úœ‘ æ‘‡æÿ–Œ
-        / *
-		gDoubleBuffer.ResetTransform();
-        Gdiplus::Pen pen(Gdiplus::Color(rand() % 256, rand() % 256, rand() % 256), 1.0f);
-		gDoubleBuffer.DrawRectangle(&pen, 1, 1, width - 1, height - 1);
-        * /
-        / *
-		const int size = 10;
-		gDoubleBuffer.DrawLine(&pen, width / 2 - size, height / 2, width / 2 + size, height / 2);
-		gDoubleBuffer.DrawLine(&pen, width / 2, height / 2 - size, width / 2, height / 2 + size);
-		* /
-	} while (0);
-
-	gScreen.DrawImage(&bmp,x, y);
-*/
 }
 
 HWND Window::Handle()

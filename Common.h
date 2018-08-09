@@ -12,9 +12,9 @@ void LuaPushWString(lua_State *L, LPCTSTR psz, int len  = -1);
 
 bool LuaPCall(lua_State *L, int nargs, int nresults);
 void LuaShowStack(lua_State *L);
-Gdiplus::Color LuaCheckColor(lua_State *L, int index);
-Gdiplus::RectF LuaCheckRectF(lua_State *L, int index);
-void RectF2LuaRect(lua_State *L, const Gdiplus::RectF &rc);
+Color LuaCheckColor(lua_State *L, int index);
+RectF LuaCheckRectF(lua_State *L, int index);
+void RectF2LuaRect(lua_State *L, const RectF &rc);
 
 
 #define LOG(msg) do\
