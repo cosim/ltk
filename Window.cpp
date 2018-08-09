@@ -276,7 +276,7 @@ LRESULT CALLBACK Window::WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM 
         return 0;
 	case WM_DESTROY:
         thiz->OnDestroy();
-        thiz->InvokeCallback(L, "OnDestroy", 0, 0);
+        thiz->CallEventHandler(L, "OnDestroy", 0, 0);
 		return 0;
 	}
     return ::DefWindowProc(hwnd, message, wparam, lparam);

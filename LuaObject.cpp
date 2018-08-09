@@ -59,7 +59,7 @@ int LuaObject::GCMethod( lua_State *L )
 	return 0;
 }
 
-int LuaObject::GetCallbacks( lua_State *L )
+int LuaObject::GetEventHandler( lua_State *L )
 {
 	LuaObject *thiz = CheckLuaObject<LuaObject>(L, 1);
 	if (LUA_NOREF == thiz->m_refUserData)
@@ -73,23 +73,24 @@ int LuaObject::GetCallbacks( lua_State *L )
 	return 1;
 }
 
-int LuaObject::SetCallbacks( lua_State *L )
+int LuaObject::SetEventHandler(lua_State *L)
 {
 	LuaObject *thiz = CheckLuaObject<LuaObject>(L, 1);
-	luaL_checktype(L, 2, LUA_TTABLE);
-	GetWeakTable(L);
-	int ref_table = lua_gettop(L);
+	luaL_checktype(L, 2, LUA_TTABLE); // thiz event
+	GetWeakTable(L); // thiz event weak
+	int ref_table = lua_gettop(L); 
 	if (LUA_NOREF != thiz->m_refUserData)
 	{
 		luaL_unref(L, ref_table, thiz->m_refUserData);
 	}
-	lua_pushvalue(L, 2);
-	thiz->m_refUserData = luaL_ref(L, ref_table);
-	lua_pop(L, 1); // for ref_table
-	return 0; // TODO return the event table
+	lua_pushvalue(L, 2); // thiz event weak event
+	thiz->m_refUserData = luaL_ref(L, ref_table); // thiz event weak
+	lua_pop(L, 1); // for the weak ref_table
+    lua_pushvalue(L, 2); // thiz event event
+    return 1;
 }
 
-bool LuaObject::InvokeCallback( lua_State *L, const char *name, int nargs, int nresult )
+bool LuaObject::CallEventHandler( lua_State *L, const char *name, int nargs, int nresult )
 {
 	if (LUA_NOREF == m_refUserData)
 	{

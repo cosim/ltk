@@ -3,6 +3,7 @@ package.cpath = package.cpath..[[;E:\myworks\ltk\x64\Debug\?.dll]]
 
 function SetupPrintWithLineInfo()
 	local old_print = _G.print;
+	local format = string.format;
 	_G.print = function(...)
 		old_print(...);
 		local info = debug.getinfo(2, "Sl");
@@ -12,7 +13,7 @@ function SetupPrintWithLineInfo()
 		else
 			path = info.source;
 		end
-		old_print("\t" .. path .. ":" .. info.currentline .. ":");
+		old_print(format("\t%s:%d:", path, info.currentline));
 	end
 end
 
@@ -26,12 +27,11 @@ LtkApi.Trace("hi ZeroBrane");
 
 local wnd = Window:new();
 wnd:Create({x = 10, y = 10, w = 800, h = 600});
-g_wnd_event = {
+g_wnd_event = wnd:SetEventHandler({
 	OnDestroy = function()
 		print('OnDestroy');
 		LtkApi.PostQuitMessage(0);
 	end
-}
-wnd:SetCallbacks(g_wnd_event);
+});
 
 LtkApi.RunMessageLoop();

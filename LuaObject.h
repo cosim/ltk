@@ -19,9 +19,9 @@ public:
 
 	static int GCMethod(lua_State *L);
 
-	static int GetCallbacks(lua_State *L);
+	static int GetEventHandler(lua_State *L);
 
-	static int SetCallbacks(lua_State *L);
+    static int SetEventHandler(lua_State *L);
 
 	// 把这个对象放入lua中 创建一个新的userdata包裹之 引用计数+1 lua栈+1
     void PushToLua(lua_State *L, const char* clsName);
@@ -29,7 +29,7 @@ public:
 	// nargs 参数个数 不包括this
 	//void CallLuaMethod(lua_State *L, const char *method, int nargs, int nresult);
 
-	bool InvokeCallback(lua_State *L, const char *name, int nargs, int nresult);
+	bool CallEventHandler(lua_State *L, const char *name, int nargs, int nresult);
 	
 private:
 	static void GetWeakTable( lua_State *L );
@@ -69,11 +69,11 @@ void LuaRegisterClass(lua_State *L, const char *className)
     lua_pushcfunction(L, T::LuaConstructor);
     lua_setfield(L, methods, "new");
 
-    lua_pushcfunction(L, T::GetCallbacks);
-    lua_setfield(L, methods, "GetCallbacks");
+    lua_pushcfunction(L, T::GetEventHandler);
+    lua_setfield(L, methods, "GetEventHandler");
 
-    lua_pushcfunction(L, T::SetCallbacks);
-    lua_setfield(L, methods, "SetCallbacks");
+    lua_pushcfunction(L, T::SetEventHandler);
+    lua_setfield(L, methods, "SetEventHandler");
 
     // 注册方法
     T::RegisterMethods(L, methods);
