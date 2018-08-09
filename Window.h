@@ -22,7 +22,13 @@ public:
 
     void SetRect(RectF rc);
 
-    void Create(Window *parent, RectF rc, DWORD style, DWORD exStyle);
+    enum Mode
+    {
+        eOverlaped,
+        eBorderless
+    };
+
+    void Create(Window *parent, RectF rc, Mode mode);
 
 	static void RegisterWndClass();
 
@@ -64,9 +70,11 @@ public:
 #ifndef LTK_DISABLE_LUA
     static int LuaConstructor(lua_State *L);
     static int Create(lua_State *L);
+    static int AttachSprite(lua_State *L);
 
     BEGIN_LUA_METHOD_MAP(Window)
         LUA_METHOD_ENTRY(Create)
+        LUA_METHOD_ENTRY(AttachSprite)
     END_LUA_METHOD_MAP()
 #endif
 
@@ -78,6 +86,7 @@ private:
 
 private:
 	HWND m_hwnd;
+    Mode m_mode = eOverlaped;
 	ImeInput m_ime;
 	RECT m_rectComposition;
 	int m_caretHeight;
@@ -88,6 +97,7 @@ private:
 	std::unordered_set<Sprite *> m_setTrackMouseLeave;
     std::unordered_set<Sprite *> m_setAnimation;
     ID2D1HwndRenderTarget *m_target = nullptr;
+    Sprite *m_spClose; // owner
 };
 
 } // namespace ltk

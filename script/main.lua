@@ -35,8 +35,10 @@ do -- debugger test
 	i = 1;
 end
 
+---@type Ltk.Window
 local wnd = Ltk.Window:new();
-wnd:Create({x = 10, y = 10, w = 800, h = 600});
+
+wnd:Create({x = 10, y = 10, w = 800, h = 600}, 'borderless');
 g_wnd_event = wnd:SetEventHandler({
 	OnDestroy = function()
 		print('OnDestroy');

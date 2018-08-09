@@ -46,7 +46,7 @@ Window::~Window(void)
     m_target = INVALID_POINTER(ID2D1HwndRenderTarget);
 }
 
-void Window::Create(Window *parent, RectF rc, DWORD style, DWORD exStyle)
+void Window::Create(Window *parent, RectF rc, Mode mode)
 {
     HWND hParent = NULL;
     if (!parent)
@@ -57,8 +57,22 @@ void Window::Create(Window *parent, RectF rc, DWORD style, DWORD exStyle)
     {
         hParent = parent->m_hwnd;
     }
+    DWORD style = WS_VISIBLE;
+    
+    switch (mode)
+    {
+    case ltk::Window::eOverlaped:
+        style |= WS_OVERLAPPED;
+        break;
+    case ltk::Window::eBorderless:
+        style |= WS_POPUP;
+        break;
+    default:
+        break;
+    }
+    style |= WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX;
 
-    ::CreateWindowEx(exStyle, ClsName, L"", style,
+    ::CreateWindowEx(0, ClsName, L"", style,
         (int)rc.X, (int)rc.Y, (int)rc.Width, (int)rc.Height,
         hParent, NULL, HINST_THISCOMPONENT, this);
 }
@@ -532,7 +546,26 @@ int Window::Create(lua_State *L)
     DtorTest test;
     auto thiz = CheckLuaObject<Window>(L, 1);
     auto rc = LuaCheckRectF(L, 2);
-    thiz->Create(nullptr, rc, WS_OVERLAPPEDWINDOW|WS_VISIBLE, 0);
+    auto mode = luaL_checkstring(L, 3);
+    auto m = eOverlaped;
+
+    if (strcmp(mode, "borderless") == 0) {
+        m = eBorderless;
+    }
+    else if (strcmp(mode, "overlapped") == 0){
+        m = eOverlaped;
+    }
+    else {
+        luaL_error(L, "InvalideArgs #3 mode: borderless|overlapped");
+    }
+
+    thiz->Create(nullptr, rc, m);
+    return 0;
+}
+
+int Window::AttachSprite(lua_State *L)
+{
+
     return 0;
 }
 
