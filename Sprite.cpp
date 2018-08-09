@@ -3,6 +3,7 @@
 */
 
 #include "StdAfx.h"
+#include "Window.h"
 #include "Sprite.h"
 #include "ltk.h"
 #include <cmath>
@@ -117,13 +118,11 @@ void Sprite::Invalidate()
 	}
 }
 
-// 只在CUIWindow::AddSprite中使用
+// 只在Window::AttachSprite中使用
 void Sprite::SetHostWnd( Window *wnd )
 {
 	LOG("BEGIN");
-	// FIXME 可能有性能问题 AddChild时候跑这里 会使算法复杂度暴增
 	m_hostWnd = wnd;
-	// m_hostWnd->Ref(); 应该是弱引用
 	Sprite *sp = m_firstChild;
 	while(sp)
 	{
@@ -191,7 +190,7 @@ void Sprite::AddChild( Sprite *sp )
 		sp->m_prevSibling = tmp;
 		tmp->m_nextSibling = sp;
 	}
-	//sp->SetHostWnd(m_hostWnd); // 递归去设置 防止任意顺序插入导致问题 FIXME 可能有性能问题
+	sp->SetHostWnd(m_hostWnd); // 递归去设置 防止任意顺序插入导致问题 FIXME 可能有性能问题
 	sp->m_parent = this;
 }
 

@@ -25,16 +25,6 @@ require("ltk");
 
 LtkApi.Trace("hi ZeroBrane");
 
-do -- debugger test
-	local insert = table.insert
-	local large_tbl = {}
-	for i = 1, 10000 do
-		insert(large_tbl, {x = i});
-	end
-	local i;
-	i = 1;
-end
-
 ---@type Ltk.Window
 local wnd = Ltk.Window:new();
 
@@ -47,3 +37,25 @@ g_wnd_event = wnd:SetEventHandler({
 });
 
 LtkApi.RunMessageLoop();
+
+
+
+---@class EmmyTest
+---@field _root Ltk.Window
+local EmmyTest = {}
+
+function EmmyTest:Fun1()
+
+	self._root = Ltk.Window:new();
+	self._root:Create()
+end
+
+do -- debugger test
+	local insert = table.insert
+	local large_tbl = {}
+	for i = 1, 10000 do
+		insert(large_tbl, {x = i});
+	end
+	local i;
+	i = 1;
+end

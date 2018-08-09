@@ -22,7 +22,14 @@ Window::Window(void)
 	m_rectComposition.right = 5;
 	m_rectComposition.bottom = 20;
 
-    m_sprite = NULL;
+    m_sprite = new Sprite();
+    m_sprite->SetHostWnd(this);
+
+    m_btnClose = new Button();
+    m_btnClose->SetText(L"X");
+    m_btnClose->Clicked.Attach(std::bind(&Window::OnBtnCloseClicked, this));
+    m_sprite->AddChild(m_btnClose);
+    
 	m_spFocus = NULL;
 	m_spCapture = NULL;
 	m_spHover = NULL;
@@ -325,7 +332,7 @@ void Window::OnPaint(HWND hwnd )
     m_target->BeginDraw();
     m_target->SetTransform(D2D1::Matrix3x2F::Identity());
     TranslateTransform(m_target, 0.5f, 0.5f);
-    m_target->Clear(D2D1::ColorF(D2D1::ColorF::White));
+    m_target->Clear(D2D1::ColorF(D2D1::ColorF(0.1f, 0.1f, 0.2f)));
 
     if (m_sprite)
     {
@@ -525,6 +532,12 @@ void Window::EndAnimation(Sprite *sp)
     }
 }
 
+void Window::OnBtnCloseClicked()
+{
+    //::CloseWindow(m_hwnd); // MSDN: Minimizes (but does not destroy) the specified window. WTF??
+    ::SendMessage(m_hwnd, WM_CLOSE, 0, 0);
+}
+
 #ifndef LTK_DISABLE_LUA
 
 int Window::LuaConstructor(lua_State *L)
@@ -567,6 +580,14 @@ int Window::AttachSprite(lua_State *L)
 {
 
     return 0;
+}
+
+bool Window::OnSize(float cx, float cy, DWORD flag)
+{
+    const float SYSBTN_WIDTH = 40;
+    const float SYSBTN_HEIGHT = 30;
+    m_btnClose->SetRect(RectF(cx - SYSBTN_WIDTH - 1, 0, SYSBTN_WIDTH, SYSBTN_HEIGHT));
+    return false;
 }
 
 #endif

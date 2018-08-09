@@ -3,20 +3,21 @@
 */
 #pragma once
 #include "Common.h"
-#include "Window.h"
 #include "Event.h"
-#include "RefCounted.h"
+#include "LuaObject.h"
 //#include "DukObject.h"
 
 namespace ltk {
 
-class Sprite : public RefCounted
+class Window;
+
+class Sprite : public LuaObject
 {
 protected:
     virtual ~Sprite(void);
 
 public:
-    RTTI_DECLARATIONS(Sprite, RefCounted)
+    RTTI_DECLARATIONS(Sprite, LuaObject)
 
     Sprite(void);
 

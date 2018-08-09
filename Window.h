@@ -5,10 +5,12 @@
 #include "stdafx.h"
 #include "ImeInput.h"
 #include "LuaObject.h"
+#include "Button.h"
 
 namespace ltk {
 
 class Sprite;
+class Button;
 
 class Window : public LuaObject
 {
@@ -63,9 +65,11 @@ public:
     void BeginAnimation(Sprite *sp);
     void EndAnimation(Sprite *sp);
 
-    virtual bool OnSize(float cx, float cy, DWORD flag) { return false; }
+    virtual bool OnSize(float cx, float cy, DWORD flag);
     virtual bool OnClose(bool &proceed) { proceed = true; return true; }
     virtual bool OnDestroy() { return false; }
+
+    void OnBtnCloseClicked();
 
 #ifndef LTK_DISABLE_LUA
     static int LuaConstructor(lua_State *L);
@@ -97,7 +101,7 @@ private:
 	std::unordered_set<Sprite *> m_setTrackMouseLeave;
     std::unordered_set<Sprite *> m_setAnimation;
     ID2D1HwndRenderTarget *m_target = nullptr;
-    Sprite *m_spClose; // owner
+    Button *m_btnClose = nullptr;
 };
 
 } // namespace ltk
