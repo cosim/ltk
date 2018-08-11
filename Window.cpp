@@ -16,7 +16,7 @@ static const long SYSBTN_WIDTH = 40;
 static const long SYSBTN_HEIGHT = 30;
 static const long CAPTION_HEIGHT = 25;
 static const long SYSICON_SIZE = 24;
-static const long WINDOW_BORDER = 4;
+static const long WINDOW_BORDER = 6;
 
 Window::Window(void)
 {
@@ -623,7 +623,7 @@ int Window::AttachSprite(lua_State *L)
 
 bool Window::OnSize(float cx, float cy, DWORD flag)
 {
-    m_btnClose->SetRect(RectF(cx - SYSBTN_WIDTH - 1, 0, SYSBTN_WIDTH, SYSBTN_HEIGHT));
+    m_btnClose->SetRect(RectF((float)(cx - SYSBTN_WIDTH - 1), 0.0f, (float)SYSBTN_WIDTH, (float)SYSBTN_HEIGHT));
     return false;
 }
 
@@ -640,6 +640,7 @@ LRESULT ResizeHelper::HandleMessage(HWND hwnd, UINT message, WPARAM wparam, LPAR
     RECT rc;
     POINT pt;
     BOOL ret;
+    State st;
 
     switch (message) {
     case WM_MOUSEMOVE:
@@ -654,52 +655,42 @@ LRESULT ResizeHelper::HandleMessage(HWND hwnd, UINT message, WPARAM wparam, LPAR
             m_oldPoint = pt;
             m_oldRect = rc;
 
-            if (pt.x < rc.left + WINDOW_BORDER) {
-                if (pt.y < rc.top + WINDOW_BORDER) {
-                    m_state = eLeftTop;
-                }
-                else {
-                    m_state = eLeft;
-                }
+            m_state = StateFromPoint(pt, rc);
+            if (m_state != eNone) {
                 bHandled = true;
-            }
-            else if (pt.y < rc.top + WINDOW_BORDER) {
-                if (pt.x > rc.right - WINDOW_BORDER) {
-                    m_state = eRightTop;
-                }
-                else {
-                    m_state = eTop;
-                }
-                bHandled = true;
-            }
-            else if (pt.x < rc.right - SYSBTN_WIDTH - 5 && pt.y < rc.top + CAPTION_HEIGHT) {
-                m_state = eMove;
-                bHandled = true;
-            }
-            if (bHandled) {
                 ::SetCapture(hwnd);
             }
             break;
         case WM_MOUSEMOVE:
-            if (pt.x < rc.left + WINDOW_BORDER) {
-                if (pt.y < rc.top + WINDOW_BORDER) {
-                    ::SetCursor(::LoadCursor(NULL, MAKEINTRESOURCE(IDC_SIZENWSE)));
-                    bHandled = true;
-                }
-                else {
-                    ::SetCursor(::LoadCursor(NULL, MAKEINTRESOURCE(IDC_SIZEWE)));
-                    bHandled = true;
-                }
+            st = StateFromPoint(pt, rc);
+            switch (st) {
+            case eLeftTop:
+                ::SetCursor(::LoadCursor(NULL, MAKEINTRESOURCE(IDC_SIZENWSE)));
+                break;
+            case eLeft:
+                ::SetCursor(::LoadCursor(NULL, MAKEINTRESOURCE(IDC_SIZEWE)));
+                break;
+            case eLeftBottom:
+                ::SetCursor(::LoadCursor(NULL, MAKEINTRESOURCE(IDC_SIZENESW)));
+                break;
+            case eRightTop:
+                ::SetCursor(::LoadCursor(NULL, MAKEINTRESOURCE(IDC_SIZENESW)));
+                break;
+            case eRight:
+                ::SetCursor(::LoadCursor(NULL, MAKEINTRESOURCE(IDC_SIZEWE)));
+                break;
+            case eRightBottom:
+                ::SetCursor(::LoadCursor(NULL, MAKEINTRESOURCE(IDC_SIZENWSE)));
+                break;
+            case eTop:
+                ::SetCursor(::LoadCursor(NULL, MAKEINTRESOURCE(IDC_SIZENS)));
+                break;
+            case eBottom:
+                ::SetCursor(::LoadCursor(NULL, MAKEINTRESOURCE(IDC_SIZENS)));
+                break;
             }
-            else if (pt.y < rc.top + WINDOW_BORDER) {
-                if (pt.x > rc.right - WINDOW_BORDER) {
-                    ::SetCursor(::LoadCursor(NULL, MAKEINTRESOURCE(IDC_SIZENESW)));
-                    bHandled = true;
-                }
-                else {
-                    ::SetCursor(::LoadCursor(NULL, MAKEINTRESOURCE(IDC_SIZENS)));
-                    bHandled = true;
-                }
+            if (st != eNone) {
+                bHandled = true;
             }
             switch (m_state) {
             case eMove:
@@ -709,21 +700,37 @@ LRESULT ResizeHelper::HandleMessage(HWND hwnd, UINT message, WPARAM wparam, LPAR
                     0, 0, SWP_NOSIZE);
                 bHandled = true;
                 return 0;
-            case eLeft:
-                rc.left = pt.x - m_oldPoint.x + m_oldRect.left;
-                SetWindowRect(hwnd, rc);
-                bHandled = true;
-                return 0;
             case eLeftTop:
                 rc.left = pt.x - m_oldPoint.x + m_oldRect.left;
-                rc.top = pt.y - m_oldPoint.y + m_oldRect.top,
-                SetWindowRect(hwnd, rc);
-                bHandled = true;
-                return 0;
+                rc.top = pt.y - m_oldPoint.y + m_oldRect.top;
+                break;
+            case eLeft:
+                rc.left = pt.x - m_oldPoint.x + m_oldRect.left;
+                break;
+            case eLeftBottom:
+                rc.left = pt.x - m_oldPoint.x + m_oldRect.left;
+                rc.bottom = pt.y - m_oldPoint.y + m_oldRect.bottom;
+                break;
+
             case eRightTop:
                 rc.right = pt.x - m_oldPoint.x + m_oldRect.right;
                 rc.top = pt.y - m_oldPoint.y + m_oldRect.top;
-                //LOG("eRightTop " << rc.right << " " << rc.top);
+                break;
+            case eRight:
+                rc.right = pt.x - m_oldPoint.x + m_oldRect.right;
+                break;
+            case eRightBottom:
+                rc.right = pt.x - m_oldPoint.x + m_oldRect.right;
+                rc.bottom = pt.y - m_oldPoint.y + m_oldRect.bottom;
+                break;
+            case eTop:
+                rc.top = pt.y - m_oldPoint.y + m_oldRect.top;
+                break;
+            case eBottom:
+                rc.bottom = pt.y - m_oldPoint.y + m_oldRect.bottom;
+                break;
+            }
+            if (m_state != eNone) {
                 SetWindowRect(hwnd, rc);
                 bHandled = true;
                 return 0;
@@ -732,14 +739,50 @@ LRESULT ResizeHelper::HandleMessage(HWND hwnd, UINT message, WPARAM wparam, LPAR
         case WM_LBUTTONUP:
             if (m_state != eNone) {
                 ::ReleaseCapture();
-                m_state = eNone;
                 bHandled = true;
+                m_state = eNone;
             }
             break;
         }
         break;
     }
     return 0;
+}
+
+ResizeHelper::State ResizeHelper::StateFromPoint(POINT pt, const RECT &rc)
+{
+    if (pt.x < rc.left + WINDOW_BORDER) {
+        if (pt.y < rc.top + WINDOW_BORDER) {
+            return eLeftTop;
+        } 
+        else if (pt.y > rc.bottom - WINDOW_BORDER) {
+            return eLeftBottom;
+        }
+        else {
+            return eLeft;
+        }
+    }
+    else if (pt.x > rc.right - WINDOW_BORDER) {
+        if (pt.y < rc.top + WINDOW_BORDER) {
+            return eRightTop;
+        } 
+        else if (pt.y > rc.bottom - WINDOW_BORDER) {
+            return eRightBottom;
+        } 
+        else {
+            return eRight;
+        }
+    }
+    else if (pt.y < rc.top + WINDOW_BORDER) {
+        return eTop;
+    }
+    else if (pt.y > rc.bottom - WINDOW_BORDER) {
+        return eBottom;
+    }
+    else if (pt.x < rc.right - SYSBTN_WIDTH - 5 && pt.y < rc.top + CAPTION_HEIGHT) {
+        return eMove;
+    }
+    return eNone;
 }
 
 } // namespace ltk

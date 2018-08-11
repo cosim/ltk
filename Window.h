@@ -111,6 +111,7 @@ class ResizeHelper
 {
 public:
     LRESULT HandleMessage(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam, bool &bHandled);
+
 private:
     POINT m_oldPoint;
     RECT m_oldRect;
@@ -127,6 +128,7 @@ private:
         eTop,
         eBottom
     };
+    State StateFromPoint(POINT pt, const RECT &rc);
     State m_state = eNone;
 };
 
