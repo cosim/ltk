@@ -112,16 +112,20 @@ class ResizeHelper
 public:
     LRESULT HandleMessage(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam, bool &bHandled);
 private:
-    float m_originX = 0.0f;
-    float m_originY = 0.0f;
+    POINT m_oldPoint;
+    RECT m_oldRect;
 
     enum State {
         eNone,
         eMove,
         eLeftTop,
         eLeft,
+        eLeftBottom,
+        eRightTop,
         eRight,
-        eRightTop
+        eRightBottom,
+        eTop,
+        eBottom
     };
     State m_state = eNone;
 };

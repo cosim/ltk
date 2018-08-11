@@ -12,11 +12,11 @@
 namespace ltk {
 
 const wchar_t * Window::ClsName = L"ltk_cls";
-static const float SYSBTN_WIDTH = 40;
-static const float SYSBTN_HEIGHT = 30;
-static const float CAPTION_HEIGHT = 25;
-static const float SYSICON_SIZE = 24;
-static const float WINDOW_BORDER = 4;
+static const long SYSBTN_WIDTH = 40;
+static const long SYSBTN_HEIGHT = 30;
+static const long CAPTION_HEIGHT = 25;
+static const long SYSICON_SIZE = 24;
+static const long WINDOW_BORDER = 4;
 
 Window::Window(void)
 {
@@ -636,72 +636,105 @@ static void SetWindowRect(HWND hwnd, RECT &rc)
 
 LRESULT ResizeHelper::HandleMessage(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam, bool &bHandled)
 {
-    float x, y, cx, cy;
+    // all coords here are in screen space.
     RECT rc;
+    POINT pt;
+    BOOL ret;
 
     switch (message) {
     case WM_MOUSEMOVE:
     case WM_LBUTTONDOWN:
     case WM_LBUTTONUP:
-        x = (float)(short)LOWORD(lparam);
-        y = (float)(short)HIWORD(lparam);
-        ::GetClientRect(hwnd, &rc);
-        cx = (float)(rc.right - rc.left);
-        cy = (float)(rc.bottom - rc.top);
+        ret = ::GetCursorPos(&pt);
+        assert(ret);
+        ::GetWindowRect(hwnd, &rc);
 
         switch(message) {
         case WM_LBUTTONDOWN:
-            m_originX = x;
-            m_originY = y;
-            ::SetCapture(hwnd);
+            m_oldPoint = pt;
+            m_oldRect = rc;
 
-            if (x < WINDOW_BORDER) {
-                if (y < WINDOW_BORDER) {
+            if (pt.x < rc.left + WINDOW_BORDER) {
+                if (pt.y < rc.top + WINDOW_BORDER) {
                     m_state = eLeftTop;
                 }
                 else {
                     m_state = eLeft;
                 }
+                bHandled = true;
             }
-            else if (x < cx - SYSBTN_WIDTH - 5 && y < CAPTION_HEIGHT) {
+            else if (pt.y < rc.top + WINDOW_BORDER) {
+                if (pt.x > rc.right - WINDOW_BORDER) {
+                    m_state = eRightTop;
+                }
+                else {
+                    m_state = eTop;
+                }
+                bHandled = true;
+            }
+            else if (pt.x < rc.right - SYSBTN_WIDTH - 5 && pt.y < rc.top + CAPTION_HEIGHT) {
                 m_state = eMove;
+                bHandled = true;
+            }
+            if (bHandled) {
+                ::SetCapture(hwnd);
             }
             break;
         case WM_MOUSEMOVE:
-            if (x < WINDOW_BORDER) {
-                if (y < WINDOW_BORDER) {
+            if (pt.x < rc.left + WINDOW_BORDER) {
+                if (pt.y < rc.top + WINDOW_BORDER) {
                     ::SetCursor(::LoadCursor(NULL, MAKEINTRESOURCE(IDC_SIZENWSE)));
                     bHandled = true;
                 }
                 else {
-                    auto cursor = ::LoadCursor(NULL, MAKEINTRESOURCE(IDC_SIZEWE));
-                    ::SetCursor(cursor);
+                    ::SetCursor(::LoadCursor(NULL, MAKEINTRESOURCE(IDC_SIZEWE)));
                     bHandled = true;
                 }
             }
-            ::GetWindowRect(hwnd, &rc);
+            else if (pt.y < rc.top + WINDOW_BORDER) {
+                if (pt.x > rc.right - WINDOW_BORDER) {
+                    ::SetCursor(::LoadCursor(NULL, MAKEINTRESOURCE(IDC_SIZENESW)));
+                    bHandled = true;
+                }
+                else {
+                    ::SetCursor(::LoadCursor(NULL, MAKEINTRESOURCE(IDC_SIZENS)));
+                    bHandled = true;
+                }
+            }
             switch (m_state) {
             case eMove:
                 ::SetWindowPos(hwnd, NULL, 
-                    (int)(rc.left + x - m_originX), 
-                    (int)(rc.top + y - m_originY),
+                    pt.x - m_oldPoint.x + m_oldRect.left,
+                    pt.y - m_oldPoint.y + m_oldRect.top,
                     0, 0, SWP_NOSIZE);
                 bHandled = true;
                 return 0;
             case eLeft:
-                rc.left += (LONG)(x - m_originX);
+                rc.left = pt.x - m_oldPoint.x + m_oldRect.left;
                 SetWindowRect(hwnd, rc);
+                bHandled = true;
                 return 0;
             case eLeftTop:
-                rc.left += (LONG)(x - m_originX);
-                rc.top += (LONG)(y - m_originY);
+                rc.left = pt.x - m_oldPoint.x + m_oldRect.left;
+                rc.top = pt.y - m_oldPoint.y + m_oldRect.top,
                 SetWindowRect(hwnd, rc);
+                bHandled = true;
+                return 0;
+            case eRightTop:
+                rc.right = pt.x - m_oldPoint.x + m_oldRect.right;
+                rc.top = pt.y - m_oldPoint.y + m_oldRect.top;
+                //LOG("eRightTop " << rc.right << " " << rc.top);
+                SetWindowRect(hwnd, rc);
+                bHandled = true;
                 return 0;
             }
             break;
         case WM_LBUTTONUP:
-            ::ReleaseCapture();
-            m_state = eNone;
+            if (m_state != eNone) {
+                ::ReleaseCapture();
+                m_state = eNone;
+                bHandled = true;
+            }
             break;
         }
         break;
