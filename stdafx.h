@@ -25,11 +25,14 @@ using std::wstringstream;
 using std::stringstream;
 using std::unique_ptr;
 
-#include <new> // 没这个 placement new 就不能编译
+#include <new> // for `placement new`
 #include <cassert>
 #include <atlstr.h>
 
 #include <GdiPlus.h>
+using Gdiplus::RectF;
+using Gdiplus::Color;
+
 #include <ShlObj.h>
 #include <vld.h>
 #include <atlconv.h>
@@ -41,13 +44,6 @@ using std::unique_ptr;
 #include <functional>
 
 #define SAFE_RELEASE(p) if (p) { p->Release(); p = NULL; }
-#define DEF_SMART_PTR(type) typedef std::shared_ptr<type> type##Ptr; typedef std::weak_ptr<type> type##Weak;
 
-#include "duktape.h"
-
-//#include <boost/signals2.hpp>
-//#include <boost/shared_ptr.hpp>
-//#include <boost/enable_shared_from_this.hpp>
-//
-//using boost::shared_ptr;
-//using boost::weak_ptr;
+#include "lua.h"
+#include "lauxlib.h"

@@ -9,12 +9,14 @@
 #include "ltk.h"
 #include "ApiBind.h"
 
-extern HINSTANCE g_hInstance;
-extern duk_context *g_duk_ctx;
-
 namespace ltk {
 
 const wchar_t * Window::ClsName = L"ltk_cls";
+static const long SYSBTN_WIDTH = 40;
+static const long SYSBTN_HEIGHT = 30;
+static const long CAPTION_HEIGHT = 25;
+static const long SYSICON_SIZE = 24;
+static const long WINDOW_BORDER = 6;
 
 Window::Window(void)
 {
@@ -25,12 +27,21 @@ Window::Window(void)
 	m_rectComposition.right = 5;
 	m_rectComposition.bottom = 20;
 
-    m_sprite = NULL;
+    m_sprite = new Sprite();
+    m_sprite->SetHostWnd(this);
+
+    m_btnClose = new Button();
+    m_btnClose->SetText(L"X");
+    m_btnClose->Clicked.Attach(std::bind(&Window::OnBtnCloseClicked, this));
+    m_sprite->AddChild(m_btnClose);
+    
 	m_spFocus = NULL;
 	m_spCapture = NULL;
 	m_spHover = NULL;
 
 	m_caretHeight = 20;
+
+    m_resizable = new ResizeHelper;
 }
 
 Window::~Window(void)
@@ -42,12 +53,19 @@ Window::~Window(void)
     m_spFocus = INVALID_POINTER(Sprite);
     m_spCapture = INVALID_POINTER(Sprite);
     m_spHover = INVALID_POINTER(Sprite);
-    m_target->Release();
+
+    if (m_target) {
+        m_target->Release();
+    }
     m_target = INVALID_POINTER(ID2D1HwndRenderTarget);
+
+    delete m_resizable;
+    m_resizable = INVALID_POINTER(ResizeHelper);
 }
 
-void Window::Create(Window *parent, Gdiplus::RectF rc, DWORD style, DWORD exStyle)
+void Window::Create(Window *parent, RectF rc, Mode mode)
 {
+    m_mode = mode;
     HWND hParent = NULL;
     if (!parent)
     {
@@ -57,13 +75,27 @@ void Window::Create(Window *parent, Gdiplus::RectF rc, DWORD style, DWORD exStyl
     {
         hParent = parent->m_hwnd;
     }
+    DWORD style = WS_VISIBLE;
+    
+    switch (m_mode)
+    {
+    case ltk::Window::eOverlaped:
+        style |= WS_OVERLAPPED;
+        break;
+    case ltk::Window::eBorderless:
+        style |= WS_POPUP;
+        break;
+    default:
+        break;
+    }
+    style |=  WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX;
 
-    ::CreateWindowEx(exStyle, ClsName, L"", style,
+    ::CreateWindowEx(0, ClsName, L"", style,
         (int)rc.X, (int)rc.Y, (int)rc.Width, (int)rc.Height,
-        hParent, NULL, g_hInstance, this);
+        hParent, NULL, HINST_THISCOMPONENT, this);
 }
 
-void Window::SetRect(Gdiplus::RectF rc)
+void Window::SetRect(RectF rc)
 {
     ::MoveWindow(m_hwnd, (int)rc.X, (int)rc.Y, (int)rc.Width, (int)rc.Height, TRUE);
 }
@@ -74,11 +106,11 @@ void Window::SetRect(Gdiplus::RectF rc)
 void Window::RegisterWndClass()
 {
 	WNDCLASS wc;
-	wc.style         = 0; // CS_DBLCLKS;
+	wc.style         = CS_VREDRAW | CS_HREDRAW | CS_DBLCLKS;
 	wc.lpfnWndProc   = WndProc;
 	wc.cbClsExtra    = 0;
 	wc.cbWndExtra    = 0;
-	wc.hInstance     = g_hInstance;
+	wc.hInstance     = HINST_THISCOMPONENT;
 	wc.hIcon         = NULL;
 	wc.hCursor       = LoadCursor(NULL, IDC_ARROW);
 	wc.hbrBackground = NULL;// (HBRUSH)(COLOR_WINDOW + 1); // TODO ¸Ä³ÉNULL ·ÀÖ¹ÏµÍ³È¥²Á³ý±³¾°(ÉÁË¸) Ë«»º³å »¹ÓÐclip children clip sibling
@@ -119,7 +151,7 @@ void Window::HandleMouseMessage(UINT message, WPARAM wparam, LPARAM lparam)
 
 	if (m_spCapture)
 	{
-		Gdiplus::RectF rc = m_spCapture->GetAbsRect();
+		RectF rc = m_spCapture->GetAbsRect();
 		event.x -= rc.X;
 		event.y -= rc.Y;
 		m_spCapture->HandleCapturedMouseEvent(&event);
@@ -135,7 +167,7 @@ void Window::HandleMouseMessage(UINT message, WPARAM wparam, LPARAM lparam)
 				iter != m_setTrackMouseLeave.end(); ++iter)
 			{
 				Sprite *sp = *iter;
-				Gdiplus::RectF rc = sp->GetAbsRect();
+				RectF rc = sp->GetAbsRect();
 				if (!rc.Contains(event.x, event.y))
 				{
 					MouseEvent e2 = event;
@@ -155,10 +187,33 @@ void Window::HandleMouseMessage(UINT message, WPARAM wparam, LPARAM lparam)
 	}
 }
 
+LRESULT Window::HandleNcHitTest(float x, float y)
+{
+    if (x < 0 || y < 0) {
+        return HTNOWHERE;
+    }
+    RECT rc;
+    ::GetClientRect(m_hwnd, &rc);
+    float cx = (float)(rc.right - rc.left);
+    float cy = (float)(rc.bottom - rc.top);
+
+    if (x < WINDOW_BORDER) {
+        if (y < WINDOW_BORDER) {
+            return HTTOPLEFT;
+        }
+    }
+
+    if (x > SYSICON_SIZE && x < cx - SYSBTN_WIDTH && y < SYSBTN_HEIGHT) {
+        return HTCAPTION;
+    }
+
+    return HTCLIENT;
+}
+
 LRESULT CALLBACK Window::WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
 {
 	Window *thiz;
-    duk_context *ctx = g_duk_ctx;
+    lua_State *L = GetGlobalLuaState();
 
 	if (WM_NCCREATE == message)
 	{
@@ -178,6 +233,11 @@ LRESULT CALLBACK Window::WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM 
 	assert(NULL != thiz);
 
     bool bHandled = false;
+
+    LRESULT ret = thiz->m_resizable->HandleMessage(hwnd, message, wparam, lparam, bHandled);
+    if (bHandled) {
+        return ret;
+    }
 
 	switch(message)
 	{
@@ -217,7 +277,7 @@ LRESULT CALLBACK Window::WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM 
             {
                 thiz->m_target->Resize(D2D1::SizeU(cx, cy));
             }
-            thiz->OnSize((float)cx, (float)cy, wparam);
+            thiz->OnSize((float)cx, (float)cy, (DWORD)wparam);
         } while (0);
 		return 0;
 	case WM_KEYDOWN:
@@ -276,7 +336,7 @@ LRESULT CALLBACK Window::WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM 
         return 0;
 	case WM_DESTROY:
         thiz->OnDestroy();
-        thiz->DispatchEvent(ctx, "OnDestroy", 0);
+        thiz->CallEventHandler(L, "OnDestroy", 0, 0);
 		return 0;
 	}
     return ::DefWindowProc(hwnd, message, wparam, lparam);
@@ -311,11 +371,11 @@ void Window::OnPaint(HWND hwnd )
     m_target->BeginDraw();
     m_target->SetTransform(D2D1::Matrix3x2F::Identity());
     TranslateTransform(m_target, 0.5f, 0.5f);
-    m_target->Clear(D2D1::ColorF(D2D1::ColorF::White));
+    m_target->Clear(D2D1::ColorF(D2D1::ColorF(0.1f, 0.1f, 0.2f)));
 
     if (m_sprite)
     {
-        Gdiplus::RectF rc = m_sprite->GetRect();
+        RectF rc = m_sprite->GetRect();
         TranslateTransform(m_target, rc.X, rc.Y);
         m_sprite->HandlePaint(m_target);
         TranslateTransform(m_target, -rc.X, -rc.Y);
@@ -328,61 +388,6 @@ void Window::OnPaint(HWND hwnd )
         SAFE_RELEASE(m_target);
     }
     EndPaint(hwnd, &ps);
-/*
-	int x = ps.rcPaint.left;
-	int y = ps.rcPaint.top;
-	int width = ps.rcPaint.right - ps.rcPaint.left;
-	int height = ps.rcPaint.bottom - ps.rcPaint.top;
-	Gdiplus::RectF rcDirty((float)x, (float) y, (float)width, (float)height);
-
-	// http://www.codeproject.com/Tips/66909/Rendering-fast-with-GDI-What-to-do-and-what-not-to
-	Gdiplus::Graphics gScreen(hwnd, FALSE);
-	SetGdipMode(gScreen);
-	Gdiplus::Bitmap bmp(width, height, PixelFormat32bppPARGB);
-	Gdiplus::Graphics gDoubleBuffer(&bmp);
-	SetGdipMode(gDoubleBuffer);
-	//Gdiplus::Graphics gDoubleBuffer(dcMem);
-    gDoubleBuffer.TranslateTransform(0.5f, 0.5f);
-	gDoubleBuffer.TranslateTransform(-(float)x, -(float)y);
-	if (m_sprite)
-	{
-		Gdiplus::RectF rc = m_sprite->GetRect();
-		gDoubleBuffer.TranslateTransform(rc.X, rc.Y);
-		m_sprite->HandlePaint(gDoubleBuffer, rcDirty);
-		gDoubleBuffer.TranslateTransform(-rc.X, -rc.Y);
-	}
-	do 
-	{
-		// ÏÔÊ¾FPS
-		/ *
-		gDoubleBuffer.TranslateTransform(rcDirty.X, rcDirty.Y);
-		CStringW speed;
-		speed.Format(L"%dms", ::GetTickCount() - startTime);
-		Gdiplus::Font font(L"Î¢ÈíÑÅºÚ", 12.0f, Gdiplus::FontStyleRegular, Gdiplus::UnitPixel);
-		Gdiplus::StringFormat format;
-		format.SetFormatFlags(Gdiplus::StringFormatFlagsMeasureTrailingSpaces | Gdiplus::StringFormatFlagsNoWrap | Gdiplus::StringFormatFlagsBypassGDI);
-		Gdiplus::SolidBrush brush(Gdiplus::Color(255,0,255));
-		Gdiplus::PointF pt(0.0f, 0.0f);
-		gDoubleBuffer.DrawString(speed, speed.GetLength(), &font, pt, &format, &brush);
-		* /
-	} while (0);
-	do 
-	{
-		// ²âÊÔµÄÊ±ºòÏÔÊ¾Ôà¾ØÐÎ
-        / *
-		gDoubleBuffer.ResetTransform();
-        Gdiplus::Pen pen(Gdiplus::Color(rand() % 256, rand() % 256, rand() % 256), 1.0f);
-		gDoubleBuffer.DrawRectangle(&pen, 1, 1, width - 1, height - 1);
-        * /
-        / *
-		const int size = 10;
-		gDoubleBuffer.DrawLine(&pen, width / 2 - size, height / 2, width / 2 + size, height / 2);
-		gDoubleBuffer.DrawLine(&pen, width / 2, height / 2 - size, width / 2, height / 2 + size);
-		* /
-	} while (0);
-
-	gScreen.DrawImage(&bmp,x, y);
-*/
 }
 
 HWND Window::Handle()
@@ -566,59 +571,218 @@ void Window::EndAnimation(Sprite *sp)
     }
 }
 
-#ifndef LTK_DISABLE_DUKTAPE
-
-duk_ret_t Window::DukConstructor(duk_context *ctx)
+void Window::OnBtnCloseClicked()
 {
-    if (!duk_is_constructor_call(ctx)) {
-        return DUK_RET_TYPE_ERROR;
-    }
-    duk_push_this(ctx);
+    //::CloseWindow(m_hwnd); // MSDN: Minimizes (but does not destroy) the specified window. WTF??
+    ::SendMessage(m_hwnd, WM_CLOSE, 0, 0);
+}
+
+#ifndef LTK_DISABLE_LUA
+
+class DtorTest
+{
+public:
+    ~DtorTest() { LOG("..."); }
+};
+
+int Window::LuaConstructor(lua_State *L)
+{
     Window *wnd = new Window();
-    duk_push_pointer(ctx, wnd);
-    duk_put_prop_string(ctx, -2, DukThisSymbol);
+    wnd->PushToLua(L, "Window");
+    wnd->Unref();
+    return 1;
+}
+
+int Window::Create(lua_State *L)
+{
+    DtorTest test;
+    auto thiz = CheckLuaObject<Window>(L, 1);
+    auto rc = LuaCheckRectF(L, 2);
+    auto mode = luaL_checkstring(L, 3);
+    auto m = eOverlaped;
+
+    if (strcmp(mode, "borderless") == 0) {
+        m = eBorderless;
+    }
+    else if (strcmp(mode, "overlapped") == 0){
+        m = eOverlaped;
+    }
+    else {
+        luaL_error(L, "InvalideArgs #3 mode: borderless|overlapped");
+    }
+
+    thiz->Create(nullptr, rc, m);
     return 0;
 }
 
-duk_ret_t Window::Create(duk_context *ctx)
+int Window::AttachSprite(lua_State *L)
 {
-    auto thiz = DukCheckThis<Window>(ctx); if (!thiz) return DUK_RET_TYPE_ERROR;
-    Gdiplus::RectF rc(0, 0, 100, 100);
-    DWORD style = WS_OVERLAPPEDWINDOW;
-    if (duk_is_object(ctx, 0))
-    {
-        duk_get_prop_string(ctx, 0, "rect");
-        if (duk_is_object(ctx, -1))
-        {
-            if (!DukGetRect(ctx, -1, rc)) {
-                rc = Gdiplus::RectF(0, 0, 100, 100);
+
+    return 0;
+}
+
+bool Window::OnSize(float cx, float cy, DWORD flag)
+{
+    m_btnClose->SetRect(RectF((float)(cx - SYSBTN_WIDTH - 1), 0.0f, (float)SYSBTN_WIDTH, (float)SYSBTN_HEIGHT));
+    return false;
+}
+
+#endif
+
+static void SetWindowRect(HWND hwnd, RECT &rc)
+{
+    ::MoveWindow(hwnd, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top, TRUE);
+}
+
+LRESULT ResizeHelper::HandleMessage(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam, bool &bHandled)
+{
+    // all coords here are in screen space.
+    RECT rc;
+    POINT pt;
+    BOOL ret;
+    State st;
+
+    switch (message) {
+    case WM_MOUSEMOVE:
+    case WM_LBUTTONDOWN:
+    case WM_LBUTTONUP:
+        ret = ::GetCursorPos(&pt);
+        assert(ret);
+        ::GetWindowRect(hwnd, &rc);
+
+        switch(message) {
+        case WM_LBUTTONDOWN:
+            m_oldPoint = pt;
+            m_oldRect = rc;
+
+            m_state = StateFromPoint(pt, rc);
+            if (m_state != eNone) {
+                bHandled = true;
+                ::SetCapture(hwnd);
             }
-        }
-        duk_pop(ctx); // rect
+            break;
+        case WM_MOUSEMOVE:
+            st = StateFromPoint(pt, rc);
+            switch (st) {
+            case eLeftTop:
+                ::SetCursor(::LoadCursor(NULL, MAKEINTRESOURCE(IDC_SIZENWSE)));
+                break;
+            case eLeft:
+                ::SetCursor(::LoadCursor(NULL, MAKEINTRESOURCE(IDC_SIZEWE)));
+                break;
+            case eLeftBottom:
+                ::SetCursor(::LoadCursor(NULL, MAKEINTRESOURCE(IDC_SIZENESW)));
+                break;
+            case eRightTop:
+                ::SetCursor(::LoadCursor(NULL, MAKEINTRESOURCE(IDC_SIZENESW)));
+                break;
+            case eRight:
+                ::SetCursor(::LoadCursor(NULL, MAKEINTRESOURCE(IDC_SIZEWE)));
+                break;
+            case eRightBottom:
+                ::SetCursor(::LoadCursor(NULL, MAKEINTRESOURCE(IDC_SIZENWSE)));
+                break;
+            case eTop:
+                ::SetCursor(::LoadCursor(NULL, MAKEINTRESOURCE(IDC_SIZENS)));
+                break;
+            case eBottom:
+                ::SetCursor(::LoadCursor(NULL, MAKEINTRESOURCE(IDC_SIZENS)));
+                break;
+            }
+            if (st != eNone) {
+                bHandled = true;
+            }
+            switch (m_state) {
+            case eMove:
+                ::SetWindowPos(hwnd, NULL, 
+                    pt.x - m_oldPoint.x + m_oldRect.left,
+                    pt.y - m_oldPoint.y + m_oldRect.top,
+                    0, 0, SWP_NOSIZE);
+                bHandled = true;
+                return 0;
+            case eLeftTop:
+                rc.left = pt.x - m_oldPoint.x + m_oldRect.left;
+                rc.top = pt.y - m_oldPoint.y + m_oldRect.top;
+                break;
+            case eLeft:
+                rc.left = pt.x - m_oldPoint.x + m_oldRect.left;
+                break;
+            case eLeftBottom:
+                rc.left = pt.x - m_oldPoint.x + m_oldRect.left;
+                rc.bottom = pt.y - m_oldPoint.y + m_oldRect.bottom;
+                break;
 
-        duk_get_prop_string(ctx, 0, "style");
-        if (duk_is_number(ctx, -1))
-        {
-            style = (DWORD) duk_get_number(ctx, -1);
+            case eRightTop:
+                rc.right = pt.x - m_oldPoint.x + m_oldRect.right;
+                rc.top = pt.y - m_oldPoint.y + m_oldRect.top;
+                break;
+            case eRight:
+                rc.right = pt.x - m_oldPoint.x + m_oldRect.right;
+                break;
+            case eRightBottom:
+                rc.right = pt.x - m_oldPoint.x + m_oldRect.right;
+                rc.bottom = pt.y - m_oldPoint.y + m_oldRect.bottom;
+                break;
+            case eTop:
+                rc.top = pt.y - m_oldPoint.y + m_oldRect.top;
+                break;
+            case eBottom:
+                rc.bottom = pt.y - m_oldPoint.y + m_oldRect.bottom;
+                break;
+            }
+            if (m_state != eNone) {
+                SetWindowRect(hwnd, rc);
+                bHandled = true;
+                return 0;
+            }
+            break;
+        case WM_LBUTTONUP:
+            if (m_state != eNone) {
+                ::ReleaseCapture();
+                bHandled = true;
+                m_state = eNone;
+            }
+            break;
         }
-        duk_pop(ctx); // style
+        break;
     }
-    thiz->Create(nullptr, rc, style, 0);
     return 0;
 }
 
-duk_ret_t Window::Show(duk_context *ctx)
+ResizeHelper::State ResizeHelper::StateFromPoint(POINT pt, const RECT &rc)
 {
-    auto thiz = DukCheckThis<Window>(ctx); if (!thiz) return DUK_RET_TYPE_ERROR;
-    int cmd = SW_SHOW;
-    if (duk_is_number(ctx, 0))
-    {
-        cmd = (int)duk_get_number(ctx, 0);
+    if (pt.x < rc.left + WINDOW_BORDER) {
+        if (pt.y < rc.top + WINDOW_BORDER) {
+            return eLeftTop;
+        } 
+        else if (pt.y > rc.bottom - WINDOW_BORDER) {
+            return eLeftBottom;
+        }
+        else {
+            return eLeft;
+        }
     }
-    ::ShowWindow(thiz->Handle(), cmd);
-    return 0;
+    else if (pt.x > rc.right - WINDOW_BORDER) {
+        if (pt.y < rc.top + WINDOW_BORDER) {
+            return eRightTop;
+        } 
+        else if (pt.y > rc.bottom - WINDOW_BORDER) {
+            return eRightBottom;
+        } 
+        else {
+            return eRight;
+        }
+    }
+    else if (pt.y < rc.top + WINDOW_BORDER) {
+        return eTop;
+    }
+    else if (pt.y > rc.bottom - WINDOW_BORDER) {
+        return eBottom;
+    }
+    else if (pt.x < rc.right - SYSBTN_WIDTH - 5 && pt.y < rc.top + CAPTION_HEIGHT) {
+        return eMove;
+    }
+    return eNone;
 }
-
-#endif // LTK_DISABLE_DUKTAPE
 
 } // namespace ltk

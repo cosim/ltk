@@ -7,8 +7,15 @@
 
 CStringW Utf8ToUtf16(LPCSTR strA, int len = -1);
 CStringA Utf16ToUtf8(LPCTSTR strW, int len);
+CString LuaCheckWString(lua_State *L, int index);
+void LuaPushWString(lua_State *L, LPCTSTR psz, int len  = -1);
 
-static void DebugOutputLine(CString line);
+bool LuaPCall(lua_State *L, int nargs, int nresults);
+void LuaShowStack(lua_State *L);
+Color LuaCheckColor(lua_State *L, int index);
+RectF LuaCheckRectF(lua_State *L, int index);
+void RectF2LuaRect(lua_State *L, const RectF &rc);
+
 
 #define LOG(msg) do\
 {\
@@ -32,4 +39,7 @@ static void DebugOutputLine(CString line);
 #ifndef INVALID_POINTER
 #define INVALID_POINTER(type) reinterpret_cast<type *>(0xDEADBEEF)
 #endif
+
+EXTERN_C IMAGE_DOS_HEADER __ImageBase;
+#define HINST_THISCOMPONENT ((HINSTANCE)&__ImageBase)
 

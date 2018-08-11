@@ -9,3 +9,4 @@ void UTF8FromUTF16(const wchar_t *uptr, unsigned int tlen, char *putf, unsigned 
 unsigned int UTF8CharLength(unsigned char ch);
 unsigned int UTF16Length(const char *s, unsigned int len);
 unsigned int UTF16FromUTF8(const char *s, unsigned int len, wchar_t *tbuf, unsigned int tlen);
+int GetInvalidUtf8SymbolPosition(const char *input, char &ch);

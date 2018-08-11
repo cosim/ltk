@@ -4,25 +4,34 @@
 #pragma once
 #include "stdafx.h"
 #include "ImeInput.h"
-#include "DukObject.h"
+#include "LuaObject.h"
+#include "Button.h"
 
 namespace ltk {
 
 class Sprite;
+class Button;
+class ResizeHelper;
 
-class Window : public DukObject
+class Window : public LuaObject
 {
 protected:
     virtual ~Window(void);
 
 public:
-    RTTI_DECLARATIONS(Window, DukObject)
+    RTTI_DECLARATIONS(Window, LuaObject)
 
     Window(void);
 
-    void SetRect(Gdiplus::RectF rc);
+    void SetRect(RectF rc);
 
-    void Create(Window *parent, Gdiplus::RectF rc, DWORD style, DWORD exStyle);
+    enum Mode
+    {
+        eOverlaped,
+        eBorderless
+    };
+
+    void Create(Window *parent, RectF rc, Mode mode);
 
 	static void RegisterWndClass();
 
@@ -57,31 +66,33 @@ public:
     void BeginAnimation(Sprite *sp);
     void EndAnimation(Sprite *sp);
 
-    virtual bool OnSize(float cx, float cy, DWORD flag) { return false; }
+    virtual bool OnSize(float cx, float cy, DWORD flag);
     virtual bool OnClose(bool &proceed) { proceed = true; return true; }
     virtual bool OnDestroy() { return false; }
 
-#ifndef LTK_DISABLE_DUKTAPE
-    static duk_ret_t DukConstructor(duk_context *ctx);
-    static duk_ret_t Create(duk_context *ctx);
-    static duk_ret_t Show(duk_context *ctx);
+    void OnBtnCloseClicked();
 
-    BEGIN_DUK_METHOD_MAP(Window)
-        DUK_METHOD_ENTRY(Create, 1)
-        DUK_METHOD_ENTRY(Show, 1)
-        DUK_CHAIN_METHOD_MAP(DukObject)
-    END_DUK_METHOD_MAP()
+#ifndef LTK_DISABLE_LUA
+    static int LuaConstructor(lua_State *L);
+    static int Create(lua_State *L);
+    static int AttachSprite(lua_State *L);
 
-#endif // LTK_DISABLE_DUKTAPE
+    BEGIN_LUA_METHOD_MAP(Window)
+        LUA_METHOD_ENTRY(Create)
+        LUA_METHOD_ENTRY(AttachSprite)
+    END_LUA_METHOD_MAP()
+#endif
 
 private:
 	void HandleMouseMessage(UINT message, WPARAM wparam, LPARAM lparam);
-	LRESULT OnImeEvent(UINT message, WPARAM wparam, LPARAM lparam);
+    LRESULT HandleNcHitTest(float x, float y);
+    LRESULT OnImeEvent(UINT message, WPARAM wparam, LPARAM lparam);
     enum { TIMER_ANIMATION = 100 };
     static const wchar_t * ClsName;
 
 private:
 	HWND m_hwnd;
+    Mode m_mode = eOverlaped;
 	ImeInput m_ime;
 	RECT m_rectComposition;
 	int m_caretHeight;
@@ -92,6 +103,33 @@ private:
 	std::unordered_set<Sprite *> m_setTrackMouseLeave;
     std::unordered_set<Sprite *> m_setAnimation;
     ID2D1HwndRenderTarget *m_target = nullptr;
+    Button *m_btnClose = nullptr;
+    ResizeHelper *m_resizable = nullptr;
+};
+
+class ResizeHelper
+{
+public:
+    LRESULT HandleMessage(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam, bool &bHandled);
+
+private:
+    POINT m_oldPoint;
+    RECT m_oldRect;
+
+    enum State {
+        eNone,
+        eMove,
+        eLeftTop,
+        eLeft,
+        eLeftBottom,
+        eRightTop,
+        eRight,
+        eRightBottom,
+        eTop,
+        eBottom
+    };
+    State StateFromPoint(POINT pt, const RECT &rc);
+    State m_state = eNone;
 };
 
 } // namespace ltk

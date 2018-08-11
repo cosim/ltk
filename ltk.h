@@ -32,10 +32,13 @@
 #endif
 
 namespace ltk {
+    void LtkInitialize();
+    void LtkUninitialize();
     ID2D1Factory *GetD2DFactory();
     IWICImagingFactory *GetWICFactory();
     IDWriteFactory *GetDWriteFactory();
     void TranslateTransform(ID2D1RenderTarget *target, float dx, float dy);
-    D2D1_RECT_F GdipRectF2D2D1RectF(const Gdiplus::RectF &rc);
+    D2D1_RECT_F GdipRectF2D2D1RectF(const RectF &rc);
 	HRESULT LoadBitmapFromFile(ID2D1RenderTarget * target, LPCWSTR path, ID2D1Bitmap ** bitmap);
+    lua_State *GetGlobalLuaState();
 }
