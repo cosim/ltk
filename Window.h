@@ -11,6 +11,7 @@ namespace ltk {
 
 class Sprite;
 class Button;
+class ResizeHelper;
 
 class Window : public LuaObject
 {
@@ -103,12 +104,26 @@ private:
     std::unordered_set<Sprite *> m_setAnimation;
     ID2D1HwndRenderTarget *m_target = nullptr;
     Button *m_btnClose = nullptr;
+    ResizeHelper *m_resizable = nullptr;
 };
 
 class ResizeHelper
 {
 public:
-    LRESULT HandleMessage(UINT message, WPARAM wparam, LPARAM lparam, bool &bHandled);
+    LRESULT HandleMessage(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam, bool &bHandled);
+private:
+    float m_originX = 0.0f;
+    float m_originY = 0.0f;
+
+    enum State {
+        eNone,
+        eMove,
+        eLeftTop,
+        eLeft,
+        eRight,
+        eRightTop
+    };
+    State m_state = eNone;
 };
 
 } // namespace ltk

@@ -14,6 +14,7 @@ namespace ltk {
 const wchar_t * Window::ClsName = L"ltk_cls";
 static const float SYSBTN_WIDTH = 40;
 static const float SYSBTN_HEIGHT = 30;
+static const float CAPTION_HEIGHT = 25;
 static const float SYSICON_SIZE = 24;
 static const float WINDOW_BORDER = 4;
 
@@ -39,6 +40,8 @@ Window::Window(void)
 	m_spHover = NULL;
 
 	m_caretHeight = 20;
+
+    m_resizable = new ResizeHelper;
 }
 
 Window::~Window(void)
@@ -55,6 +58,9 @@ Window::~Window(void)
         m_target->Release();
     }
     m_target = INVALID_POINTER(ID2D1HwndRenderTarget);
+
+    delete m_resizable;
+    m_resizable = INVALID_POINTER(ResizeHelper);
 }
 
 void Window::Create(Window *parent, RectF rc, Mode mode)
@@ -228,6 +234,11 @@ LRESULT CALLBACK Window::WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM 
 
     bool bHandled = false;
 
+    LRESULT ret = thiz->m_resizable->HandleMessage(hwnd, message, wparam, lparam, bHandled);
+    if (bHandled) {
+        return ret;
+    }
+
 	switch(message)
 	{
 	case WM_PAINT:
@@ -240,44 +251,6 @@ LRESULT CALLBACK Window::WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM 
 		::InvalidateRect(hwnd, NULL, TRUE);
 		//LOG("WM_SYNCPAINT");
 		break;
-    case WM_NCHITTEST: 
-        do 
-        {
-            POINTS pts = MAKEPOINTS(lparam);
-            POINT pt = {pts.x, pts.y};
-            ::ScreenToClient(hwnd, &pt);
-            return thiz->HandleNcHitTest((float)pt.x, (float)pt.y);
-        } while (0);
-        break;
-
-    case WM_NCCALCSIZE:
-        /*
-        if (thiz->m_mode == eBorderless) {
-            if (wparam) {
-                LPNCCALCSIZE_PARAMS pncc = (LPNCCALCSIZE_PARAMS)lparam;
-                RECT rc;
-                ::GetWindowRect(hwnd, &rc);
-                auto ret = DefWindowProc(hwnd, message, wparam, lparam);
-                LOG("WM_NCCALCSIZE rect:" << pncc->rgrc[0].left << " " << pncc->rgrc[0].top << " "
-                    << pncc->rgrc[0].right << " " << pncc->rgrc[0].bottom);
-                pncc->rgrc[0].top = 0; // So we draw on top of title bar
-                pncc->rgrc[0].left = 0;
-                pncc->rgrc[0].right = 800;
-                pncc->rgrc[0].bottom = 600;
-                
-                return ret;
-            }
-        }
-        */
-        break;
-    case WM_NCPAINT:
-/*
-        if (thiz->m_mode == eBorderless) {
-            LOG("WM_NCPAINT");
-            return 0;
-        }
-*/
-        break;
 	case WM_MOUSEMOVE:
 	case WM_LBUTTONDOWN:
 	case WM_LBUTTONUP:
@@ -655,5 +628,85 @@ bool Window::OnSize(float cx, float cy, DWORD flag)
 }
 
 #endif
+
+static void SetWindowRect(HWND hwnd, RECT &rc)
+{
+    ::MoveWindow(hwnd, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top, TRUE);
+}
+
+LRESULT ResizeHelper::HandleMessage(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam, bool &bHandled)
+{
+    float x, y, cx, cy;
+    RECT rc;
+
+    switch (message) {
+    case WM_MOUSEMOVE:
+    case WM_LBUTTONDOWN:
+    case WM_LBUTTONUP:
+        x = (float)(short)LOWORD(lparam);
+        y = (float)(short)HIWORD(lparam);
+        ::GetClientRect(hwnd, &rc);
+        cx = (float)(rc.right - rc.left);
+        cy = (float)(rc.bottom - rc.top);
+
+        switch(message) {
+        case WM_LBUTTONDOWN:
+            m_originX = x;
+            m_originY = y;
+            ::SetCapture(hwnd);
+
+            if (x < WINDOW_BORDER) {
+                if (y < WINDOW_BORDER) {
+                    m_state = eLeftTop;
+                }
+                else {
+                    m_state = eLeft;
+                }
+            }
+            else if (x < cx - SYSBTN_WIDTH - 5 && y < CAPTION_HEIGHT) {
+                m_state = eMove;
+            }
+            break;
+        case WM_MOUSEMOVE:
+            if (x < WINDOW_BORDER) {
+                if (y < WINDOW_BORDER) {
+                    ::SetCursor(::LoadCursor(NULL, MAKEINTRESOURCE(IDC_SIZENWSE)));
+                    bHandled = true;
+                }
+                else {
+                    auto cursor = ::LoadCursor(NULL, MAKEINTRESOURCE(IDC_SIZEWE));
+                    ::SetCursor(cursor);
+                    bHandled = true;
+                }
+            }
+            ::GetWindowRect(hwnd, &rc);
+            switch (m_state) {
+            case eMove:
+                ::SetWindowPos(hwnd, NULL, 
+                    (int)(rc.left + x - m_originX), 
+                    (int)(rc.top + y - m_originY),
+                    0, 0, SWP_NOSIZE);
+                bHandled = true;
+                return 0;
+            case eLeft:
+                rc.left += (LONG)(x - m_originX);
+                SetWindowRect(hwnd, rc);
+                return 0;
+            case eLeftTop:
+                rc.left += (LONG)(x - m_originX);
+                rc.top += (LONG)(y - m_originY);
+                SetWindowRect(hwnd, rc);
+                return 0;
+            }
+            break;
+        case WM_LBUTTONUP:
+            ::ReleaseCapture();
+            m_state = eNone;
+            break;
+        }
+        break;
+    }
+    return 0;
+}
 
 } // namespace ltk
