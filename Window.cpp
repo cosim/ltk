@@ -12,6 +12,10 @@
 namespace ltk {
 
 const wchar_t * Window::ClsName = L"ltk_cls";
+static const float SYSBTN_WIDTH = 40;
+static const float SYSBTN_HEIGHT = 30;
+static const float SYSICON_SIZE = 24;
+static const float WINDOW_BORDER = 4;
 
 Window::Window(void)
 {
@@ -55,6 +59,7 @@ Window::~Window(void)
 
 void Window::Create(Window *parent, RectF rc, Mode mode)
 {
+    m_mode = mode;
     HWND hParent = NULL;
     if (!parent)
     {
@@ -66,7 +71,7 @@ void Window::Create(Window *parent, RectF rc, Mode mode)
     }
     DWORD style = WS_VISIBLE;
     
-    switch (mode)
+    switch (m_mode)
     {
     case ltk::Window::eOverlaped:
         style |= WS_OVERLAPPED;
@@ -77,7 +82,7 @@ void Window::Create(Window *parent, RectF rc, Mode mode)
     default:
         break;
     }
-    style |= WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX;
+    style |=  WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX;
 
     ::CreateWindowEx(0, ClsName, L"", style,
         (int)rc.X, (int)rc.Y, (int)rc.Width, (int)rc.Height,
@@ -95,7 +100,7 @@ void Window::SetRect(RectF rc)
 void Window::RegisterWndClass()
 {
 	WNDCLASS wc;
-	wc.style         = 0; // CS_DBLCLKS;
+	wc.style         = CS_VREDRAW | CS_HREDRAW | CS_DBLCLKS;
 	wc.lpfnWndProc   = WndProc;
 	wc.cbClsExtra    = 0;
 	wc.cbWndExtra    = 0;
@@ -176,6 +181,29 @@ void Window::HandleMouseMessage(UINT message, WPARAM wparam, LPARAM lparam)
 	}
 }
 
+LRESULT Window::HandleNcHitTest(float x, float y)
+{
+    if (x < 0 || y < 0) {
+        return HTNOWHERE;
+    }
+    RECT rc;
+    ::GetClientRect(m_hwnd, &rc);
+    float cx = (float)(rc.right - rc.left);
+    float cy = (float)(rc.bottom - rc.top);
+
+    if (x < WINDOW_BORDER) {
+        if (y < WINDOW_BORDER) {
+            return HTTOPLEFT;
+        }
+    }
+
+    if (x > SYSICON_SIZE && x < cx - SYSBTN_WIDTH && y < SYSBTN_HEIGHT) {
+        return HTCAPTION;
+    }
+
+    return HTCLIENT;
+}
+
 LRESULT CALLBACK Window::WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
 {
 	Window *thiz;
@@ -212,6 +240,44 @@ LRESULT CALLBACK Window::WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM 
 		::InvalidateRect(hwnd, NULL, TRUE);
 		//LOG("WM_SYNCPAINT");
 		break;
+    case WM_NCHITTEST: 
+        do 
+        {
+            POINTS pts = MAKEPOINTS(lparam);
+            POINT pt = {pts.x, pts.y};
+            ::ScreenToClient(hwnd, &pt);
+            return thiz->HandleNcHitTest((float)pt.x, (float)pt.y);
+        } while (0);
+        break;
+
+    case WM_NCCALCSIZE:
+        /*
+        if (thiz->m_mode == eBorderless) {
+            if (wparam) {
+                LPNCCALCSIZE_PARAMS pncc = (LPNCCALCSIZE_PARAMS)lparam;
+                RECT rc;
+                ::GetWindowRect(hwnd, &rc);
+                auto ret = DefWindowProc(hwnd, message, wparam, lparam);
+                LOG("WM_NCCALCSIZE rect:" << pncc->rgrc[0].left << " " << pncc->rgrc[0].top << " "
+                    << pncc->rgrc[0].right << " " << pncc->rgrc[0].bottom);
+                pncc->rgrc[0].top = 0; // So we draw on top of title bar
+                pncc->rgrc[0].left = 0;
+                pncc->rgrc[0].right = 800;
+                pncc->rgrc[0].bottom = 600;
+                
+                return ret;
+            }
+        }
+        */
+        break;
+    case WM_NCPAINT:
+/*
+        if (thiz->m_mode == eBorderless) {
+            LOG("WM_NCPAINT");
+            return 0;
+        }
+*/
+        break;
 	case WM_MOUSEMOVE:
 	case WM_LBUTTONDOWN:
 	case WM_LBUTTONUP:
@@ -540,6 +606,12 @@ void Window::OnBtnCloseClicked()
 
 #ifndef LTK_DISABLE_LUA
 
+class DtorTest
+{
+public:
+    ~DtorTest() { LOG("..."); }
+};
+
 int Window::LuaConstructor(lua_State *L)
 {
     Window *wnd = new Window();
@@ -547,12 +619,6 @@ int Window::LuaConstructor(lua_State *L)
     wnd->Unref();
     return 1;
 }
-
-class DtorTest
-{
-public:
-    ~DtorTest() { LOG("..."); }
-};
 
 int Window::Create(lua_State *L)
 {
@@ -584,8 +650,6 @@ int Window::AttachSprite(lua_State *L)
 
 bool Window::OnSize(float cx, float cy, DWORD flag)
 {
-    const float SYSBTN_WIDTH = 40;
-    const float SYSBTN_HEIGHT = 30;
     m_btnClose->SetRect(RectF(cx - SYSBTN_WIDTH - 1, 0, SYSBTN_WIDTH, SYSBTN_HEIGHT));
     return false;
 }
