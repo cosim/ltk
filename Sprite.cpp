@@ -194,6 +194,7 @@ void Sprite::AddChild( Sprite *sp )
 	sp->m_parent = this;
 }
 
+// TODO refactor this method
 void Sprite::HandleMouseEvent( MouseEvent *ev )
 {
 	switch(ev->message)

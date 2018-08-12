@@ -85,7 +85,7 @@ public:
 
 private:
 	void HandleMouseMessage(UINT message, WPARAM wparam, LPARAM lparam);
-    LRESULT HandleNcHitTest(float x, float y);
+    void HandleMouseLeave();
     LRESULT OnImeEvent(UINT message, WPARAM wparam, LPARAM lparam);
     enum { TIMER_ANIMATION = 100 };
     static const wchar_t * ClsName;

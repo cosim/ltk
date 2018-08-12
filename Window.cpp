@@ -162,6 +162,7 @@ void Window::HandleMouseMessage(UINT message, WPARAM wparam, LPARAM lparam)
 		//{
 			m_sprite->DispatchMouseEvent(&event);
 			
+            // TODO copy to vector first (pre-allocate)
 			std::vector<Sprite *> defer_remove;
 			for (std::unordered_set<Sprite *>::iterator iter = m_setTrackMouseLeave.begin();
 				iter != m_setTrackMouseLeave.end(); ++iter)
@@ -187,27 +188,22 @@ void Window::HandleMouseMessage(UINT message, WPARAM wparam, LPARAM lparam)
 	}
 }
 
-LRESULT Window::HandleNcHitTest(float x, float y)
+void Window::HandleMouseLeave()
 {
-    if (x < 0 || y < 0) {
-        return HTNOWHERE;
+    for (auto iter = m_setTrackMouseLeave.begin(); iter != m_setTrackMouseLeave.end(); ++iter)
+    {
+        Sprite *sp = *iter;
+        MouseEvent e2;
+        e2.id = eMouseLeave;
+        e2.delta = 0;
+        e2.flag = 0;
+        e2.x = 0;
+        e2.y = 0;
+        e2.message = WM_MOUSELEAVE;
+        sp->HandleMouseEvent(&e2);
+        // Fire the event and remove sp from the set;
     }
-    RECT rc;
-    ::GetClientRect(m_hwnd, &rc);
-    float cx = (float)(rc.right - rc.left);
-    float cy = (float)(rc.bottom - rc.top);
-
-    if (x < WINDOW_BORDER) {
-        if (y < WINDOW_BORDER) {
-            return HTTOPLEFT;
-        }
-    }
-
-    if (x > SYSICON_SIZE && x < cx - SYSBTN_WIDTH && y < SYSBTN_HEIGHT) {
-        return HTCAPTION;
-    }
-
-    return HTCLIENT;
+    m_setTrackMouseLeave.clear();
 }
 
 LRESULT CALLBACK Window::WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
@@ -280,6 +276,9 @@ LRESULT CALLBACK Window::WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM 
             thiz->OnSize((float)cx, (float)cy, (DWORD)wparam);
         } while (0);
 		return 0;
+    case WM_MOUSELEAVE:
+        thiz->HandleMouseLeave();
+        break;
 	case WM_KEYDOWN:
 	case WM_KEYUP:
 	case WM_CHAR:
@@ -540,7 +539,13 @@ void Window::TrackMouseLeave( Sprite *sp )
 	{
 		m_setTrackMouseLeave.insert(sp);
 	}
-	// TODO Track for the HWND
+	// Track for the HWND
+    TRACKMOUSEEVENT tme;
+    tme.cbSize = sizeof(tme);
+    tme.hwndTrack = m_hwnd;
+    tme.dwFlags = TME_LEAVE;
+    tme.dwHoverTime = HOVER_DEFAULT;
+    ::TrackMouseEvent(&tme);
 }
 
 void Window::BeginAnimation(Sprite *sp)

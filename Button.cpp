@@ -42,9 +42,9 @@ bool Button::OnPaint(PaintEvent *ev)
 
     auto rc = this->GetRect();
 
-    if (m_bMousePress)
-        rc.Y = 2;
-    else 
+    //if (m_bMousePress)
+    //    rc.Y = 2;
+    //else 
         rc.Y = 0;
 
     rc.X = 0;
@@ -59,13 +59,6 @@ bool Button::OnPaint(PaintEvent *ev)
     m_brush->SetColor(D2D1::ColorF(D2D1::ColorF::Black));
     ev->target->DrawText(m_strText.c_str(), (UINT32)m_strText.length(), m_text_format, rc2, m_brush);
 
-/*
-    brush.SetColor(Color(0,0,0));
-    StringFormat fmt;
-    fmt.SetAlignment(StringAlignmentCenter);
-    fmt.SetLineAlignment(StringAlignmentCenter);
-    ev->graphics->DrawString(m_strText.c_str(), m_strText.length(), &m_font, rc, &fmt, &brush);
-*/
     return true;
 }
 
@@ -97,6 +90,7 @@ void Button::SetText(LPCWSTR text)
 bool Button::OnLBtnDown(MouseEvent *ev)
 {
     m_bMousePress = true;
+    this->SetCapture();
     this->Invalidate();
     return true;
 }
@@ -104,8 +98,13 @@ bool Button::OnLBtnDown(MouseEvent *ev)
 bool Button::OnLBtnUp(MouseEvent *ev)
 {
     m_bMousePress = false;
+    this->ReleaseCapture();
+    this->OnMouseLeave(ev);
+    auto rc = this->GetClientRect();
     this->Invalidate();
-    this->Clicked.Invoke();
+    if (rc.Contains(Gdiplus::PointF(ev->x, ev->y))) {
+        this->Clicked.Invoke();
+    }
     return true;
 }
 
