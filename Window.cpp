@@ -651,6 +651,7 @@ LRESULT ResizeHelper::HandleMessage(HWND hwnd, UINT message, WPARAM wparam, LPAR
     case WM_MOUSEMOVE:
     case WM_LBUTTONDOWN:
     case WM_LBUTTONUP:
+    case WM_LBUTTONDBLCLK:
         ret = ::GetCursorPos(&pt);
         assert(ret);
         ::GetWindowRect(hwnd, &rc);
@@ -746,6 +747,19 @@ LRESULT ResizeHelper::HandleMessage(HWND hwnd, UINT message, WPARAM wparam, LPAR
                 ::ReleaseCapture();
                 bHandled = true;
                 m_state = eNone;
+            }
+            break;
+        case WM_LBUTTONDBLCLK:
+            st = StateFromPoint(pt, rc);
+            if (st == eMove) {
+                WINDOWPLACEMENT wp = {0};
+                ::GetWindowPlacement(hwnd, &wp);
+                if (wp.showCmd == SW_MAXIMIZE) {
+                    ::ShowWindow(hwnd, SW_RESTORE);
+                }
+                else {
+                    ::ShowWindow(hwnd, SW_MAXIMIZE);
+                }
             }
             break;
         }
