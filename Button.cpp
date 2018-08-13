@@ -11,8 +11,10 @@ Button::Button()
 
 Button::~Button()
 {
-    SAFE_RELEASE(m_text_format);
-    SAFE_RELEASE(m_brush);
+    if (m_text_format) m_text_format->Release();
+    m_text_format = INVALID_POINTER(IDWriteTextFormat);
+    if (m_brush) m_brush->Release();
+    m_brush = INVALID_POINTER(ID2D1SolidColorBrush);
     this->EndAnimation();
 }
 

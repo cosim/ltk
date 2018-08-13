@@ -13,7 +13,7 @@ namespace ltk {
 
 const wchar_t * Window::ClsName = L"ltk_cls";
 static const long SYSBTN_WIDTH = 40;
-static const long SYSBTN_HEIGHT = 30;
+static const long SYSBTN_HEIGHT = 25;
 static const long CAPTION_HEIGHT = 25;
 static const long SYSICON_SIZE = 24;
 static const long WINDOW_BORDER = 6;
@@ -29,19 +29,12 @@ Window::Window(void)
 
     m_sprite = new Sprite();
     m_sprite->SetHostWnd(this);
-
-    m_btnClose = new Button();
-    m_btnClose->SetText(L"X");
-    m_btnClose->Clicked.Attach(std::bind(&Window::OnBtnCloseClicked, this));
-    m_sprite->AddChild(m_btnClose);
     
 	m_spFocus = NULL;
 	m_spCapture = NULL;
 	m_spHover = NULL;
 
 	m_caretHeight = 20;
-
-    m_resizable = new ResizeHelper;
 }
 
 Window::~Window(void)
@@ -61,6 +54,16 @@ Window::~Window(void)
 
     delete m_resizable;
     m_resizable = INVALID_POINTER(ResizeHelper);
+
+    if (m_brush) {
+        m_brush->Release();
+    }
+    m_brush = INVALID_POINTER(ID2D1SolidColorBrush);
+
+    if (m_textFormat) {
+        m_textFormat->Release();
+    }
+    m_textFormat = INVALID_POINTER(IDWriteTextFormat);
 }
 
 void Window::Create(Window *parent, RectF rc, Mode mode)
@@ -80,10 +83,15 @@ void Window::Create(Window *parent, RectF rc, Mode mode)
     switch (m_mode)
     {
     case ltk::Window::eOverlaped:
-        style |= WS_OVERLAPPED;
+        style |= WS_OVERLAPPEDWINDOW;
         break;
     case ltk::Window::eBorderless:
         style |= WS_POPUP;
+        m_resizable = new ResizeHelper;
+        m_btnClose = new Button();
+        m_btnClose->SetText(L"X");
+        m_btnClose->Clicked.Attach(std::bind(&Window::OnBtnCloseClicked, this));
+        m_sprite->AddChild(m_btnClose);
         break;
     default:
         break;
@@ -95,9 +103,33 @@ void Window::Create(Window *parent, RectF rc, Mode mode)
         hParent, NULL, HINST_THISCOMPONENT, this);
 }
 
+RectF Window::GetRect()
+{
+    RectF rf;
+    RECT rc;
+    ::GetWindowRect(m_hwnd, &rc);
+    rf.X = (float)rc.left;
+    rf.Y = (float)rc.top;
+    rf.Width = (float)(rc.right - rc.left);
+    rf.Height = (float)(rc.bottom - rc.top);
+    return rf;
+}
+
 void Window::SetRect(RectF rc)
 {
     ::MoveWindow(m_hwnd, (int)rc.X, (int)rc.Y, (int)rc.Width, (int)rc.Height, TRUE);
+}
+
+void Window::SetTitile(const wchar_t *title)
+{
+    ::SetWindowText(m_hwnd, title);
+}
+
+SizeF Window::GetClientSize()
+{
+    RECT rc;
+    ::GetClientRect(m_hwnd, &rc);
+    return SizeF((float)rc.right - rc.left, (float)rc.bottom - rc.top);
 }
 
 // TODO 记得窗口过程 里面一定要先push HWND message wparam lparam 到lua堆栈里
@@ -230,9 +262,11 @@ LRESULT CALLBACK Window::WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM 
 
     bool bHandled = false;
 
-    LRESULT ret = thiz->m_resizable->HandleMessage(hwnd, message, wparam, lparam, bHandled);
-    if (bHandled) {
-        return ret;
+    if (thiz->m_resizable) {
+        LRESULT ret = thiz->m_resizable->HandleMessage(hwnd, message, wparam, lparam, bHandled);
+        if (bHandled) {
+            return ret;
+        }
     }
 
 	switch(message)
@@ -341,15 +375,41 @@ LRESULT CALLBACK Window::WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM 
     return ::DefWindowProc(hwnd, message, wparam, lparam);
 }
 
+void Window::DrawNonClient()
+{
+    auto size = this->GetClientSize();
+    m_brush->SetColor(D2D1::ColorF(0.3f, 0.3f, 0.4f));
+    m_target->FillRectangle(D2D1::RectF(0.0f, 0.0f, size.Width, (float)CAPTION_HEIGHT), m_brush);
+    m_brush->SetColor(D2D1::ColorF(0.5f, 0.5f, 0.6f));
+    m_target->DrawRectangle(D2D1::RectF(0.0f, 0.0f, size.Width - 1.0f, size.Height - 1.0f), m_brush);
+}
+
+void Window::RecreateResouce()
+{
+    HRESULT hr = E_FAIL;
+    SAFE_RELEASE(m_brush);
+    hr = m_target->CreateSolidColorBrush(D2D1::ColorF(0.5f, 0.5f, 0.5f), &m_brush);
+    assert(SUCCEEDED(hr));
+    SAFE_RELEASE(m_textFormat);
+    hr = GetDWriteFactory()->CreateTextFormat(
+        L"微软雅黑",
+        NULL,
+        DWRITE_FONT_WEIGHT_REGULAR,
+        DWRITE_FONT_STYLE_NORMAL,
+        DWRITE_FONT_STRETCH_NORMAL,
+        14.0f,
+        L"zh-cn",
+        &m_textFormat
+        );
+    assert(SUCCEEDED(hr));
+    m_textFormat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
+}
+
 void Window::OnPaint(HWND hwnd )
 {
-
-	DWORD startTime = ::GetTickCount();
 	PAINTSTRUCT ps;
 	HDC hdc = BeginPaint(hwnd, &ps);
     HRESULT hr = E_FAIL;
-
-	//LOG("PAINTSTRUCT:" << ps.fErase << "," << ps.fIncUpdate << "," << ps.fRestore);
 
     if (!m_target)
     {
@@ -365,12 +425,14 @@ void Window::OnPaint(HWND hwnd )
         {
             m_sprite->HandleRecreateResouce(m_target);
         }
+        this->RecreateResouce();
     }
 
     m_target->BeginDraw();
     m_target->SetTransform(D2D1::Matrix3x2F::Identity());
     TranslateTransform(m_target, 0.5f, 0.5f);
     m_target->Clear(D2D1::ColorF(D2D1::ColorF(0.1f, 0.1f, 0.2f)));
+    this->DrawNonClient();
 
     if (m_sprite)
     {
@@ -389,11 +451,20 @@ void Window::OnPaint(HWND hwnd )
     EndPaint(hwnd, &ps);
 }
 
+bool Window::OnSize(float cx, float cy, DWORD flag)
+{
+    if (m_mode == eBorderless) {
+        m_btnClose->SetRect(RectF((float)(cx - SYSBTN_WIDTH - 1), 0.0f, (float)SYSBTN_WIDTH, (float)SYSBTN_HEIGHT));
+    }
+    return false;
+}
+
 HWND Window::Handle()
 {
 	return m_hwnd;
 }
 
+// TODO replace this method with GetRootSprite
 void Window::AttachSprite( Sprite *sp )
 {
 	m_sprite->Unref();
@@ -620,16 +691,18 @@ int Window::Create(lua_State *L)
     return 0;
 }
 
-int Window::AttachSprite(lua_State *L)
+int Window::SetTitile(lua_State *L)
 {
-
+    auto thiz = CheckLuaObject<Window>(L, 1);
+    auto title = LuaCheckWString(L, 2);
+    thiz->SetTitile(title);
     return 0;
 }
 
-bool Window::OnSize(float cx, float cy, DWORD flag)
+int Window::GetRootSprite(lua_State *L)
 {
-    m_btnClose->SetRect(RectF((float)(cx - SYSBTN_WIDTH - 1), 0.0f, (float)SYSBTN_WIDTH, (float)SYSBTN_HEIGHT));
-    return false;
+
+    return 0;
 }
 
 #endif

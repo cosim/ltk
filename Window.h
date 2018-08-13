@@ -23,8 +23,6 @@ public:
 
     Window(void);
 
-    void SetRect(RectF rc);
-
     enum Mode
     {
         eOverlaped,
@@ -32,6 +30,14 @@ public:
     };
 
     void Create(Window *parent, RectF rc, Mode mode);
+
+    void SetRect(RectF rc);
+
+    RectF GetRect();
+
+    SizeF GetClientSize();
+
+    void SetTitile(const wchar_t *title);
 
 	static void RegisterWndClass();
 
@@ -75,17 +81,21 @@ public:
 #ifndef LTK_DISABLE_LUA
     static int LuaConstructor(lua_State *L);
     static int Create(lua_State *L);
-    static int AttachSprite(lua_State *L);
+    static int SetTitile(lua_State *L);
+    static int GetRootSprite(lua_State *L);
 
     BEGIN_LUA_METHOD_MAP(Window)
         LUA_METHOD_ENTRY(Create)
-        LUA_METHOD_ENTRY(AttachSprite)
+        LUA_METHOD_ENTRY(SetTitile)
     END_LUA_METHOD_MAP()
 #endif
 
 private:
 	void HandleMouseMessage(UINT message, WPARAM wparam, LPARAM lparam);
     void HandleMouseLeave();
+    void DrawNonClient();
+    void RecreateResouce();
+
     LRESULT OnImeEvent(UINT message, WPARAM wparam, LPARAM lparam);
     enum { TIMER_ANIMATION = 100 };
     static const wchar_t * ClsName;
@@ -102,9 +112,11 @@ private:
 	Sprite *m_spHover;
 	std::unordered_set<Sprite *> m_setTrackMouseLeave;
     std::unordered_set<Sprite *> m_setAnimation;
-    ID2D1HwndRenderTarget *m_target = nullptr;
+    ID2D1HwndRenderTarget *m_target = nullptr; // owner
     Button *m_btnClose = nullptr;
-    ResizeHelper *m_resizable = nullptr;
+    ResizeHelper *m_resizable = nullptr; // owner
+    ID2D1SolidColorBrush *m_brush = nullptr; // owner
+    IDWriteTextFormat *m_textFormat = nullptr; // owner
 };
 
 class ResizeHelper

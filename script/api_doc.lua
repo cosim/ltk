@@ -9,12 +9,11 @@ local RectF = {}
 local Window = {}
 
 ---@return Ltk.Window
-function Window:new()
-
-end
+function Window:new() end
 
 ---@param rect Ltk.RectF
 ---@param mode string @overlapped,borderless
-function Window:Create(rect, mode)
+function Window:Create(rect, mode) end
 
-end
+---@param title string
+function Window:SetTitile(title) end

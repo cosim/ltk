@@ -31,6 +31,7 @@ using std::unique_ptr;
 
 #include <GdiPlus.h>
 using Gdiplus::RectF;
+using Gdiplus::SizeF;
 using Gdiplus::Color;
 
 #include <ShlObj.h>

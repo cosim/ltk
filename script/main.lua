@@ -29,6 +29,7 @@ LtkApi.Trace("hi ZeroBrane");
 local wnd = Ltk.Window:new();
 
 wnd:Create({x = 10, y = 10, w = 800, h = 600}, 'borderless');
+wnd:SetTitile("LTK测试窗口");
 g_wnd_event = wnd:SetEventHandler({
 	OnDestroy = function()
 		print('OnDestroy');
