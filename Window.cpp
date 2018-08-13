@@ -382,6 +382,15 @@ void Window::DrawNonClient()
     m_target->FillRectangle(D2D1::RectF(0.0f, 0.0f, size.Width, (float)CAPTION_HEIGHT), m_brush);
     m_brush->SetColor(D2D1::ColorF(0.5f, 0.5f, 0.6f));
     m_target->DrawRectangle(D2D1::RectF(0.0f, 0.0f, size.Width - 1.0f, size.Height - 1.0f), m_brush);
+
+    m_brush->SetColor(D2D1::ColorF(D2D1::ColorF::WhiteSmoke));
+    std::wstring title;
+    auto len = ::GetWindowTextLengthW(m_hwnd);
+    len++;
+    title.resize((size_t)len);
+    ::GetWindowTextW(m_hwnd, &title[0], len);
+    auto rc = D2D1::RectF(10.0f, 0.0f, size.Width, (float)CAPTION_HEIGHT);
+    m_target->DrawText(title.c_str(), (UINT32)title.length(), m_textFormat, rc, m_brush);
 }
 
 void Window::RecreateResouce()
@@ -397,7 +406,7 @@ void Window::RecreateResouce()
         DWRITE_FONT_WEIGHT_REGULAR,
         DWRITE_FONT_STYLE_NORMAL,
         DWRITE_FONT_STRETCH_NORMAL,
-        14.0f,
+        12.0f,
         L"zh-cn",
         &m_textFormat
         );
