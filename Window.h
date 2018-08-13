@@ -115,6 +115,8 @@ public:
 private:
     POINT m_oldPoint;
     RECT m_oldRect;
+    RECT m_normalRect;
+    bool m_bMaximized = false;
 
     enum State {
         eNone,

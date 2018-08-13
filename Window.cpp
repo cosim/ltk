@@ -646,6 +646,12 @@ LRESULT ResizeHelper::HandleMessage(HWND hwnd, UINT message, WPARAM wparam, LPAR
     POINT pt;
     BOOL ret;
     State st;
+    WINDOWPLACEMENT wp = { 0 };
+    wp.length = sizeof(wp);
+    ::GetWindowPlacement(hwnd, &wp);
+    if ((wp.showCmd == SW_MAXIMIZE || m_bMaximized) && message != WM_LBUTTONDBLCLK) {
+        return 0;
+    }
 
     switch (message) {
     case WM_MOUSEMOVE:
@@ -752,13 +758,22 @@ LRESULT ResizeHelper::HandleMessage(HWND hwnd, UINT message, WPARAM wparam, LPAR
         case WM_LBUTTONDBLCLK:
             st = StateFromPoint(pt, rc);
             if (st == eMove) {
-                WINDOWPLACEMENT wp = {0};
-                ::GetWindowPlacement(hwnd, &wp);
                 if (wp.showCmd == SW_MAXIMIZE) {
-                    ::ShowWindow(hwnd, SW_RESTORE);
+                    wp.showCmd = SW_SHOWNORMAL;
+                    ::SetWindowPlacement(hwnd, &wp);
+                }
+                else if (m_bMaximized) {
+                    SetWindowRect(hwnd, m_normalRect);
+                    m_bMaximized = false;
                 }
                 else {
-                    ::ShowWindow(hwnd, SW_MAXIMIZE);
+                    ::GetWindowRect(hwnd, &m_normalRect);
+                    HMONITOR mon = ::MonitorFromPoint(pt, MONITOR_DEFAULTTONEAREST);
+                    MONITORINFO info = { 0 };
+                    info.cbSize = sizeof(info);
+                    ::GetMonitorInfoW(mon, &info);
+                    SetWindowRect(hwnd, info.rcWork);
+                    m_bMaximized = true;
                 }
             }
             break;
