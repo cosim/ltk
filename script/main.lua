@@ -41,11 +41,14 @@ print("Window:GetClientSize()", w, h);
 local root = wnd:GetRootSprite()
 print("Window:GetRootSprite()", root);
 
----@type Ltk.Button
-g_btn_test = Ltk.Button:new("你好");
-g_btn_test:SetRect({x=20, y = 40, w = 100, h = 30});
-root:AddChild(g_btn_test);
-
+for i = 0, 4 do
+	for j = 0, 4 do
+		---@type Ltk.Button
+		local btn_test = Ltk.Button:new(string.format("%d-%d", j, i));
+		btn_test:SetRect({ x = 20 + 110 * i, y = 40 + 40 * j, w = 100, h = 30});
+		root:AddChild(btn_test);
+	end
+end
 g_wnd_event = wnd:SetEventHandler({
 	OnDestroy = function()
 		print('OnDestroy');

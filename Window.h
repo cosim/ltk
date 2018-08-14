@@ -47,8 +47,6 @@ public:
 
 	HWND Handle();
 
-	void AttachSprite(Sprite *sp);
-
 	void OnImeInput(LPCTSTR text);
 
 	void SetImePosition( float x, float y );

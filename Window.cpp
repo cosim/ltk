@@ -475,15 +475,6 @@ HWND Window::Handle()
 	return m_hwnd;
 }
 
-// TODO replace this method with GetRootSprite
-void Window::AttachSprite( Sprite *sp )
-{
-	m_sprite->Unref();
-    sp->Ref();
-	sp->SetHostWnd(this);
-    m_sprite = sp;
-}
-
 LRESULT Window::OnImeEvent( UINT uMsg, WPARAM wParam, LPARAM lParam )
 {
     // TODO 加个开关 能够关闭输入法 当焦点不在输入框上的时候就关闭
@@ -858,8 +849,7 @@ LRESULT ResizeHelper::HandleMessage(HWND hwnd, UINT message, WPARAM wparam, LPAR
             }
             break;
         case WM_LBUTTONDBLCLK:
-            st = StateFromPoint(pt, rc);
-            if (st == eMove) {
+            if (pt.x < rc.right - SYSBTN_WIDTH - 5 && pt.y < rc.top + CAPTION_HEIGHT) {
                 if (wp.showCmd == SW_MAXIMIZE) {
                     wp.showCmd = SW_SHOWNORMAL;
                     ::SetWindowPlacement(hwnd, &wp);
