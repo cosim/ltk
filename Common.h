@@ -12,7 +12,7 @@ void LuaPushWString(lua_State *L, LPCTSTR psz, int len  = -1);
 
 bool LuaPCall(lua_State *L, int nargs, int nresults);
 void LuaShowStack(lua_State *L);
-Color LuaCheckColor(lua_State *L, int index);
+D2D1_COLOR_F LuaCheckColor(lua_State *L, int index);
 RectF LuaCheckRectF(lua_State *L, int index);
 void LuaPushRectF(lua_State *L, const RectF &rc);
 

@@ -6,7 +6,10 @@ namespace ltk {
 
 Button::Button()
 {
-    
+    m_colorText = D2D1::ColorF(0.8f, 0.8f, 0.8f);
+    m_colorBorder = D2D1::ColorF(0.3f, 0.3f, 0.4f);
+    m_colorNormal = D2D1::ColorF(0.3f, 0.3f, 0.4f);
+    m_colorHover = D2D1::ColorF(0.5f, 0.5f, 0.7f);
 }
 
 Button::~Button()
@@ -52,13 +55,13 @@ bool Button::OnPaint(PaintEvent *ev)
     rc.X = 0;
     rc.Height -= 2;
     auto rc2 = GdipRectF2D2D1RectF(rc);
-    //ev->graphics->FillRectangle(&brush, rc);
     ev->target->FillRectangle(rc2, m_brush);
 
-    m_brush->SetColor(D2D1::ColorF(0.5f, 0.5f, 1.0f, 1.0f));
-    ev->target->DrawRectangle(rc2, m_brush);
-
-    m_brush->SetColor(D2D1::ColorF(D2D1::ColorF::Black));
+    if (m_bBorder) {
+        m_brush->SetColor(m_colorBorder);
+        ev->target->DrawRectangle(rc2, m_brush);
+    }
+    m_brush->SetColor(m_colorText);
     ev->target->DrawText(m_strText.c_str(), (UINT32)m_strText.length(), m_text_format, rc2, m_brush);
 
     return true;
@@ -141,14 +144,18 @@ D2D1_COLOR_F Button::GetColor()
     if (m_aniCounter < 0)
         m_aniCounter = 0;
 
-    UINT32 db = 0xEE - 0xCC;
-    UINT32 dg = 0xEE - 0xCC;
-    
-    //UINT32 diff = 0xEEEEFF - 0xDDDDFF;
-    UINT32 b = db * m_aniCounter / AniDuration + 0xCC;
-    UINT32 g = dg * m_aniCounter / AniDuration + 0xCC;
-    UINT32 clr = (b << 16) + (g << 8) + 0xFF;
-    return D2D1::ColorF((UINT32)clr);
+    float ratio = (float)m_aniCounter / (float)AniDuration;
+    float dRed = m_colorHover.r - m_colorNormal.r;
+    float dGreen = m_colorHover.g - m_colorNormal.g;
+    float dBlue = m_colorHover.b - m_colorNormal.b;
+
+    D2D1_COLOR_F result;
+    result.a = 1.0f;
+    result.r = dRed * ratio + m_colorNormal.r;
+    result.g = dGreen * ratio + m_colorNormal.g;
+    result.b = dBlue * ratio + m_colorNormal.b;
+
+    return result;
 }
 
 } // namespace

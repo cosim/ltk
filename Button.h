@@ -30,15 +30,20 @@ public:
 private:
     bool m_bMouseIn = false;
     bool m_bMousePress = false;
-    wstring m_strText;
-    IDWriteTextFormat *m_text_format = nullptr;
-    ID2D1SolidColorBrush *m_brush = nullptr;
-
     enum AniState { stStoped, stNormal2Hover, stHover2Normal };
     AniState m_state = stStoped;
     int m_aniCounter = 0;
     enum { AniDuration = 200 };
     DWORD m_lastTick = 0;
+
+    wstring m_strText;
+    IDWriteTextFormat *m_text_format = nullptr;
+    ID2D1SolidColorBrush *m_brush = nullptr;
+    bool m_bBorder = false;
+    D2D1_COLOR_F m_colorText;
+    D2D1_COLOR_F m_colorBorder;
+    D2D1_COLOR_F m_colorNormal;
+    D2D1_COLOR_F m_colorHover;
 };
 
 } // namespace

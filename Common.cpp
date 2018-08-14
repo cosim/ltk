@@ -111,12 +111,14 @@ void LuaPushWString(lua_State *L, LPCTSTR psz, int len /* = -1 */)
     lua_pushlstring(L, strA, strA.GetLength());
 }
 
-Color LuaCheckColor(lua_State *L, int index)
+D2D1_COLOR_F LuaCheckColor(lua_State *L, int index)
 {
-    double r = luaL_checknumber(L, index + 0);
-    double g = luaL_checknumber(L, index + 1);
-    double b = luaL_checknumber(L, index + 2);
-    return Color((BYTE)r, (BYTE)g, (BYTE)b);
+    D2D1_COLOR_F color;
+    color.r = (float)luaL_checknumber(L, index + 0);
+    color.g = (float)luaL_checknumber(L, index + 1);
+    color.b = (float)luaL_checknumber(L, index + 2);
+    color.a = 1.0f;
+    return color;
 }
 
 void LuaShowStack(lua_State *L)

@@ -463,7 +463,8 @@ void Window::OnPaint(HWND hwnd )
 bool Window::OnSize(float cx, float cy, DWORD flag)
 {
     if (m_mode == eBorderless) {
-        m_btnClose->SetRect(RectF((float)(cx - SYSBTN_WIDTH - 1), 0.0f, (float)SYSBTN_WIDTH, (float)SYSBTN_HEIGHT));
+        // TODO FIXME 0.5f is the first pixel
+        m_btnClose->SetRect(RectF((float)(cx - SYSBTN_WIDTH - 2), 1.0f, (float)SYSBTN_WIDTH, (float)(CAPTION_HEIGHT - 1)));
     }
     return false;
 }
