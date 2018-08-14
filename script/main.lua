@@ -30,6 +30,14 @@ local wnd = Ltk.Window:new();
 
 wnd:Create({x = 10, y = 10, w = 800, h = 600}, 'borderless');
 wnd:SetTitle("LTK测试窗口");
+
+---@type Ltk.RectF
+local rc = wnd:GetRect();
+print('Window:GetRect()',rc.x, rc.y, rc.w, rc.h);
+
+local w, h = wnd:GetClientSize();
+print("Window:GetClientSize()", w, h);
+
 g_wnd_event = wnd:SetEventHandler({
 	OnDestroy = function()
 		print('OnDestroy');

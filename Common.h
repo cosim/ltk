@@ -14,7 +14,7 @@ bool LuaPCall(lua_State *L, int nargs, int nresults);
 void LuaShowStack(lua_State *L);
 Color LuaCheckColor(lua_State *L, int index);
 RectF LuaCheckRectF(lua_State *L, int index);
-void RectF2LuaRect(lua_State *L, const RectF &rc);
+void LuaPushRectF(lua_State *L, const RectF &rc);
 
 
 #define LOG(msg) do\

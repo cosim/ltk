@@ -81,11 +81,15 @@ public:
 #ifndef LTK_DISABLE_LUA
     static int LuaConstructor(lua_State *L);
     static int Create(lua_State *L);
+    static int GetRect(lua_State *L);
+    static int GetClientSize(lua_State *L);
     static int SetTitle(lua_State *L);
     static int GetRootSprite(lua_State *L);
 
     BEGIN_LUA_METHOD_MAP(Window)
         LUA_METHOD_ENTRY(Create)
+        LUA_METHOD_ENTRY(GetRect)
+        LUA_METHOD_ENTRY(GetClientSize)
         LUA_METHOD_ENTRY(SetTitle)
     END_LUA_METHOD_MAP()
 #endif

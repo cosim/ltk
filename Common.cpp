@@ -187,7 +187,7 @@ RectF LuaCheckRectF(lua_State *L, int index)
     return rc;
 }
 
-void RectF2LuaRect(lua_State *L, const RectF &rc)
+void LuaPushRectF(lua_State *L, const RectF &rc)
 {
     lua_newtable(L);
     int tRect = lua_gettop(L);

@@ -700,6 +700,23 @@ int Window::Create(lua_State *L)
     return 0;
 }
 
+int Window::GetRect(lua_State *L)
+{
+    auto thiz = CheckLuaObject<Window>(L, 1);
+    auto rc = thiz->GetRect();
+    LuaPushRectF(L, rc);
+    return 1;
+}
+
+int Window::GetClientSize(lua_State *L)
+{
+    auto thiz = CheckLuaObject<Window>(L, 1);
+    SizeF size = thiz->GetClientSize();
+    lua_pushnumber(L, size.Width);
+    lua_pushnumber(L, size.Height);
+    return 2;
+}
+
 int Window::SetTitle(lua_State *L)
 {
     auto thiz = CheckLuaObject<Window>(L, 1);
