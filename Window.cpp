@@ -120,7 +120,7 @@ void Window::SetRect(RectF rc)
     ::MoveWindow(m_hwnd, (int)rc.X, (int)rc.Y, (int)rc.Width, (int)rc.Height, TRUE);
 }
 
-void Window::SetTitile(const wchar_t *title)
+void Window::SetTitle(const wchar_t *title)
 {
     ::SetWindowText(m_hwnd, title);
 }
@@ -700,11 +700,11 @@ int Window::Create(lua_State *L)
     return 0;
 }
 
-int Window::SetTitile(lua_State *L)
+int Window::SetTitle(lua_State *L)
 {
     auto thiz = CheckLuaObject<Window>(L, 1);
     auto title = LuaCheckWString(L, 2);
-    thiz->SetTitile(title);
+    thiz->SetTitle(title);
     return 0;
 }
 
@@ -783,7 +783,7 @@ LRESULT ResizeHelper::HandleMessage(HWND hwnd, UINT message, WPARAM wparam, LPAR
                 ::SetCursor(::LoadCursor(NULL, MAKEINTRESOURCE(IDC_SIZENS)));
                 break;
             }
-            if (st != eNone) {
+            if (st != eNone && st != eMove) {
                 bHandled = true;
             }
             switch (m_state) {

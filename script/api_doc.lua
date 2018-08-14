@@ -16,4 +16,4 @@ function Window:new() end
 function Window:Create(rect, mode) end
 
 ---@param title string
-function Window:SetTitile(title) end
+function Window:SetTitle(title) end

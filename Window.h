@@ -37,7 +37,7 @@ public:
 
     SizeF GetClientSize();
 
-    void SetTitile(const wchar_t *title);
+    void SetTitle(const wchar_t *title);
 
 	static void RegisterWndClass();
 
@@ -81,12 +81,12 @@ public:
 #ifndef LTK_DISABLE_LUA
     static int LuaConstructor(lua_State *L);
     static int Create(lua_State *L);
-    static int SetTitile(lua_State *L);
+    static int SetTitle(lua_State *L);
     static int GetRootSprite(lua_State *L);
 
     BEGIN_LUA_METHOD_MAP(Window)
         LUA_METHOD_ENTRY(Create)
-        LUA_METHOD_ENTRY(SetTitile)
+        LUA_METHOD_ENTRY(SetTitle)
     END_LUA_METHOD_MAP()
 #endif
 
