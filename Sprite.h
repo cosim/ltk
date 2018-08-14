@@ -111,6 +111,18 @@ public:
 
     virtual void RecreateResouce(ID2D1RenderTarget *target){}
 
+#ifndef LTK_DISABLE_LUA
+    static int LuaConstructor(lua_State *L);
+    static int AddChild(lua_State *L);
+    static int SetRect(lua_State *L);
+
+    BEGIN_LUA_METHOD_MAP(Sprite)
+        LUA_METHOD_ENTRY(AddChild)
+        LUA_METHOD_ENTRY(SetRect)
+    END_LUA_METHOD_MAP()
+
+#endif // LTK_DISABLE_LUA
+
 private:
 	bool m_bVisible; // 编译器会自动优化成1字节
 	bool m_bMouseIn;

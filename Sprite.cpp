@@ -192,6 +192,7 @@ void Sprite::AddChild( Sprite *sp )
 	}
 	sp->SetHostWnd(m_hostWnd); // 递归去设置 防止任意顺序插入导致问题 FIXME 可能有性能问题
 	sp->m_parent = this;
+    sp->Ref();
 }
 
 // TODO refactor this method
@@ -607,5 +608,35 @@ void Sprite::EndAnimation()
 {
     m_hostWnd->EndAnimation(this);
 }
+
+#ifndef LTK_DISABLE_LUA
+
+int Sprite::LuaConstructor(lua_State *L)
+{
+    Sprite *sp = new Sprite();
+    sp->PushToLua(L, "Sprite");
+    sp->Unref();
+    return 1;
+}
+
+int Sprite::AddChild(lua_State *L)
+{
+    Sprite *thiz = CheckLuaObject<Sprite>(L, 1);
+    Sprite *sp = CheckLuaObject<Sprite>(L, 2);
+    thiz->AddChild(sp);
+    return 0;
+}
+
+
+int Sprite::SetRect(lua_State *L)
+{
+    Sprite *thiz = CheckLuaObject<Sprite>(L, 1);
+    RectF rc = LuaCheckRectF(L, 2);
+    thiz->SetRect(rc);
+    return 0;
+}
+
+
+#endif // LTK_DISABLE_LUA
 
 } // namespace ltk

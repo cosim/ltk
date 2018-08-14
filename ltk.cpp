@@ -182,6 +182,8 @@ int luaopen_ltk(lua_State *L)
     ApiBindingInit(L);
     Window::RegisterWndClass();
     LuaRegisterClass<Window>(L, "Window");
+    LuaRegisterClass<Sprite>(L, "Sprite");
+    LuaRegisterClass<Button>(L, "Button");
 
     return 0;
 }

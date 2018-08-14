@@ -17,18 +17,13 @@ void LuaObject::PushToLua( lua_State *L, const char* clsName )
 	*ppThis = this;
 	int udata = lua_gettop(L);
 
-	// 检查下是不是已经注册过了
 	luaL_getmetatable(L, clsName);
 	if(!lua_istable(L, -1))
 	{
         LOG("NOT REGISTERD!!! " << clsName);
-		lua_pop(L, 1); // pop nil
-		lua_pushnil(L);
-        check.SetReturn(1);
-        return;
+        __debugbreak();
 	}
 	lua_setmetatable(L, udata); // udata
-	//int type = lua_type(L, lua_gettop(L));
 	check.SetReturn(1);
 }
 

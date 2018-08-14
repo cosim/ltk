@@ -91,8 +91,9 @@ public:
         LUA_METHOD_ENTRY(GetRect)
         LUA_METHOD_ENTRY(GetClientSize)
         LUA_METHOD_ENTRY(SetTitle)
+        LUA_METHOD_ENTRY(GetRootSprite)
     END_LUA_METHOD_MAP()
-#endif
+#endif // LTK_DISABLE_LUA
 
 private:
 	void HandleMouseMessage(UINT message, WPARAM wparam, LPARAM lparam);

@@ -27,6 +27,15 @@ public:
 
     D2D1_COLOR_F GetColor();
 
+#ifndef LTK_DISABLE_LUA
+    static int LuaConstructor(lua_State *L);
+
+    BEGIN_LUA_METHOD_MAP(Button)
+        LUA_CHAIN_METHOD_MAP(Sprite)
+    END_LUA_METHOD_MAP()
+
+#endif // LTK_DISABLE_LUA
+
 private:
     bool m_bMouseIn = false;
     bool m_bMousePress = false;

@@ -92,6 +92,7 @@ void Window::Create(Window *parent, RectF rc, Mode mode)
         m_btnClose->SetText(L"X");
         m_btnClose->Clicked.Attach(std::bind(&Window::OnBtnCloseClicked, this));
         m_sprite->AddChild(m_btnClose);
+        m_btnClose->Unref();
         break;
     default:
         break;
@@ -633,7 +634,7 @@ void Window::BeginAnimation(Sprite *sp)
 {
     if (m_setAnimation.size() == 0)
     {
-        ::SetTimer(m_hwnd, TIMER_ANIMATION, 33, NULL);
+        ::SetTimer(m_hwnd, TIMER_ANIMATION, 0, NULL);
         LOG("SetTimer");
     }
     m_setAnimation.insert(sp);
@@ -728,8 +729,9 @@ int Window::SetTitle(lua_State *L)
 
 int Window::GetRootSprite(lua_State *L)
 {
-
-    return 0;
+    auto thiz = CheckLuaObject<Window>(L, 1);
+    thiz->m_sprite->PushToLua(L, "Sprite");
+    return 1;
 }
 
 #endif

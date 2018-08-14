@@ -38,6 +38,14 @@ print('Window:GetRect()',rc.x, rc.y, rc.w, rc.h);
 local w, h = wnd:GetClientSize();
 print("Window:GetClientSize()", w, h);
 
+local root = wnd:GetRootSprite()
+print("Window:GetRootSprite()", root);
+
+---@type Ltk.Button
+g_btn_test = Ltk.Button:new("你好");
+g_btn_test:SetRect({x=20, y = 40, w = 100, h = 30});
+root:AddChild(g_btn_test);
+
 g_wnd_event = wnd:SetEventHandler({
 	OnDestroy = function()
 		print('OnDestroy');

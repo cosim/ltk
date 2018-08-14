@@ -23,3 +23,19 @@ function Window:GetRect() end
 
 ---@return number,number
 function Window:GetClientSize() end
+
+---@return Ltk.Sprite
+function Window:GetRootSprite() end
+
+---@class Ltk.Sprite
+local Sprite = {}
+
+---@param sp Ltk.Sprite
+function Sprite:AddChild(sp) end
+
+---@param rc Ltk.RectF
+function Sprite:SetRect(rc) end
+
+---@class Ltk.Button:Ltk.Sprite
+local Button = {}
+

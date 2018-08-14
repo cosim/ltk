@@ -158,4 +158,18 @@ D2D1_COLOR_F Button::GetColor()
     return result;
 }
 
+#ifndef LTK_DISABLE_LUA
+
+int Button::LuaConstructor(lua_State *L)
+{
+    auto text = LuaCheckWString(L, 2);
+    Button *thiz = new Button;
+    thiz->SetText(text);
+    thiz->PushToLua(L, "Button");
+    thiz->Unref();
+    return 1;
+}
+
+#endif // LTK_DISABLE_LUA
+
 } // namespace
