@@ -16,7 +16,6 @@ D2D1_COLOR_F LuaCheckColor(lua_State *L, int index);
 RectF LuaCheckRectF(lua_State *L, int index);
 void LuaPushRectF(lua_State *L, const RectF &rc);
 
-
 #define LOG(msg) do\
 {\
 	std::stringstream ss;\

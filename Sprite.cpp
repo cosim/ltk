@@ -17,7 +17,8 @@ Sprite::Sprite(void)
 	m_rect.Width = 10;
 	m_rect.Height = 10;
 
-	m_hostWnd = NULL;
+    m_hostWnd = NULL;
+    m_layout = NULL;
 
 	m_firstChild = NULL;
 	m_lastChild = NULL;
@@ -34,7 +35,7 @@ Sprite::Sprite(void)
 
 Sprite::~Sprite(void)
 {
-	m_hostWnd = NULL;
+	m_hostWnd = INVALID_POINTER(Window);
 	Sprite *sp = m_firstChild;
 	while(sp)
 	{
@@ -47,6 +48,11 @@ Sprite::~Sprite(void)
     m_prevSibling = INVALID_POINTER(Sprite);
     m_nextSibling = INVALID_POINTER(Sprite);
     m_parent = INVALID_POINTER(Sprite);
+
+    if (m_layout) {
+        m_layout->Unref();
+    }
+    m_layout = INVALID_POINTER(LayoutItem);
 }
 
 RectF Sprite::GetRect()
@@ -98,6 +104,9 @@ void Sprite::SetRect( RectF rect )
             OnEvent(&ev);
 		}
 	}
+    if (m_layout) {
+        m_layout->SetRect(rect);
+    }
 }
 
 void Sprite::Invalidate()
@@ -115,6 +124,19 @@ void Sprite::Invalidate()
 		::InvalidateRect(wnd->Handle(), &rc, TRUE);
 	}
 }
+
+void Sprite::SetLayout(LayoutItem *layout)
+{
+    if (layout->Is(Sprite::TypeIdClass())) {
+        __debugbreak();
+    }
+    if (m_layout) {
+        m_layout->Unref();
+    }
+    m_layout = layout;
+    m_layout->Ref();
+}
+
 
 // 只在Window::AttachSprite中使用
 void Sprite::SetHostWnd( Window *wnd )
@@ -633,7 +655,6 @@ int Sprite::SetRect(lua_State *L)
     thiz->SetRect(rc);
     return 0;
 }
-
 
 #endif // LTK_DISABLE_LUA
 

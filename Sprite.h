@@ -5,13 +5,13 @@
 #include "Common.h"
 #include "Event.h"
 #include "LuaObject.h"
-//#include "DukObject.h"
+#include "BoxLayout.h"
 
 namespace ltk {
 
 class Window;
 
-class Sprite : public LuaObject
+class Sprite : public LayoutItem
 {
 protected:
     virtual ~Sprite(void);
@@ -25,7 +25,7 @@ public:
 
 	RectF GetClientRect();
 
-	void SetRect( RectF rect );
+	void SetRect( RectF rect ) override;
 
 	RectF GetAbsRect();
 
@@ -33,6 +33,8 @@ public:
 
 	void SetHostWnd( Window *wnd ); // TODO 这里名字要改 而且语义也有问题
 	Window *GetHostWindow();
+
+    void SetLayout(LayoutItem *layout);
 
 	void SetVisible( bool );
 
@@ -132,6 +134,7 @@ private:
 
     RectF m_rect;
     Window *m_hostWnd;
+    LayoutItem *m_layout;
 
 	Sprite *m_prevSibling; // 控件树结构 要高大上一点 zorder隐含在树结构中 避免排序
 	Sprite *m_nextSibling; // owner 平级的的关系用双链表

@@ -392,6 +392,8 @@ void Window::DrawNonClient()
     m_target->FillRectangle(D2D1::RectF(0.0f, 0.0f, size.Width, (float)CAPTION_HEIGHT), m_brush);
     m_brush->SetColor(D2D1::ColorF(0.5f, 0.5f, 0.6f));
     m_target->DrawRectangle(D2D1::RectF(0.0f, 0.0f, size.Width - 1.0f, size.Height - 1.0f), m_brush);
+    // debug
+    m_target->DrawRectangle(D2D1::RectF(20, 400, 60, 440), m_brush);
 
     m_brush->SetColor(D2D1::ColorF(D2D1::ColorF::WhiteSmoke));
     std::wstring title;
@@ -427,7 +429,7 @@ void Window::RecreateResouce()
 void Window::OnPaint(HWND hwnd )
 {
 	PAINTSTRUCT ps;
-	HDC hdc = BeginPaint(hwnd, &ps);
+	HDC hdc = ::BeginPaint(hwnd, &ps);
     HRESULT hr = E_FAIL;
 
     if (!m_target)
@@ -449,7 +451,7 @@ void Window::OnPaint(HWND hwnd )
 
     m_target->BeginDraw();
     m_target->SetTransform(D2D1::Matrix3x2F::Identity());
-    //TranslateTransform(m_target, 0.5f, 0.5f);
+    TranslateTransform(m_target, 0.5f, 0.5f);
     m_target->Clear(D2D1::ColorF(D2D1::ColorF(0.1f, 0.1f, 0.2f)));
     this->DrawNonClient();
 
@@ -467,7 +469,7 @@ void Window::OnPaint(HWND hwnd )
         hr = S_OK;
         SAFE_RELEASE(m_target);
     }
-    EndPaint(hwnd, &ps);
+    ::EndPaint(hwnd, &ps);
 }
 
 bool Window::OnSize(float cx, float cy, DWORD flag)
@@ -476,6 +478,7 @@ bool Window::OnSize(float cx, float cy, DWORD flag)
         // TODO FIXME 0.5f is the first pixel
         m_btnClose->SetRect(RectF((float)(cx - SYSBTN_WIDTH - 2), 1.0f, (float)SYSBTN_WIDTH, (float)(CAPTION_HEIGHT - 1)));
     }
+    m_sprite->SetRect(RectF(0.0f, 0.0f, cx, cy));
     return false;
 }
 
