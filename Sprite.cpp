@@ -47,8 +47,6 @@ Sprite::~Sprite(void)
     m_prevSibling = INVALID_POINTER(Sprite);
     m_nextSibling = INVALID_POINTER(Sprite);
     m_parent = INVALID_POINTER(Sprite);
-
-	LOG(<<"sprite deleted"); // TODO ¼Ó¸öÃû×Ö
 }
 
 RectF Sprite::GetRect()

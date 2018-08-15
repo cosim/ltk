@@ -104,11 +104,14 @@ bool Button::OnLBtnUp(MouseEvent *ev)
 {
     m_bMousePress = false;
     this->ReleaseCapture();
-    this->OnMouseLeave(ev);
+
     auto rc = this->GetClientRect();
-    this->Invalidate();
     if (rc.Contains(Gdiplus::PointF(ev->x, ev->y))) {
         this->Clicked.Invoke();
+    }
+    else {
+        this->OnMouseLeave(ev);
+        this->Invalidate();
     }
     return true;
 }

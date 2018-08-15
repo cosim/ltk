@@ -64,6 +64,11 @@ Window::~Window(void)
         m_textFormat->Release();
     }
     m_textFormat = INVALID_POINTER(IDWriteTextFormat);
+
+    if (m_btnClose) {
+        m_btnClose->Unref();
+    }
+    m_btnClose = INVALID_POINTER(Button);
 }
 
 void Window::Create(Window *parent, RectF rc, Mode mode)
@@ -92,7 +97,6 @@ void Window::Create(Window *parent, RectF rc, Mode mode)
         m_btnClose->SetText(L"X");
         m_btnClose->Clicked.Attach(std::bind(&Window::OnBtnCloseClicked, this));
         m_sprite->AddChild(m_btnClose);
-        m_btnClose->Unref();
         break;
     default:
         break;
@@ -295,6 +299,11 @@ LRESULT CALLBACK Window::WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM 
     case WM_TIMER:
         if (wparam == TIMER_ANIMATION)
         {
+            static int cnt = 0;
+            cnt++;
+            if (cnt % 100 == 0){
+                LOG("TIMER_ANIMATION " << cnt);
+            }
             ::InvalidateRect(hwnd, NULL, FALSE);
         }
         return 0;
@@ -378,7 +387,7 @@ LRESULT CALLBACK Window::WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM 
 
 void Window::DrawNonClient()
 {
-    auto size = this->GetClientSize();
+    SizeF size = this->GetClientSize();
     m_brush->SetColor(D2D1::ColorF(0.3f, 0.3f, 0.4f));
     m_target->FillRectangle(D2D1::RectF(0.0f, 0.0f, size.Width, (float)CAPTION_HEIGHT), m_brush);
     m_brush->SetColor(D2D1::ColorF(0.5f, 0.5f, 0.6f));
@@ -440,7 +449,7 @@ void Window::OnPaint(HWND hwnd )
 
     m_target->BeginDraw();
     m_target->SetTransform(D2D1::Matrix3x2F::Identity());
-    TranslateTransform(m_target, 0.5f, 0.5f);
+    //TranslateTransform(m_target, 0.5f, 0.5f);
     m_target->Clear(D2D1::ColorF(D2D1::ColorF(0.1f, 0.1f, 0.2f)));
     this->DrawNonClient();
 
@@ -626,7 +635,6 @@ void Window::BeginAnimation(Sprite *sp)
     if (m_setAnimation.size() == 0)
     {
         ::SetTimer(m_hwnd, TIMER_ANIMATION, 0, NULL);
-        LOG("SetTimer");
     }
     m_setAnimation.insert(sp);
 }
@@ -644,7 +652,6 @@ void Window::EndAnimation(Sprite *sp)
         if (m_setAnimation.size() == 0)
         {
             ::KillTimer(m_hwnd, TIMER_ANIMATION);
-            LOG("KillTimer");
         }
     }
 }

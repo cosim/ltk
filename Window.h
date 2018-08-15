@@ -106,15 +106,18 @@ private:
 private:
 	HWND m_hwnd;
     Mode m_mode = eOverlaped;
+
 	ImeInput m_ime;
 	RECT m_rectComposition;
 	int m_caretHeight;
+
 	Sprite *m_sprite; // owner
 	Sprite *m_spFocus;
 	Sprite *m_spCapture;
 	Sprite *m_spHover;
 	std::unordered_set<Sprite *> m_setTrackMouseLeave;
     std::unordered_set<Sprite *> m_setAnimation;
+
     ID2D1HwndRenderTarget *m_target = nullptr; // owner
     Button *m_btnClose = nullptr;
     ResizeHelper *m_resizable = nullptr; // owner
