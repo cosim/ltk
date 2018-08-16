@@ -18,7 +18,6 @@ Sprite::Sprite(void)
 	m_rect.Height = 10;
 
     m_hostWnd = NULL;
-    m_layout = NULL;
 
 	m_firstChild = NULL;
 	m_lastChild = NULL;
@@ -48,11 +47,6 @@ Sprite::~Sprite(void)
     m_prevSibling = INVALID_POINTER(Sprite);
     m_nextSibling = INVALID_POINTER(Sprite);
     m_parent = INVALID_POINTER(Sprite);
-
-    if (m_layout) {
-        m_layout->Unref();
-    }
-    m_layout = INVALID_POINTER(LayoutItem);
 }
 
 RectF Sprite::GetRect()
@@ -104,9 +98,6 @@ void Sprite::SetRect( RectF rect )
             OnEvent(&ev);
 		}
 	}
-    if (m_layout) {
-        m_layout->SetRect(rect);
-    }
 }
 
 void Sprite::Invalidate()
@@ -123,22 +114,6 @@ void Sprite::Invalidate()
 		rc.bottom = (LONG)(rf.GetBottom() + 1.5f); // 很诡异 可能是因为GdiPlus认为x取大的 width也取大的
 		::InvalidateRect(wnd->Handle(), &rc, TRUE);
 	}
-}
-
-void Sprite::SetLayout(LayoutItem *layout)
-{
-    if (layout->Is(Sprite::TypeIdClass())) {
-        __debugbreak();
-    }
-    if (m_layout) {
-        m_layout->Unref();
-    }
-    m_layout = layout;
-    m_layout->Ref();
-    BoxLayout *box = layout->As<BoxLayout>();
-    if (box) {
-        box->SetSprite(this);
-    }
 }
 
 // 只在Window::AttachSprite中使用
@@ -659,14 +634,6 @@ int Sprite::SetRect(lua_State *L)
     Sprite *thiz = CheckLuaObject<Sprite>(L, 1);
     RectF rc = LuaCheckRectF(L, 2);
     thiz->SetRect(rc);
-    return 0;
-}
-
-int Sprite::SetLayout(lua_State *L)
-{
-    Sprite *thiz = CheckLuaObject<Sprite>(L, 1);
-    LayoutItem *layout = CheckLuaObject<LayoutItem>(L, 2);
-    thiz->SetLayout(layout);
     return 0;
 }
 

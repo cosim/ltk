@@ -39,15 +39,13 @@ local w, h = wnd:GetClientSize();
 print("Window:GetClientSize()", w, h);
 
 local root = wnd:GetRootSprite()
-print("Window:GetRootSprite()", root);
 
 ---@type Ltk.BoxLayout
-local vbox = Ltk.BoxLayout:new("vertical");
-root:SetLayout(vbox);
+local vbox = root;
 
 ---@type Ltk.BoxLayout
 local hbox1 = Ltk.BoxLayout:new("horizontal");
-vbox:AddLayoutItem(hbox1, 30);
+vbox:AddLayoutItem(hbox1, 50);
 
 ---@type Ltk.Button
 local btn = Ltk.Button:new("btn1");

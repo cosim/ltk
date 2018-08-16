@@ -12,19 +12,16 @@ BoxLayout::BoxLayout(Mode m) :  m_mode(m)
 BoxLayout::~BoxLayout()
 {
     for (size_t i = 0; i < m_params.size(); i++) {
-        m_params[i].item->Unref();
+        if (m_params[i].item) {
+            m_params[i].item->Unref();
+        }
     }
     m_sprite = INVALID_POINTER(Sprite);
 }
 
-void BoxLayout::AddLayoutItem(LayoutItem *item, float preferedSize, float growFactor)
+void BoxLayout::AddLayoutItem(Sprite *item, float preferedSize, float growFactor)
 {
-    if (m_sprite && item->Is(Sprite::TypeIdClass())) {
-        m_sprite->AddChild(item->As<Sprite>());
-    }
-    if (item->Is(BoxLayout::TypeIdClass())) {
-        item->As<BoxLayout>()->m_sprite = m_sprite;
-    }
+    Sprite::AddChild(item);
     item->Ref();
     BoxLayoutParam param;
     param.item = item;
@@ -33,7 +30,15 @@ void BoxLayout::AddLayoutItem(LayoutItem *item, float preferedSize, float growFa
     m_params.push_back(param);
 }
 
-void BoxLayout::SetRect(RectF rc)
+void BoxLayout::AddSpaceItem(float preferedSize, float growFactor /*= 1.0f*/)
+{
+    BoxLayoutParam param;
+    param.size = preferedSize;
+    param.growFactor = growFactor;
+    m_params.push_back(param);
+}
+
+bool BoxLayout::OnSize(SizeEvent *ev)
 {
     float sum_size = 0.0f;
     float sum_factor = 0.0f;
@@ -45,10 +50,10 @@ void BoxLayout::SetRect(RectF rc)
 
     float remain;
     if (m_mode == Horizontal) {
-        remain = rc.Width - sum_size;
+        remain = ev->width - sum_size;
     }
     else {
-        remain = rc.Height - sum_size;
+        remain = ev->height - sum_size;
     }
     remain = max(0.0f, remain);
     float x = m_margin;
@@ -66,31 +71,29 @@ void BoxLayout::SetRect(RectF rc)
             rc2.X = x;
             rc2.Y = y;
             rc2.Width = size;
-            rc2.Height = rc.Height - m_margin - m_margin;
+            rc2.Height = ev->height - m_margin - m_margin;
             x += size + m_margin;
         }
         else {
             rc2.X = x;
             rc2.Y = y;
-            rc2.Width = rc.Width - m_margin - m_margin;
+            rc2.Width = ev->width - m_margin - m_margin;
             rc2.Height = size;
             y += size + m_margin;
         }
-        m_params[i].item->SetRect(rc2);
+        if (m_params[i].item) {
+            m_params[i].item->SetRect(rc2);
+        }
     }
+    return true;
 }
 
 void BoxLayout::SetMargin(float margin)
 {
-    if (margin <= 0.0f) {
+    if (margin < 0.0f) {
         __debugbreak();
     }
     m_margin = margin;
-}
-
-void BoxLayout::SetSprite(Sprite *sp)
-{
-    m_sprite = sp; // child to parent weak ref
 }
 
 #ifndef LTK_DISABLE_LUA
@@ -110,7 +113,7 @@ int BoxLayout::LuaConstructor(lua_State *L)
 int BoxLayout::AddLayoutItem(lua_State *L)
 {
     BoxLayout *thiz = CheckLuaObject<BoxLayout>(L, 1);
-    LayoutItem *item = CheckLuaObject<LayoutItem>(L, 2);
+    Sprite *item = CheckLuaObject<Sprite>(L, 2);
     float size = (float)luaL_checknumber(L, 3);
     float grow = (float)luaL_optnumber(L, 4, 0.0f);
     thiz->AddLayoutItem(item, size, grow);

@@ -12,6 +12,7 @@ namespace ltk {
 class Sprite;
 class Button;
 class ResizeHelper;
+class BoxLayout;
 
 class Window : public LuaObject
 {
@@ -111,7 +112,7 @@ private:
 	RECT m_rectComposition;
 	int m_caretHeight;
 
-	Sprite *m_sprite; // owner
+	BoxLayout *m_sprite; // owner
 	Sprite *m_spFocus;
 	Sprite *m_spCapture;
 	Sprite *m_spHover;
@@ -123,6 +124,8 @@ private:
     ResizeHelper *m_resizable = nullptr; // owner
     ID2D1SolidColorBrush *m_brush = nullptr; // owner
     IDWriteTextFormat *m_textFormat = nullptr; // owner
+
+    BoxLayout *m_hboxCaption = nullptr;
 };
 
 class ResizeHelper

@@ -5,19 +5,18 @@
 #include "Common.h"
 #include "Event.h"
 #include "LuaObject.h"
-#include "BoxLayout.h"
 
 namespace ltk {
 
 class Window;
 
-class Sprite : public LayoutItem
+class Sprite : public LuaObject
 {
 protected:
     virtual ~Sprite(void);
 
 public:
-    RTTI_DECLARATIONS(Sprite, LayoutItem)
+    RTTI_DECLARATIONS(Sprite, LuaObject)
 
     Sprite(void);
 
@@ -25,7 +24,7 @@ public:
 
 	RectF GetClientRect();
 
-	void SetRect( RectF rect ) override;
+	void SetRect( RectF rect );
 
 	RectF GetAbsRect();
 
@@ -33,8 +32,6 @@ public:
 
 	void SetHostWnd( Window *wnd ); // TODO 这里名字要改 而且语义也有问题
 	Window *GetHostWindow();
-
-    void SetLayout(LayoutItem *layout);
 
 	void SetVisible( bool );
 
@@ -117,12 +114,10 @@ public:
     static int LuaConstructor(lua_State *L);
     static int AddChild(lua_State *L);
     static int SetRect(lua_State *L);
-    static int SetLayout(lua_State *L);
 
     BEGIN_LUA_METHOD_MAP(Sprite)
         LUA_METHOD_ENTRY(AddChild)
         LUA_METHOD_ENTRY(SetRect)
-        LUA_METHOD_ENTRY(SetLayout)
     END_LUA_METHOD_MAP()
 
 #endif // LTK_DISABLE_LUA
@@ -136,7 +131,6 @@ private:
 
     RectF m_rect;
     Window *m_hostWnd;
-    LayoutItem *m_layout;
 
 	Sprite *m_prevSibling; // 控件树结构 要高大上一点 zorder隐含在树结构中 避免排序
 	Sprite *m_nextSibling; // owner 平级的的关系用双链表

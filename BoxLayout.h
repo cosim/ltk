@@ -1,47 +1,37 @@
 #pragma once
 #include "LuaObject.h"
+#include "Sprite.h"
 
 namespace ltk {
 
-class Sprite;
-
-class LayoutItem : public LuaObject
-{
-public:
-    RTTI_DECLARATIONS(LayoutItem, LuaObject)
-    virtual void SetRect(RectF rc) {}
-    virtual LayoutItem *GetChildLayout(size_t i) { return nullptr; }
-};
-
 struct BoxLayoutParam {
-    LayoutItem *item = nullptr;
+    Sprite *item = nullptr;
     float size = 20.0f;
     float growFactor = 0.0f;
 };
 
-class SpaceItem : public LayoutItem
+class SpaceItem : public Sprite
 {
 public:
-    virtual void SetRect(RectF rc) {}
 };
 
-class BoxLayout : public LayoutItem
+class BoxLayout : public Sprite
 {
 public:
-    RTTI_DECLARATIONS(BoxLayout, LayoutItem)
+    RTTI_DECLARATIONS(BoxLayout, Sprite)
     enum Mode {
         Horizontal, Vertical
     };
     BoxLayout(Mode m);
     virtual ~BoxLayout();
 
-    virtual void SetRect(RectF rc) override;
+    virtual bool OnSize(SizeEvent *ev) override;
 
     void SetMargin(float margin);
 
-    void AddLayoutItem(LayoutItem *sp, float preferedSize, float growFactor = 0.0f);
+    void AddSpaceItem(float preferedSize, float growFactor = 1.0f);
 
-    void SetSprite(Sprite *sp);
+    void AddLayoutItem(Sprite *sp, float preferedSize, float growFactor = 0.0f);
 
 #ifndef LTK_DISABLE_LUA
     static int LuaConstructor(lua_State *L);

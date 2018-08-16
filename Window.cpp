@@ -8,6 +8,7 @@
 #include "Sprite.h"
 #include "ltk.h"
 #include "ApiBind.h"
+#include "BoxLayout.h"
 
 namespace ltk {
 
@@ -27,7 +28,8 @@ Window::Window(void)
 	m_rectComposition.right = 5;
 	m_rectComposition.bottom = 20;
 
-    m_sprite = new Sprite();
+    m_sprite = new BoxLayout(BoxLayout::Vertical);
+    m_sprite->SetMargin(0.0f);
     m_sprite->SetHostWnd(this);
     
 	m_spFocus = NULL;
@@ -42,7 +44,12 @@ Window::~Window(void)
     if (m_sprite) {
         m_sprite->Unref();
     }
-    m_sprite = INVALID_POINTER(Sprite);
+    m_sprite = INVALID_POINTER(BoxLayout);
+    if (m_hboxCaption) {
+        m_hboxCaption->Unref();
+    }
+    m_hboxCaption = INVALID_POINTER(BoxLayout);
+
     m_spFocus = INVALID_POINTER(Sprite);
     m_spCapture = INVALID_POINTER(Sprite);
     m_spHover = INVALID_POINTER(Sprite);
@@ -96,7 +103,11 @@ void Window::Create(Window *parent, RectF rc, Mode mode)
         m_btnClose = new Button();
         m_btnClose->SetText(L"X");
         m_btnClose->Clicked.Attach(std::bind(&Window::OnBtnCloseClicked, this));
-        m_sprite->AddChild(m_btnClose);
+        m_hboxCaption = new BoxLayout(BoxLayout::Horizontal);
+        m_hboxCaption->SetMargin(0.0f);
+        m_hboxCaption->AddSpaceItem(0.0f);
+        m_hboxCaption->AddLayoutItem(m_btnClose, (float)SYSBTN_WIDTH);
+        m_sprite->AddLayoutItem(m_hboxCaption, (float)CAPTION_HEIGHT);
         break;
     default:
         break;
@@ -474,13 +485,11 @@ void Window::OnPaint(HWND hwnd )
 
 bool Window::OnSize(float cx, float cy, DWORD flag)
 {
-    if (m_mode == eBorderless) {
-        // TODO FIXME 0.5f is the first pixel
-        m_btnClose->SetRect(RectF((float)(cx - SYSBTN_WIDTH - 2), (float)(1.0f - CAPTION_HEIGHT),
-            (float)SYSBTN_WIDTH, (float)(CAPTION_HEIGHT - 1)));
-    }
-    m_sprite->SetRect(RectF(0.0f, (float)CAPTION_HEIGHT, 
-        (float)(cx - 1.0f), (float)(cy - CAPTION_HEIGHT)));
+    //if (m_mode == eBorderless) {
+    //    m_btnClose->SetRect(RectF((float)(cx - SYSBTN_WIDTH - 2), (float)(1.0f - CAPTION_HEIGHT),
+    //        (float)SYSBTN_WIDTH, (float)(CAPTION_HEIGHT - 1)));
+    //}
+    m_sprite->SetRect(RectF(0.0f, 0.0f, (float)(cx - 1.0f), (float)(cy - 1.0f)));
     return false;
 }
 
@@ -733,7 +742,7 @@ int Window::SetTitle(lua_State *L)
 int Window::GetRootSprite(lua_State *L)
 {
     auto thiz = CheckLuaObject<Window>(L, 1);
-    thiz->m_sprite->PushToLua(L, "Sprite");
+    thiz->m_sprite->PushToLua(L, "BoxLayout");
     return 1;
 }
 
