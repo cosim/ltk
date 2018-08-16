@@ -5,9 +5,6 @@
 ---@field h number
 local RectF = {}
 
----@class Ltk.LayoutItem
-local LayoutItem = {}
-
 ---@class Ltk.Window
 local Window = {}
 
@@ -15,7 +12,7 @@ local Window = {}
 function Window:new() end
 
 ---@param rect Ltk.RectF
----@param mode string @overlapped,borderless
+---@param mode string @overlapped|borderless
 function Window:Create(rect, mode) end
 
 ---@param title string
@@ -27,10 +24,10 @@ function Window:GetRect() end
 ---@return number,number
 function Window:GetClientSize() end
 
----@return Ltk.Sprite
+---@return Ltk.BoxLayout
 function Window:GetRootSprite() end
 
----@class Ltk.Sprite: Ltk.LayoutItem
+---@class Ltk.Sprite
 local Sprite = {}
 
 ---@param sp Ltk.Sprite
@@ -39,20 +36,26 @@ function Sprite:AddChild(sp) end
 ---@param rc Ltk.RectF
 function Sprite:SetRect(rc) end
 
----@param layout Ltk.LayoutItem
-function Sprite:SetLayout(layout) end
-
 ---@class Ltk.Button:Ltk.Sprite
 local Button = {}
 
----@class Ltk.BoxLayout: Ltk.LayoutItem
+---@param text string
+function Button:new(text) end
+
+---@class Ltk.BoxLayout: Ltk.Sprite
 local BoxLayout = {}
 
----@param mode string @"horizontal" "vertical"
+---@param mode string @horizontal|vertical
 function BoxLayout:new(mode) end
 
----@param item Ltk.LayoutItem
+---@param item Ltk.Sprite
 ---@param size number
 ---@param grow number
 function BoxLayout:AddLayoutItem(item, size, grow) end
+
+---@param size number
+---@param grow number
+function BoxLayout:AddSpaceItem(size, grow) end
+
+function BoxLayout:DoLayout() end
 

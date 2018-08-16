@@ -105,7 +105,7 @@ void Window::Create(Window *parent, RectF rc, Mode mode)
         m_btnClose->Clicked.Attach(std::bind(&Window::OnBtnCloseClicked, this));
         m_hboxCaption = new BoxLayout(BoxLayout::Horizontal);
         m_hboxCaption->SetMargin(0.0f);
-        m_hboxCaption->AddSpaceItem(0.0f);
+        m_hboxCaption->AddSpaceItem(0.0f, 1.0f);
         m_hboxCaption->AddLayoutItem(m_btnClose, (float)SYSBTN_WIDTH);
         m_sprite->AddLayoutItem(m_hboxCaption, (float)CAPTION_HEIGHT);
         break;
@@ -370,12 +370,12 @@ LRESULT CALLBACK Window::WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM 
         }
 		return 0;
 	case WM_CREATE:
-		do 
-		{
-			RECT rc;
-			::GetClientRect(hwnd, &rc);
-			::PostMessage(hwnd, WM_SIZE, 0, MAKELPARAM(rc.right, rc.bottom)); // TODO 这里如果创建出来的是全屏的 第2个参数怎么办呢
-		} while (0);
+		//do 
+		//{
+		//	RECT rc;
+		//	::GetClientRect(hwnd, &rc);
+		//	::PostMessage(hwnd, WM_SIZE, 0, MAKELPARAM(rc.right, rc.bottom)); // TODO 这里如果创建出来的是全屏的 第2个参数怎么办呢
+		//} while (0);
 		return 0;
 	case WM_CLOSE:
         do
@@ -404,7 +404,7 @@ void Window::DrawNonClient()
     m_brush->SetColor(D2D1::ColorF(0.5f, 0.5f, 0.6f));
     m_target->DrawRectangle(D2D1::RectF(0.0f, 0.0f, size.Width - 1.0f, size.Height - 1.0f), m_brush);
     // debug
-    m_target->DrawRectangle(D2D1::RectF(20, 400, 60, 440), m_brush);
+    //m_target->DrawRectangle(D2D1::RectF(20, 400, 60, 440), m_brush);
 
     m_brush->SetColor(D2D1::ColorF(D2D1::ColorF::WhiteSmoke));
     std::wstring title;
@@ -489,7 +489,7 @@ bool Window::OnSize(float cx, float cy, DWORD flag)
     //    m_btnClose->SetRect(RectF((float)(cx - SYSBTN_WIDTH - 2), (float)(1.0f - CAPTION_HEIGHT),
     //        (float)SYSBTN_WIDTH, (float)(CAPTION_HEIGHT - 1)));
     //}
-    m_sprite->SetRect(RectF(0.0f, 0.0f, (float)(cx - 1.0f), (float)(cy - 1.0f)));
+    m_sprite->SetRect(RectF(1.0f, 1.0f, (float)(cx - 3.0f), (float)(cy - 1.0f)));
     return false;
 }
 

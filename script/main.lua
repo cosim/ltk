@@ -42,6 +42,7 @@ local root = wnd:GetRootSprite()
 
 ---@type Ltk.BoxLayout
 local vbox = root;
+vbox:AddSpaceItem(30, 0);
 
 ---@type Ltk.BoxLayout
 local hbox1 = Ltk.BoxLayout:new("horizontal");
@@ -54,8 +55,12 @@ hbox1:AddLayoutItem(btn, 100);
 btn = Ltk.Button:new("btn3");
 hbox1:AddLayoutItem(btn, 100);
 
+vbox:AddSpaceItem(0, 1);
+
 btn = Ltk.Button:new("btn2");
 vbox:AddLayoutItem(btn, 30);
+
+root:DoLayout();
 
 g_wnd_event = wnd:SetEventHandler({
 	OnDestroy = function()

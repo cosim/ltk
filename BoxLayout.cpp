@@ -30,7 +30,7 @@ void BoxLayout::AddLayoutItem(Sprite *item, float preferedSize, float growFactor
     m_params.push_back(param);
 }
 
-void BoxLayout::AddSpaceItem(float preferedSize, float growFactor /*= 1.0f*/)
+void BoxLayout::AddSpaceItem(float preferedSize, float growFactor)
 {
     BoxLayoutParam param;
     param.size = preferedSize;
@@ -96,6 +96,16 @@ void BoxLayout::SetMargin(float margin)
     m_margin = margin;
 }
 
+void BoxLayout::DoLayout()
+{
+    RectF rc = this->GetRect();
+    SizeEvent ev;
+    ev.id = eSizeChanged;
+    ev.width = rc.Width;
+    ev.height = rc.Height;
+    this->OnEvent(&ev);
+}
+
 #ifndef LTK_DISABLE_LUA
 
 int BoxLayout::LuaConstructor(lua_State *L)
@@ -115,8 +125,24 @@ int BoxLayout::AddLayoutItem(lua_State *L)
     BoxLayout *thiz = CheckLuaObject<BoxLayout>(L, 1);
     Sprite *item = CheckLuaObject<Sprite>(L, 2);
     float size = (float)luaL_checknumber(L, 3);
-    float grow = (float)luaL_optnumber(L, 4, 0.0f);
+    float grow = (float)luaL_optnumber(L, 4, 0.0);
     thiz->AddLayoutItem(item, size, grow);
+    return 0;
+}
+
+int BoxLayout::AddSpaceItem(lua_State *L)
+{
+    BoxLayout *thiz = CheckLuaObject<BoxLayout>(L, 1);
+    float size = (float)luaL_checknumber(L, 2);
+    float grow = (float)luaL_checknumber(L, 3);
+    thiz->AddSpaceItem(size, grow);
+    return 0;
+}
+
+int BoxLayout::DoLayout(lua_State *L)
+{
+    BoxLayout *thiz = CheckLuaObject<BoxLayout>(L, 1);
+    thiz->DoLayout();
     return 0;
 }
 

@@ -29,16 +29,22 @@ public:
 
     void SetMargin(float margin);
 
-    void AddSpaceItem(float preferedSize, float growFactor = 1.0f);
-
     void AddLayoutItem(Sprite *sp, float preferedSize, float growFactor = 0.0f);
+
+    void AddSpaceItem(float preferedSize, float growFactor);
+
+    void DoLayout();
 
 #ifndef LTK_DISABLE_LUA
     static int LuaConstructor(lua_State *L);
     static int AddLayoutItem(lua_State *L);
+    static int AddSpaceItem(lua_State *L);
+    static int DoLayout(lua_State *L);
 
     BEGIN_LUA_METHOD_MAP(BoxLayout)
         LUA_METHOD_ENTRY(AddLayoutItem)
+        LUA_METHOD_ENTRY(AddSpaceItem)
+        LUA_METHOD_ENTRY(DoLayout)
     END_LUA_METHOD_MAP()
 
 #endif // LTK_DISABLE_LUA
