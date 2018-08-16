@@ -476,9 +476,11 @@ bool Window::OnSize(float cx, float cy, DWORD flag)
 {
     if (m_mode == eBorderless) {
         // TODO FIXME 0.5f is the first pixel
-        m_btnClose->SetRect(RectF((float)(cx - SYSBTN_WIDTH - 2), 1.0f, (float)SYSBTN_WIDTH, (float)(CAPTION_HEIGHT - 1)));
+        m_btnClose->SetRect(RectF((float)(cx - SYSBTN_WIDTH - 2), (float)(1.0f - CAPTION_HEIGHT),
+            (float)SYSBTN_WIDTH, (float)(CAPTION_HEIGHT - 1)));
     }
-    m_sprite->SetRect(RectF(0.0f, 0.0f, cx, cy));
+    m_sprite->SetRect(RectF(0.0f, (float)CAPTION_HEIGHT, 
+        (float)(cx - 1.0f), (float)(cy - CAPTION_HEIGHT)));
     return false;
 }
 

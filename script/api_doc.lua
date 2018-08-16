@@ -5,6 +5,9 @@
 ---@field h number
 local RectF = {}
 
+---@class Ltk.LayoutItem
+local LayoutItem = {}
+
 ---@class Ltk.Window
 local Window = {}
 
@@ -27,7 +30,7 @@ function Window:GetClientSize() end
 ---@return Ltk.Sprite
 function Window:GetRootSprite() end
 
----@class Ltk.Sprite
+---@class Ltk.Sprite: Ltk.LayoutItem
 local Sprite = {}
 
 ---@param sp Ltk.Sprite
@@ -36,6 +39,20 @@ function Sprite:AddChild(sp) end
 ---@param rc Ltk.RectF
 function Sprite:SetRect(rc) end
 
+---@param layout Ltk.LayoutItem
+function Sprite:SetLayout(layout) end
+
 ---@class Ltk.Button:Ltk.Sprite
 local Button = {}
+
+---@class Ltk.BoxLayout: Ltk.LayoutItem
+local BoxLayout = {}
+
+---@param mode string @"horizontal" "vertical"
+function BoxLayout:new(mode) end
+
+---@param item Ltk.LayoutItem
+---@param size number
+---@param grow number
+function BoxLayout:AddLayoutItem(item, size, grow) end
 

@@ -41,14 +41,24 @@ print("Window:GetClientSize()", w, h);
 local root = wnd:GetRootSprite()
 print("Window:GetRootSprite()", root);
 
-for i = 0, 4 do
-	for j = 0, 4 do
-		---@type Ltk.Button
-		local btn_test = Ltk.Button:new(string.format("%d-%d", j, i));
-		btn_test:SetRect({ x = 20 + 110 * i, y = 40 + 40 * j, w = 100, h = 30});
-		root:AddChild(btn_test);
-	end
-end
+---@type Ltk.BoxLayout
+local vbox = Ltk.BoxLayout:new("vertical");
+root:SetLayout(vbox);
+
+---@type Ltk.BoxLayout
+local hbox1 = Ltk.BoxLayout:new("horizontal");
+vbox:AddLayoutItem(hbox1, 30);
+
+---@type Ltk.Button
+local btn = Ltk.Button:new("btn1");
+hbox1:AddLayoutItem(btn, 100);
+
+btn = Ltk.Button:new("btn3");
+hbox1:AddLayoutItem(btn, 100);
+
+btn = Ltk.Button:new("btn2");
+vbox:AddLayoutItem(btn, 30);
+
 g_wnd_event = wnd:SetEventHandler({
 	OnDestroy = function()
 		print('OnDestroy');

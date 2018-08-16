@@ -17,7 +17,7 @@ protected:
     virtual ~Sprite(void);
 
 public:
-    RTTI_DECLARATIONS(Sprite, LuaObject)
+    RTTI_DECLARATIONS(Sprite, LayoutItem)
 
     Sprite(void);
 
@@ -117,10 +117,12 @@ public:
     static int LuaConstructor(lua_State *L);
     static int AddChild(lua_State *L);
     static int SetRect(lua_State *L);
+    static int SetLayout(lua_State *L);
 
     BEGIN_LUA_METHOD_MAP(Sprite)
         LUA_METHOD_ENTRY(AddChild)
         LUA_METHOD_ENTRY(SetRect)
+        LUA_METHOD_ENTRY(SetLayout)
     END_LUA_METHOD_MAP()
 
 #endif // LTK_DISABLE_LUA

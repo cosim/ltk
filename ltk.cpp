@@ -184,6 +184,7 @@ int luaopen_ltk(lua_State *L)
     LuaRegisterClass<Window>(L, "Window");
     LuaRegisterClass<Sprite>(L, "Sprite");
     LuaRegisterClass<Button>(L, "Button");
+    LuaRegisterClass<BoxLayout>(L, "BoxLayout");
 
     return 0;
 }

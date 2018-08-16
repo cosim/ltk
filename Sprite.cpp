@@ -135,8 +135,11 @@ void Sprite::SetLayout(LayoutItem *layout)
     }
     m_layout = layout;
     m_layout->Ref();
+    BoxLayout *box = layout->As<BoxLayout>();
+    if (box) {
+        box->SetSprite(this);
+    }
 }
-
 
 // 只在Window::AttachSprite中使用
 void Sprite::SetHostWnd( Window *wnd )
@@ -621,12 +624,15 @@ void Sprite::HandleRecreateResouce(ID2D1RenderTarget *target)
 
 void Sprite::BeginAnimation()
 {
+    assert(m_hostWnd);
     m_hostWnd->BeginAnimation(this);
 }
 
 void Sprite::EndAnimation()
 {
-    m_hostWnd->EndAnimation(this);
+    if (m_hostWnd) {
+        m_hostWnd->EndAnimation(this);
+    }
 }
 
 #ifndef LTK_DISABLE_LUA
@@ -653,6 +659,14 @@ int Sprite::SetRect(lua_State *L)
     Sprite *thiz = CheckLuaObject<Sprite>(L, 1);
     RectF rc = LuaCheckRectF(L, 2);
     thiz->SetRect(rc);
+    return 0;
+}
+
+int Sprite::SetLayout(lua_State *L)
+{
+    Sprite *thiz = CheckLuaObject<Sprite>(L, 1);
+    LayoutItem *layout = CheckLuaObject<LayoutItem>(L, 2);
+    thiz->SetLayout(layout);
     return 0;
 }
 
