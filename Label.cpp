@@ -34,6 +34,7 @@ bool Label::OnPaint(PaintEvent *ev)
 
 void Label::RecreateResouce(ID2D1RenderTarget *target)
 {
+    LOG(".");
     HRESULT hr = E_FAIL;
     SAFE_RELEASE(m_brush);
     hr = target->CreateSolidColorBrush(D2D1::ColorF(0.5f, 0.5f, 0.5f), &m_brush);
@@ -45,7 +46,7 @@ void Label::RecreateResouce(ID2D1RenderTarget *target)
         DWRITE_FONT_WEIGHT_REGULAR,
         DWRITE_FONT_STYLE_NORMAL,
         DWRITE_FONT_STRETCH_NORMAL,
-        12.0f,
+        m_fontSize,
         L"zh-cn",
         &m_textFormat
         );
@@ -83,6 +84,9 @@ int Label::LuaConstructor(lua_State *L)
     auto text = LuaCheckWString(L, 2);
     auto thiz = new Label();
     thiz->SetText(text);
+    if (!lua_isnone(L, 3)) {
+        thiz->m_fontSize = (float)luaL_checknumber(L, 3);
+    }
     thiz->PushToLua(L, "Label");
     thiz->Unref();
     return 1;

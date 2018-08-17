@@ -40,6 +40,7 @@ private:
     DWRITE_TEXT_ALIGNMENT m_textAlign = DWRITE_TEXT_ALIGNMENT_CENTER;
     DWRITE_PARAGRAPH_ALIGNMENT m_paragraphAlign = DWRITE_PARAGRAPH_ALIGNMENT_CENTER;
     D2D1_COLOR_F m_textColor;
+    float m_fontSize = 12.0f;
 };
 
 } // namespace ltk
