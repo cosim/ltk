@@ -42,6 +42,7 @@ public:
     static int DoLayout(lua_State *L);
 
     BEGIN_LUA_METHOD_MAP(BoxLayout)
+        LUA_CHAIN_METHOD_MAP(Sprite)
         LUA_METHOD_ENTRY(AddLayoutItem)
         LUA_METHOD_ENTRY(AddSpaceItem)
         LUA_METHOD_ENTRY(DoLayout)

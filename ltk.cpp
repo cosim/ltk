@@ -34,7 +34,7 @@ namespace ltk {
         target->SetTransform(&matrix);
     }
 
-    D2D1_RECT_F GdipRectF2D2D1RectF(const RectF &rc)
+    D2D1_RECT_F D2D1RectF(const RectF &rc)
     {
         D2D1_RECT_F rc2;
         rc2.left = rc.X;

@@ -54,7 +54,7 @@ bool Button::OnPaint(PaintEvent *ev)
 
     rc.X = 0;
     rc.Height -= 2;
-    auto rc2 = GdipRectF2D2D1RectF(rc);
+    auto rc2 = D2D1RectF(rc);
     ev->target->FillRectangle(rc2, m_brush);
 
     if (m_bBorder) {
