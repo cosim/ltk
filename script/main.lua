@@ -28,7 +28,7 @@ LtkApi.Trace("hi ZeroBrane");
 ---@type Ltk.Window
 local wnd = Ltk.Window:new();
 
-wnd:Create({x = 10, y = 10, w = 800, h = 600}, 'borderless');
+wnd:Create({x = 10, y = 10, w = 800, h = 600}, 'overlapped');
 wnd:SetTitle("LTK测试窗口");
 
 ---@type Ltk.RectF
@@ -42,7 +42,7 @@ local root = wnd:GetRootSprite()
 
 ---@type Ltk.BoxLayout
 local vbox = root;
-vbox:AddSpaceItem(30, 0);
+--vbox:AddSpaceItem(30, 0);
 
 ---@type Ltk.BoxLayout
 local hbox1 = Ltk.BoxLayout:new("horizontal");

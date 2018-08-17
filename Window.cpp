@@ -399,21 +399,23 @@ LRESULT CALLBACK Window::WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM 
 void Window::DrawNonClient()
 {
     SizeF size = this->GetClientSize();
-    m_brush->SetColor(D2D1::ColorF(0.3f, 0.3f, 0.4f));
-    m_target->FillRectangle(D2D1::RectF(0.0f, 0.0f, size.Width, (float)CAPTION_HEIGHT), m_brush);
+    if (m_mode == Window::eBorderless) {
+        m_brush->SetColor(D2D1::ColorF(0.3f, 0.3f, 0.4f));
+        m_target->FillRectangle(D2D1::RectF(0.0f, 0.0f, size.Width, (float)CAPTION_HEIGHT), m_brush);
+
+        m_brush->SetColor(D2D1::ColorF(D2D1::ColorF::WhiteSmoke));
+        std::wstring title;
+        auto len = ::GetWindowTextLengthW(m_hwnd);
+        len++;
+        title.resize((size_t)len);
+        ::GetWindowTextW(m_hwnd, &title[0], len);
+        auto rc = D2D1::RectF(10.0f, 0.0f, size.Width, (float)CAPTION_HEIGHT);
+        m_target->DrawText(title.c_str(), (UINT32)title.length(), m_textFormat, rc, m_brush);
+    }
     m_brush->SetColor(D2D1::ColorF(0.5f, 0.5f, 0.6f));
     m_target->DrawRectangle(D2D1::RectF(0.0f, 0.0f, size.Width - 1.0f, size.Height - 1.0f), m_brush);
     // debug
     //m_target->DrawRectangle(D2D1::RectF(20, 400, 60, 440), m_brush);
-
-    m_brush->SetColor(D2D1::ColorF(D2D1::ColorF::WhiteSmoke));
-    std::wstring title;
-    auto len = ::GetWindowTextLengthW(m_hwnd);
-    len++;
-    title.resize((size_t)len);
-    ::GetWindowTextW(m_hwnd, &title[0], len);
-    auto rc = D2D1::RectF(10.0f, 0.0f, size.Width, (float)CAPTION_HEIGHT);
-    m_target->DrawText(title.c_str(), (UINT32)title.length(), m_textFormat, rc, m_brush);
 }
 
 void Window::RecreateResouce()
