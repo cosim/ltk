@@ -15,14 +15,14 @@ function Window:new() end
 ---@param mode string @overlapped|borderless
 function Window:Create(rect, mode) end
 
----@param title string
-function Window:SetTitle(title) end
-
 ---@return Ltk.RectF
 function Window:GetRect() end
 
 ---@return number,number
 function Window:GetClientSize() end
+
+---@param title string
+function Window:SetTitle(title) end
 
 ---@return Ltk.BoxLayout
 function Window:GetRootSprite() end
@@ -58,4 +58,24 @@ function BoxLayout:AddLayoutItem(item, size, grow) end
 function BoxLayout:AddSpaceItem(size, grow) end
 
 function BoxLayout:DoLayout() end
+
+---@class Ltk.Label : Ltk.Sprite
+local Label = {}
+
+---@param text string
+function Label:new(text) end
+
+---@param text string
+function Label:SetText(text) end
+
+---@param a string @leading|trailing|center|justified
+function Label:SetTextAlign(a) end
+
+---@param a string @near|far|bottom
+function Label:SetParagraphAlign(a) end
+
+---@param r number
+---@param g number
+---@param b number
+function Label:SetColor(r, g, b) end
 

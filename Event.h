@@ -76,21 +76,3 @@ struct FocusEvent : public Event
 
 
 }
-
-#define  LUI_DECLARE_MSG_MAP() \
-    virtual bool OnEvent( UINT id, void *ev ) override;
-
-#define LUI_BEGIN_MSG_MAP(type) \
-    bool type::OnEvent( UINT id, void *ev ) \
-    { \
-        switch (id) {
-          
-#define  LUI_END_MSG_MAP() \
-        default: \
-            return __super::OnEvent(id, ev); \
-        } \
-    }
-
-#define LUI_HANDLE_PAINT() \
-        case ePaint: \
-            return OnPaint(static_cast<PaintEvent*>(ev));

@@ -50,6 +50,11 @@ vbox:AddLayoutItem(hbox1, 50);
 
 hbox1:AddSpaceItem(0, 1);
 
+---@type Ltk.Label
+local label1 = Ltk.Label:new("Label:");
+--label1:SetTextColor(1, 1, 1);
+hbox1:AddLayoutItem(label1, 40);
+
 ---@type Ltk.Button
 local btn = Ltk.Button:new("btn1");
 hbox1:AddLayoutItem(btn, 100);

@@ -12,6 +12,7 @@
 #include "BoxLayout.h"
 #include "ApiBinding.h"
 #include "LuaObject.h"
+#include "Label.h"
 
 static ID2D1Factory *g_d2d_factory = NULL;
 static IWICImagingFactory  *g_wic_factory = NULL;
@@ -186,6 +187,7 @@ int luaopen_ltk(lua_State *L)
     LuaRegisterClass<Sprite>(L, "Sprite");
     LuaRegisterClass<Button>(L, "Button");
     LuaRegisterClass<BoxLayout>(L, "BoxLayout");
+    LuaRegisterClass<Label>(L, "Label");
 
     return 0;
 }

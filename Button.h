@@ -8,6 +8,7 @@ namespace ltk {
 class Button : public Sprite
 {
 public:
+    RTTI_DECLARATIONS(Button, Sprite)
     Button();
     virtual ~Button();
 

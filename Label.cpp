@@ -6,7 +6,7 @@ namespace ltk {
 
 Label::Label()
 {
-    m_textColor = D2D1::ColorF(D2D1::ColorF::Black);
+    m_textColor = D2D1::ColorF(D2D1::ColorF::White);
 }
 
 Label::~Label()
@@ -52,6 +52,12 @@ void Label::RecreateResouce(ID2D1RenderTarget *target)
     assert(SUCCEEDED(hr));
 }
 
+void Label::SetText(const wchar_t *t)
+{
+    m_text = t;
+    this->Invalidate();
+}
+
 void Label::SetTextAlign(DWRITE_TEXT_ALIGNMENT a)
 {
     m_textAlign = a;
@@ -71,6 +77,24 @@ void Label::SetTextColor(D2D1_COLOR_F clr)
 }
 
 #ifndef LTK_DISABLE_LUA
+
+int Label::LuaConstructor(lua_State *L)
+{
+    auto text = LuaCheckWString(L, 2);
+    auto thiz = new Label();
+    thiz->SetText(text);
+    thiz->PushToLua(L, "Label");
+    thiz->Unref();
+    return 1;
+}
+
+int Label::SetText(lua_State *L)
+{
+    Label *thiz = CheckLuaObject<Label>(L, 1);
+    auto text = LuaCheckWString(L, 2);
+    thiz->SetText(text);
+    return 0;
+}
 
 int Label::SetTextAlign(lua_State *L)
 {
