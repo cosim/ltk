@@ -51,19 +51,39 @@ vbox:AddLayoutItem(hbox1, 50);
 hbox1:AddSpaceItem(0, 1);
 
 ---@type Ltk.Label
-local label1 = Ltk.Label:new("Label:");
+local label = Ltk.Label:new("Label:");
 --label1:SetTextColor(1, 1, 1);
-hbox1:AddLayoutItem(label1, 40);
+hbox1:AddLayoutItem(label, 40);
 
 ---@type Ltk.Button
 local btn = Ltk.Button:new("btn1");
 hbox1:AddLayoutItem(btn, 100);
 
-hbox1:AddSpaceItem(30, 0);
+hbox1:AddSpaceItem(20, 0);
 
 btn = Ltk.Button:new("btn3");
 hbox1:AddLayoutItem(btn, 100);
 
+---@type Ltk.BoxLayout
+local hbox2 = Ltk.BoxLayout:new("horizontal");
+vbox:AddLayoutItem(hbox2, 40);
+
+btn = Ltk.Button:new("btn4");
+hbox2:AddLayoutItem(btn, 100, 1);
+
+btn = Ltk.Button:new("btn5");
+hbox2:AddLayoutItem(btn, 100, 1);
+hbox2:AddSpaceItem(0, 4);
+
+---@type Ltk.BoxLayout
+local hbox3 = Ltk.BoxLayout:new("horizontal");
+
+label = Ltk.Label:new("Hello World");
+hbox3:AddSpaceItem(0, 1);
+hbox3:AddLayoutItem(label, 300);
+hbox3:AddSpaceItem(0, 1);
+
+vbox:AddLayoutItem(hbox3, 50);
 
 vbox:AddSpaceItem(0, 1);
 
