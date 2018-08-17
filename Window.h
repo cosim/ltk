@@ -138,6 +138,8 @@ private:
     RECT m_oldRect;
     RECT m_normalRect;
     bool m_bMaximized = false;
+    long m_minWidth = 400;
+    long m_minHeight = 300;
 
     enum State {
         eNone,
@@ -152,6 +154,7 @@ private:
         eBottom
     };
     State StateFromPoint(POINT pt, const RECT &rc);
+    void SetWindowRect(HWND hwnd, RECT &rc);
     State m_state = eNone;
 };
 

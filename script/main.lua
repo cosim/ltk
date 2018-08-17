@@ -48,12 +48,17 @@ vbox:AddSpaceItem(30, 0);
 local hbox1 = Ltk.BoxLayout:new("horizontal");
 vbox:AddLayoutItem(hbox1, 50);
 
+hbox1:AddSpaceItem(0, 1);
+
 ---@type Ltk.Button
 local btn = Ltk.Button:new("btn1");
 hbox1:AddLayoutItem(btn, 100);
 
+hbox1:AddSpaceItem(30, 0);
+
 btn = Ltk.Button:new("btn3");
 hbox1:AddLayoutItem(btn, 100);
+
 
 vbox:AddSpaceItem(0, 1);
 

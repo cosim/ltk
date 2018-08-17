@@ -748,8 +748,36 @@ int Window::GetRootSprite(lua_State *L)
 
 #endif
 
-static void SetWindowRect(HWND hwnd, RECT &rc)
+void ResizeHelper::SetWindowRect(HWND hwnd, RECT &rc)
 {
+    if (rc.right - rc.left < m_minWidth) {
+        switch (m_state) {
+        case eLeftTop:
+        case eLeft:
+        case eLeftBottom:
+            rc.left = rc.right - m_minWidth;
+            break;
+        case eRightTop:
+        case eRight:
+        case eRightBottom:
+            rc.right = rc.left + m_minWidth;
+            break;
+        }
+    }
+    if (rc.bottom - rc.top < m_minHeight) {
+        switch (m_state) {
+        case eLeftTop:
+        case eTop:
+        case eRightTop:
+            rc.top = rc.bottom - m_minHeight;
+            break;
+        case eLeftBottom:
+        case eBottom:
+        case eRightBottom:
+            rc.bottom = rc.top + m_minHeight;
+            break;
+        }
+    }
     ::MoveWindow(hwnd, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top, TRUE);
 }
 
@@ -788,7 +816,12 @@ LRESULT ResizeHelper::HandleMessage(HWND hwnd, UINT message, WPARAM wparam, LPAR
             }
             break;
         case WM_MOUSEMOVE:
-            st = StateFromPoint(pt, rc);
+            if (m_state == eNone) {
+                st = StateFromPoint(pt, rc);
+            }
+            else {
+                st = m_state;
+            }
             switch (st) {
             case eLeftTop:
                 ::SetCursor(::LoadCursor(NULL, MAKEINTRESOURCE(IDC_SIZENWSE)));
