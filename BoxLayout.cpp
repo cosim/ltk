@@ -46,7 +46,8 @@ bool BoxLayout::OnSize(SizeEvent *ev)
         sum_size += m_params[i].size;
         sum_factor += m_params[i].growFactor;
     }
-    sum_size += m_margin * (m_params.size() + 1);
+    sum_size += m_margin * 2;
+    sum_size += m_spacing * (m_params.size() - 1);
 
     float remain;
     if (m_mode == Horizontal) {
@@ -72,14 +73,14 @@ bool BoxLayout::OnSize(SizeEvent *ev)
             rc2.Y = y;
             rc2.Width = size;
             rc2.Height = ev->height - m_margin - m_margin;
-            x += size + m_margin;
+            x += size + m_spacing;
         }
         else {
             rc2.X = x;
             rc2.Y = y;
             rc2.Width = ev->width - m_margin - m_margin;
             rc2.Height = size;
-            y += size + m_margin;
+            y += size + m_spacing;
         }
         if (m_params[i].item) {
             m_params[i].item->SetRect(rc2);
@@ -94,6 +95,11 @@ void BoxLayout::SetMargin(float margin)
         __debugbreak();
     }
     m_margin = margin;
+}
+
+void BoxLayout::SetSpacing(float spacing)
+{
+    m_spacing = spacing;
 }
 
 void BoxLayout::DoLayout()
@@ -145,6 +151,22 @@ int BoxLayout::DoLayout(lua_State *L)
     thiz->DoLayout();
     return 0;
 }
+
+int BoxLayout::SetMargin(lua_State *L)
+{
+    BoxLayout *thiz = CheckLuaObject<BoxLayout>(L, 1);
+    thiz->SetMargin((float)luaL_checknumber(L, 2));
+    return 0;
+}
+
+
+int BoxLayout::SetSpacing(lua_State *L)
+{
+    BoxLayout *thiz = CheckLuaObject<BoxLayout>(L, 1);
+    thiz->SetSpacing((float)luaL_checknumber(L, 2));
+    return 0;
+}
+
 
 #endif // LTK_DISABLE_LUA
 

@@ -42,7 +42,9 @@ print("Window:GetClientSize()", w, h);
 local root = wnd:GetRootSprite()
 
 ---@type Ltk.BoxLayout
-local vbox = root;
+local vbox = Ltk.BoxLayout:new("vertical");
+root:AddLayoutItem(vbox, 0, 1);
+vbox:SetMargin(8);
 --vbox:AddSpaceItem(30, 0);
 
 ---@type Ltk.BoxLayout
@@ -99,9 +101,10 @@ vbox:AddLayoutItem(hbox3, 50);
 
 vbox:AddSpaceItem(0, 1);
 
-btn = Ltk.Button:new("btn2");
-vbox:AddLayoutItem(btn, 30);
+btn = Ltk.Button:new("status bar");
+root:AddLayoutItem(btn, 20);
 
+root:SetSpacing(0);
 root:DoLayout();
 
 g_wnd_event = wnd:SetEventHandler({
@@ -128,7 +131,7 @@ end
 do -- debugger test
 	local insert = table.insert
 	local large_tbl = {}
-	for i = 1, 10000 do
+	for i = 1, 10 do
 		insert(large_tbl, {x = i});
 	end
 	local i;

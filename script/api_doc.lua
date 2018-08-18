@@ -63,6 +63,12 @@ local BoxLayout = {}
 ---@param mode string @horizontal|vertical
 function BoxLayout:new(mode) end
 
+---@param margin number
+function BoxLayout:SetMargin(margin) end
+
+---@param spacing number
+function BoxLayout:SetSpacing(spacing) end
+
 ---@param item Ltk.Sprite
 ---@param size number
 ---@param grow number

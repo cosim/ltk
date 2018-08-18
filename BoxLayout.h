@@ -29,6 +29,8 @@ public:
 
     void SetMargin(float margin);
 
+    void SetSpacing(float spacing);
+
     void AddLayoutItem(Sprite *sp, float preferedSize, float growFactor = 0.0f);
 
     void AddSpaceItem(float preferedSize, float growFactor);
@@ -37,12 +39,16 @@ public:
 
 #ifndef LTK_DISABLE_LUA
     static int LuaConstructor(lua_State *L);
+    static int SetMargin(lua_State *L);
+    static int SetSpacing(lua_State *L);
     static int AddLayoutItem(lua_State *L);
     static int AddSpaceItem(lua_State *L);
     static int DoLayout(lua_State *L);
 
     BEGIN_LUA_METHOD_MAP(BoxLayout)
         LUA_CHAIN_METHOD_MAP(Sprite)
+        LUA_METHOD_ENTRY(SetMargin)
+        LUA_METHOD_ENTRY(SetSpacing)
         LUA_METHOD_ENTRY(AddLayoutItem)
         LUA_METHOD_ENTRY(AddSpaceItem)
         LUA_METHOD_ENTRY(DoLayout)
@@ -54,7 +60,8 @@ private:
     std::vector<BoxLayoutParam> m_params; // item: owner
     Sprite *m_sprite = nullptr; // weak
     Mode m_mode;
-    float m_margin = 5.0f;
+    float m_margin = 0.0f;
+    float m_spacing = 5.0f;
 };
 
 } // namespace ltk
