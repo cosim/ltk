@@ -44,7 +44,7 @@ using Gdiplus::Color;
 
 #include <functional>
 
-#define SAFE_RELEASE(p) if (p) { p->Release(); p = NULL; }
+#define SAFE_RELEASE(p) if (p) { (p)->Release(); (p) = NULL; }
 
 #include "lua.h"
 #include "lauxlib.h"

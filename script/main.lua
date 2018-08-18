@@ -38,6 +38,7 @@ print('Window:GetRect()',rc.x, rc.y, rc.w, rc.h);
 local w, h = wnd:GetClientSize();
 print("Window:GetClientSize()", w, h);
 
+---@type Ltk.BoxLayout
 local root = wnd:GetRootSprite()
 
 ---@type Ltk.BoxLayout
@@ -68,17 +69,28 @@ hbox1:AddLayoutItem(btn, 100);
 local hbox2 = Ltk.BoxLayout:new("horizontal");
 vbox:AddLayoutItem(hbox2, 40);
 
-btn = Ltk.Button:new("btn4");
+btn = Ltk.Button:new("Label Color Test");
+g_btn_set_label_color = btn:SetEventHandler({
+	OnClick = function() label:SetTextColor(1, 1, 1) end,
+	Sprite = btn
+})
 hbox2:AddLayoutItem(btn, 100, 1);
 
-btn = Ltk.Button:new("btn5");
+btn = Ltk.Button:new("Font Size Test");
+g_btn_set_label_font_size = btn:SetEventHandler({
+	OnClick = function() label:SetFontSize(12) end,
+	Sprite = btn
+})
 hbox2:AddLayoutItem(btn, 100, 1);
 hbox2:AddSpaceItem(0, 4);
 
 ---@type Ltk.BoxLayout
 local hbox3 = Ltk.BoxLayout:new("horizontal");
 
-label = Ltk.Label:new("Hello World", 20);
+label = Ltk.Label:new("Hello World");
+label:SetTextColor(1,0,0);
+label:SetFontSize(20);
+
 hbox3:AddSpaceItem(0, 1);
 hbox3:AddLayoutItem(label, 300);
 hbox3:AddSpaceItem(0, 1);

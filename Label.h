@@ -23,6 +23,7 @@ public:
     static int SetTextAlign(lua_State *L);
     static int SetParagraphAlign(lua_State *L);
     static int SetTextColor(lua_State *L);
+    static int SetFontSize(lua_State *L);
 
     BEGIN_LUA_METHOD_MAP(Label)
         LUA_CHAIN_METHOD_MAP(Sprite)
@@ -30,6 +31,7 @@ public:
         LUA_METHOD_ENTRY(SetTextAlign)
         LUA_METHOD_ENTRY(SetParagraphAlign)
         LUA_METHOD_ENTRY(SetTextColor)
+        LUA_METHOD_ENTRY(SetFontSize)
     END_LUA_METHOD_MAP()
 #endif // LTK_DISABLE_LUA
 

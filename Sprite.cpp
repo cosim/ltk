@@ -112,7 +112,7 @@ void Sprite::Invalidate()
 		rc.top = (LONG)(rf.GetTop() - 0.5f);  // TODO FIXME 这个值是试出来的 不知其所以然
 		rc.right = (LONG)(rf.GetRight() + 1.5f); // 缩小窗口TabCtrl会有拖影 这里改成2 就可以消除拖影现象
 		rc.bottom = (LONG)(rf.GetBottom() + 1.5f); // 很诡异 可能是因为GdiPlus认为x取大的 width也取大的
-		::InvalidateRect(wnd->Handle(), &rc, TRUE);
+		::InvalidateRect(wnd->Handle(), &rc, FALSE);
 	}
 }
 

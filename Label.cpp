@@ -24,7 +24,22 @@ Label::~Label()
 
 bool Label::OnPaint(PaintEvent *ev)
 {
+    HRESULT hr = E_FAIL;
     RectF rc = this->GetClientRect();
+    if (!m_textFormat) {
+        hr = GetDWriteFactory()->CreateTextFormat(
+            L"Î¢ÈíÑÅºÚ",
+            NULL,
+            DWRITE_FONT_WEIGHT_REGULAR,
+            DWRITE_FONT_STYLE_NORMAL,
+            DWRITE_FONT_STRETCH_NORMAL,
+            m_fontSize,
+            L"zh-cn",
+            &m_textFormat
+            );
+        assert(SUCCEEDED(hr));
+        LOG("recreate m_textFormat");
+    }
     m_textFormat->SetTextAlignment(m_textAlign);
     m_textFormat->SetParagraphAlignment(m_paragraphAlign);
     m_brush->SetColor(m_textColor);
@@ -37,19 +52,7 @@ void Label::RecreateResouce(ID2D1RenderTarget *target)
     LOG(".");
     HRESULT hr = E_FAIL;
     SAFE_RELEASE(m_brush);
-    hr = target->CreateSolidColorBrush(D2D1::ColorF(0.5f, 0.5f, 0.5f), &m_brush);
-    assert(SUCCEEDED(hr));
-    SAFE_RELEASE(m_textFormat);
-    hr = GetDWriteFactory()->CreateTextFormat(
-        L"Î¢ÈíÑÅºÚ",
-        NULL,
-        DWRITE_FONT_WEIGHT_REGULAR,
-        DWRITE_FONT_STYLE_NORMAL,
-        DWRITE_FONT_STRETCH_NORMAL,
-        m_fontSize,
-        L"zh-cn",
-        &m_textFormat
-        );
+    hr = target->CreateSolidColorBrush(m_textColor, &m_brush);
     assert(SUCCEEDED(hr));
 }
 
@@ -84,9 +87,6 @@ int Label::LuaConstructor(lua_State *L)
     auto text = LuaCheckWString(L, 2);
     auto thiz = new Label();
     thiz->SetText(text);
-    if (!lua_isnone(L, 3)) {
-        thiz->m_fontSize = (float)luaL_checknumber(L, 3);
-    }
     thiz->PushToLua(L, "Label");
     thiz->Unref();
     return 1;
@@ -127,6 +127,15 @@ int Label::SetTextColor(lua_State *L)
     Label *thiz = CheckLuaObject<Label>(L, 1);
     auto clr = LuaCheckColor(L, 2);
     thiz->SetTextColor(clr);
+    return 0;
+}
+
+int Label::SetFontSize(lua_State *L)
+{
+    Label *thiz = CheckLuaObject<Label>(L, 1);
+    thiz->m_fontSize = (float)luaL_checknumber(L, 2);
+    SAFE_RELEASE(thiz->m_textFormat);
+    thiz->Invalidate();
     return 0;
 }
 

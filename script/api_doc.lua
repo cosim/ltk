@@ -5,6 +5,12 @@
 ---@field h number
 local RectF = {}
 
+---@class Ltk.Object
+local Object = {}
+
+---@param handler table
+function Object:SetEventHandler(handler) end
+
 ---@class Ltk.Window
 local Window = {}
 
@@ -27,7 +33,7 @@ function Window:SetTitle(title) end
 ---@return Ltk.BoxLayout
 function Window:GetRootSprite() end
 
----@class Ltk.Sprite
+---@class Ltk.Sprite : Ltk.Object
 local Sprite = {}
 
 ---@param sp Ltk.Sprite
@@ -77,5 +83,7 @@ function Label:SetParagraphAlign(a) end
 ---@param r number
 ---@param g number
 ---@param b number
-function Label:SetColor(r, g, b) end
+function Label:SetTextColor(r, g, b) end
 
+---@param fontSize number
+function Label:SetFontSize(fontSize) end
