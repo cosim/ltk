@@ -30,7 +30,7 @@ Window::Window(void)
 
     m_sprite = new BoxLayout(BoxLayout::Vertical);
     m_sprite->SetMargin(0.0f);
-    m_sprite->SetHostWnd(this);
+    m_sprite->SetWindow(this);
     
 	m_spFocus = NULL;
 	m_spCapture = NULL;
@@ -608,7 +608,7 @@ void Window::SetCaretHeight( float h)
 
 void Window::SetCapture( Sprite *sp )
 {
-	assert(sp->GetHostWindow() == this);
+	assert(sp->GetWindow() == this);
 	m_spCapture = sp;
 	::SetCapture(m_hwnd);
 }
@@ -633,7 +633,7 @@ void Window::HideCaret()
 
 void Window::TrackMouseLeave( Sprite *sp )
 {
-	if (sp->GetHostWindow() == this)
+	if (sp->GetWindow() == this)
 	{
 		m_setTrackMouseLeave.insert(sp);
 	}

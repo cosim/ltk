@@ -17,7 +17,7 @@ Sprite::Sprite(void)
 	m_rect.Width = 10;
 	m_rect.Height = 10;
 
-    m_hostWnd = NULL;
+    m_window = NULL;
 
 	m_firstChild = NULL;
 	m_lastChild = NULL;
@@ -34,7 +34,7 @@ Sprite::Sprite(void)
 
 Sprite::~Sprite(void)
 {
-	m_hostWnd = INVALID_POINTER(Window);
+	m_window = INVALID_POINTER(Window);
 	Sprite *sp = m_firstChild;
 	while(sp)
 	{
@@ -103,7 +103,7 @@ void Sprite::SetRect( RectF rect )
 void Sprite::Invalidate()
 {
 	// 0指针访问 不挂是因为x64系统一个bug 记得打开调试中的Win32异常断点
-	Window *wnd = GetHostWindow();
+	Window *wnd = GetWindow();
 	if (wnd)
 	{
 		RECT rc;
@@ -117,17 +117,17 @@ void Sprite::Invalidate()
 }
 
 // 只在Window::AttachSprite中使用
-void Sprite::SetHostWnd( Window *wnd )
+void Sprite::SetWindow( Window *wnd )
 {
-	LOG("BEGIN");
-	m_hostWnd = wnd;
+	LOG("-->");
+	m_window = wnd;
 	Sprite *sp = m_firstChild;
 	while(sp)
 	{
-		sp->SetHostWnd(wnd);
+		sp->SetWindow(wnd);
 		sp = sp->m_nextSibling;
 	}
-	LOG("END");
+	LOG("<--");
 }
 
 void Sprite::HandlePaint( ID2D1RenderTarget *target )
@@ -188,7 +188,7 @@ void Sprite::AddChild( Sprite *sp )
 		sp->m_prevSibling = tmp;
 		tmp->m_nextSibling = sp;
 	}
-	sp->SetHostWnd(m_hostWnd); // 递归去设置 防止任意顺序插入导致问题 FIXME 可能有性能问题
+	sp->SetWindow(m_window); // 递归去设置 防止任意顺序插入导致问题 FIXME 可能有性能问题
 	sp->m_parent = this;
     sp->Ref();
 }
@@ -217,7 +217,7 @@ void Sprite::HandleMouseEvent( MouseEvent *ev )
         OnEvent(ev);
 		if (m_enableFocus)
 		{
-			GetHostWindow()->SetFocusSprite(this);
+			GetWindow()->SetFocusSprite(this);
 		}
 		break;
 	case WM_LBUTTONUP:
@@ -287,31 +287,31 @@ void Sprite::EnableFocus( bool enable )
 	m_enableFocus = enable;
 }
 
-Window * Sprite::GetHostWindow()
+Window * Sprite::GetWindow()
 {
 	Sprite *sp = this;
 	while (sp->m_parent)
 	{
 		sp = sp->m_parent;
 	}
-	return sp->m_hostWnd;
+	return sp->m_window;
 }
 
 void Sprite::SetCapture()
 {
-	assert(GetHostWindow()); // 这个在lua包装函数里检查 报成lua错误
-	if (GetHostWindow())
+	assert(GetWindow()); // 这个在lua包装函数里检查 报成lua错误
+	if (GetWindow())
 	{
-		GetHostWindow()->SetCapture(this);
+		GetWindow()->SetCapture(this);
 	}
 }
 
 void Sprite::ReleaseCapture()
 {
-	assert(GetHostWindow()); // 这个在lua包装函数里检查 报成lua错误
-	if (GetHostWindow())
+	assert(GetWindow()); // 这个在lua包装函数里检查 报成lua错误
+	if (GetWindow())
 	{
-		GetHostWindow()->ReleaseCapture();
+		GetWindow()->ReleaseCapture();
 	}
 }
 
@@ -429,7 +429,7 @@ Sprite * Sprite::GetParent()
 
 void Sprite::TrackMouseLeave()
 {
-	Window *wnd = GetHostWindow();
+	Window *wnd = GetWindow();
 	if (wnd)
 	{
 		wnd->TrackMouseLeave(this);
@@ -502,26 +502,26 @@ Sprite * Sprite::GetLastChild()
 
 void Sprite::ShowCaret()
 {
-    GetHostWindow()->ShowCaret();
+    GetWindow()->ShowCaret();
     m_bShowCaret = true;
 }
 
 void Sprite::SetCaretPos(RectF rc)
 {
     RectF arc = Sprite::GetAbsRect();
-    GetHostWindow()->SetImePosition(rc.X + arc.X, rc.Y + arc.Y);
-    HWND hwnd = GetHostWindow()->Handle();
+    GetWindow()->SetImePosition(rc.X + arc.X, rc.Y + arc.Y);
+    HWND hwnd = GetWindow()->Handle();
     ::DestroyCaret(); // 这里销毁重新建立 才能改变高度
     ::CreateCaret(hwnd, NULL, (int)rc.Width, (int)rc.Height); // 可以加个参数制定虚线光标(HBITMAP)1
     BOOL ret = ::ShowCaret(hwnd); // TODO 这里太脏了 可能显示出来就隐藏不掉 应该一对一绑定
     assert(ret);
-    GetHostWindow()->SetCaretHeight(rc.Height);
+    GetWindow()->SetCaretHeight(rc.Height);
     ::SetCaretPos((int)(rc.X + arc.X), (int)(rc.Y + arc.Y));
 }
 
 void Sprite::HideCaret()
 {
-    GetHostWindow()->HideCaret();
+    GetWindow()->HideCaret();
     m_bShowCaret = false;
 }
 
@@ -599,14 +599,14 @@ void Sprite::HandleRecreateResouce(ID2D1RenderTarget *target)
 
 void Sprite::BeginAnimation()
 {
-    assert(m_hostWnd);
-    m_hostWnd->BeginAnimation(this);
+    assert(m_window);
+    m_window->BeginAnimation(this);
 }
 
 void Sprite::EndAnimation()
 {
-    if (m_hostWnd) {
-        m_hostWnd->EndAnimation(this);
+    if (m_window) {
+        m_window->EndAnimation(this);
     }
 }
 

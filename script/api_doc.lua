@@ -5,6 +5,15 @@
 ---@field h number
 local RectF = {}
 
+---@class Ltk
+---@field Object Ltk.Object
+---@field Window Ltk.Window
+---@field Sprite Ltk.Sprite
+---@field Button Ltk.Button
+---@field BoxLayout Ltk.BoxLayout
+---@field Label Ltk.Label
+Ltk = {}
+
 ---@class Ltk.Object
 local Object = {}
 

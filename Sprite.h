@@ -30,8 +30,8 @@ public:
 
 	void Invalidate();
 
-	void SetHostWnd( Window *wnd ); // TODO 这里名字要改 而且语义也有问题
-	Window *GetHostWindow();
+	void SetWindow( Window *wnd );
+	Window *GetWindow();
 
 	void SetVisible( bool );
 
@@ -130,7 +130,7 @@ private:
     bool m_bShowCaret;
 
     RectF m_rect;
-    Window *m_hostWnd;
+    Window *m_window;
 
 	Sprite *m_prevSibling; // 控件树结构 要高大上一点 zorder隐含在树结构中 避免排序
 	Sprite *m_nextSibling; // owner 平级的的关系用双链表
