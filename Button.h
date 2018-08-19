@@ -1,43 +1,51 @@
 #pragma once
 
-#include "Sprite.h"
 #include "Delegate.h"
+#include "BoxLayout.h"
 
 namespace ltk {
 
-class Button : public Sprite
+class Label;
+
+class Button : public BoxLayout
 {
 public:
-    RTTI_DECLARATIONS(Button, Sprite)
+    RTTI_DECLARATIONS(Button, BoxLayout)
+
+    enum Mode {
+        Text, Icon, IconLeft, IconTop
+    };
+
     Button();
     virtual ~Button();
 
-    virtual bool OnPaint(PaintEvent *ev) override;
+    void SetText(LPCWSTR text);
+    Label *GetLabel();
 
+    virtual bool OnPaint(PaintEvent *ev) override;
     virtual bool OnMouseEnter(MouseEvent *ev) override;
     virtual bool OnMouseLeave(MouseEvent *ev) override;
-
-    void SetText(LPCWSTR text);
-
     virtual bool OnLBtnDown(MouseEvent *ev) override;
     virtual bool OnLBtnUp(MouseEvent *ev) override;
+    virtual bool OnSize(SizeEvent *ev) override;
 
     virtual void RecreateResouce(ID2D1RenderTarget *target) override;
 
     Delegate<void()> Clicked;
 
-    D2D1_COLOR_F GetColor();
-
 #ifndef LTK_DISABLE_LUA
     static int LuaConstructor(lua_State *L);
+    static int GetLabel(lua_State *L);
 
     BEGIN_LUA_METHOD_MAP(Button)
         LUA_CHAIN_METHOD_MAP(Sprite)
+        LUA_METHOD_ENTRY(GetLabel)
     END_LUA_METHOD_MAP()
-
 #endif // LTK_DISABLE_LUA
 
 private:
+    D2D1_COLOR_F GetColor();
+
     bool m_bMouseIn = false;
     bool m_bMousePress = false;
     enum AniState { stStoped, stNormal2Hover, stHover2Normal };
@@ -46,14 +54,13 @@ private:
     enum { AniDuration = 200 };
     DWORD m_lastTick = 0;
 
-    wstring m_strText;
-    IDWriteTextFormat *m_text_format = nullptr;
     ID2D1SolidColorBrush *m_brush = nullptr;
     bool m_bBorder = false;
     D2D1_COLOR_F m_colorText;
     D2D1_COLOR_F m_colorBorder;
     D2D1_COLOR_F m_colorNormal;
     D2D1_COLOR_F m_colorHover;
+    Label *m_label = nullptr;
 };
 
 } // namespace

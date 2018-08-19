@@ -1,23 +1,28 @@
 #include "stdafx.h"
 #include "Button.h"
+#include "Label.h"
 #include "ltk.h"
 
 namespace ltk {
 
-Button::Button()
+Button::Button() : BoxLayout(BoxLayout::Horizontal)
 {
     m_colorText = D2D1::ColorF(0.8f, 0.8f, 0.8f);
     m_colorBorder = D2D1::ColorF(0.3f, 0.3f, 0.4f);
     m_colorNormal = D2D1::ColorF(0.3f, 0.3f, 0.4f);
     m_colorHover = D2D1::ColorF(0.5f, 0.5f, 0.7f);
+    m_label = new Label;
+    this->AddChild(m_label);
 }
 
 Button::~Button()
 {
-    if (m_text_format) m_text_format->Release();
-    m_text_format = INVALID_POINTER(IDWriteTextFormat);
+    if (m_label) m_label->Unref();
+    m_label = INVALID_POINTER(Label);
+
     if (m_brush) m_brush->Release();
     m_brush = INVALID_POINTER(ID2D1SolidColorBrush);
+
     this->EndAnimation();
 }
 
@@ -62,7 +67,6 @@ bool Button::OnPaint(PaintEvent *ev)
         ev->target->DrawRectangle(rc2, m_brush);
     }
     m_brush->SetColor(m_colorText);
-    ev->target->DrawText(m_strText.c_str(), (UINT32)m_strText.length(), m_text_format, rc2, m_brush);
 
     return true;
 }
@@ -84,12 +88,6 @@ bool Button::OnMouseLeave(MouseEvent *ev)
     m_state = stHover2Normal;
     m_lastTick = ::GetTickCount();
     return true;
-}
-
-void Button::SetText(LPCWSTR text)
-{
-    m_strText = text;
-    this->Invalidate();
 }
 
 bool Button::OnLBtnDown(MouseEvent *ev)
@@ -117,28 +115,24 @@ bool Button::OnLBtnUp(MouseEvent *ev)
     return true;
 }
 
+bool Button::OnSize(SizeEvent *ev)
+{
+    m_label->SetRect(RectF(0.0f, 0.0f, ev->width, ev->height));
+    return true;
+}
+
 void Button::RecreateResouce(ID2D1RenderTarget *target)
 {
     HRESULT hr;
-    SAFE_RELEASE(m_text_format);
-    hr = GetDWriteFactory()->CreateTextFormat(
-        L"Î¢ÈíÑÅºÚ",
-        NULL,
-        DWRITE_FONT_WEIGHT_REGULAR,
-        DWRITE_FONT_STYLE_NORMAL,
-        DWRITE_FONT_STRETCH_NORMAL,
-        14.0f,
-        L"zh-cn",
-        &m_text_format
-        );
-    assert(SUCCEEDED(hr));
-    m_text_format->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
-    m_text_format->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
-
     SAFE_RELEASE(m_brush);
     hr = target->CreateSolidColorBrush(
         D2D1::ColorF(D2D1::ColorF::White), &m_brush);
     assert(SUCCEEDED(hr));
+}
+
+void Button::SetText(LPCWSTR text)
+{
+    m_label->SetText(text);
 }
 
 D2D1_COLOR_F Button::GetColor()
@@ -162,6 +156,11 @@ D2D1_COLOR_F Button::GetColor()
     return result;
 }
 
+Label *Button::GetLabel()
+{
+    return m_label;
+}
+
 #ifndef LTK_DISABLE_LUA
 
 int Button::LuaConstructor(lua_State *L)
@@ -171,6 +170,14 @@ int Button::LuaConstructor(lua_State *L)
     thiz->SetText(text);
     thiz->PushToLua(L, "Button");
     thiz->Unref();
+    return 1;
+}
+
+int Button::GetLabel(lua_State *L)
+{
+    Button *thiz = CheckLuaObject<Button>(L, 1);
+    Label *label = thiz->GetLabel();
+    label->PushToLua(L, "Label");
     return 1;
 }
 

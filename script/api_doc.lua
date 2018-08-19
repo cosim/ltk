@@ -57,6 +57,9 @@ local Button = {}
 ---@param text string
 function Button:new(text) end
 
+---@return Ltk.Label
+function Button:GetLabel() end
+
 ---@class Ltk.BoxLayout: Ltk.Sprite
 local BoxLayout = {}
 
@@ -102,3 +105,9 @@ function Label:SetTextColor(r, g, b) end
 
 ---@param fontSize number
 function Label:SetFontSize(fontSize) end
+
+---@param weight string @regular|bold
+function Label:SetFontWeight(weight) end
+
+---@param name string
+function Label:SetFontName(name) end

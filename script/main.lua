@@ -64,7 +64,12 @@ hbox1:AddLayoutItem(btn, 100);
 
 hbox1:AddSpaceItem(20, 0);
 
-btn = Ltk.Button:new("btn3");
+btn = Ltk.Button:new("按钮样式");
+---@type Ltk.Label
+local btn_label = btn:GetLabel();
+btn_label:SetTextColor(0.5,1,1);
+btn_label:SetFontSize(16);
+btn_label:SetFontName("宋体");
 hbox1:AddLayoutItem(btn, 100);
 
 ---@type Ltk.BoxLayout

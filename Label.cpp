@@ -28,7 +28,7 @@ bool Label::OnPaint(PaintEvent *ev)
     RectF rc = this->GetClientRect();
     if (!m_textFormat) {
         hr = GetDWriteFactory()->CreateTextFormat(
-            L"Î¢ÈíÑÅºÚ",
+            m_fontName.c_str(),
             NULL,
             m_fontWeight,
             DWRITE_FONT_STYLE_NORMAL,
@@ -166,6 +166,7 @@ int Label::SetFontWeight(lua_State *L)
         DWRITE_FONT_WEIGHT_REGULAR, DWRITE_FONT_WEIGHT_BOLD
     };
     int id = luaL_checkoption(L, 2, nullptr, options1);
+    assert(id < ARRAYSIZE(enums));
     thiz->SetFontWeight(enums[id]);
     return 0;
 }
