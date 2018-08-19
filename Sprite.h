@@ -65,7 +65,9 @@ public:
 
 	void TrackMouseLeave();
 
-	Sprite *DispatchMouseEvent(MouseEvent *ev);
+	void DispatchMouseEvent(MouseEvent *ev);
+
+    Sprite *DispatchMouseEvent2(MouseEvent *ev);
 
 	void RemoveChild(Sprite *sp);
 

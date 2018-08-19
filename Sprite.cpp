@@ -371,10 +371,25 @@ bool Sprite::GetClipChildren()
 	return m_bClipChildren;
 }
 
-
+void Sprite::DispatchMouseEvent(MouseEvent *ev)
+{
+    this->HandleMouseEvent(ev);
+    Sprite *sp = m_firstChild;
+    while (sp)
+    {
+        RectF rc = sp->GetRect();
+        if (rc.Contains(ev->x, ev->y)) {
+            MouseEvent ev2 = *ev;
+            ev2.x -= rc.X;
+            ev2.y -= rc.Y;
+            sp->DispatchMouseEvent(&ev2);
+        }
+        sp = sp->m_nextSibling;
+    }
+}
 
 // http://blog.csdn.net/magic_feng/article/details/6618206
-Sprite * Sprite::DispatchMouseEvent(MouseEvent *event)
+Sprite * Sprite::DispatchMouseEvent2(MouseEvent *event)
 {
 	std::stack<Sprite *> stack;
 	std::stack<Sprite *> reverse;
