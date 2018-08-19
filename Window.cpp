@@ -9,6 +9,7 @@
 #include "ltk.h"
 #include "ApiBind.h"
 #include "BoxLayout.h"
+#include "Label.h"
 
 namespace ltk {
 
@@ -67,15 +68,15 @@ Window::~Window(void)
     }
     m_brush = INVALID_POINTER(ID2D1SolidColorBrush);
 
-    if (m_textFormat) {
-        m_textFormat->Release();
-    }
-    m_textFormat = INVALID_POINTER(IDWriteTextFormat);
-
     if (m_btnClose) {
         m_btnClose->Unref();
     }
     m_btnClose = INVALID_POINTER(Button);
+
+    if (m_labelTitle) {
+        m_labelTitle->Unref();
+    }
+    m_labelTitle = INVALID_POINTER(Label);
 }
 
 void Window::Create(Window *parent, RectF rc, Mode mode)
@@ -100,13 +101,21 @@ void Window::Create(Window *parent, RectF rc, Mode mode)
     case ltk::Window::eBorderless:
         style |= WS_POPUP;
         m_resizable = new ResizeHelper;
+
+        m_hboxCaption = new BoxLayout(BoxLayout::Horizontal);
+        m_hboxCaption->SetMargin(0.0f);
+        m_hboxCaption->AddSpaceItem(7.0f, 0.0f);
+
+        m_labelTitle = new Label;
+        m_labelTitle->SetTextColor(D2D1::ColorF(D2D1::ColorF::LightGray));
+        m_labelTitle->SetTextAlign(DWRITE_TEXT_ALIGNMENT_LEADING);
+        m_hboxCaption->AddLayoutItem(m_labelTitle, 0.0f, 1.0f);
+
         m_btnClose = new Button();
         m_btnClose->SetText(L"X");
         m_btnClose->Clicked.Attach(std::bind(&Window::OnBtnCloseClicked, this));
-        m_hboxCaption = new BoxLayout(BoxLayout::Horizontal);
-        m_hboxCaption->SetMargin(0.0f);
-        m_hboxCaption->AddSpaceItem(0.0f, 1.0f);
         m_hboxCaption->AddLayoutItem(m_btnClose, (float)SYSBTN_WIDTH);
+
         m_sprite->AddLayoutItem(m_hboxCaption, (float)CAPTION_HEIGHT);
         break;
     default:
@@ -139,6 +148,7 @@ void Window::SetRect(RectF rc)
 void Window::SetTitle(const wchar_t *title)
 {
     ::SetWindowText(m_hwnd, title);
+    m_labelTitle->SetText(title);
 }
 
 SizeF Window::GetClientSize()
@@ -402,15 +412,6 @@ void Window::DrawNonClient()
     if (m_mode == Window::eBorderless) {
         m_brush->SetColor(D2D1::ColorF(0.3f, 0.3f, 0.4f));
         m_target->FillRectangle(D2D1::RectF(0.0f, 0.0f, size.Width, (float)CAPTION_HEIGHT), m_brush);
-
-        m_brush->SetColor(D2D1::ColorF(D2D1::ColorF::WhiteSmoke));
-        std::wstring title;
-        auto len = ::GetWindowTextLengthW(m_hwnd);
-        len++;
-        title.resize((size_t)len);
-        ::GetWindowTextW(m_hwnd, &title[0], len);
-        auto rc = D2D1::RectF(10.0f, 0.0f, size.Width, (float)CAPTION_HEIGHT);
-        m_target->DrawText(title.c_str(), (UINT32)title.length(), m_textFormat, rc, m_brush);
     }
     m_brush->SetColor(D2D1::ColorF(0.5f, 0.5f, 0.6f));
     m_target->DrawRectangle(D2D1::RectF(0.0f, 0.0f, size.Width - 1.0f, size.Height - 1.0f), m_brush);
@@ -424,19 +425,6 @@ void Window::RecreateResouce()
     SAFE_RELEASE(m_brush);
     hr = m_target->CreateSolidColorBrush(D2D1::ColorF(0.5f, 0.5f, 0.5f), &m_brush);
     assert(SUCCEEDED(hr));
-    SAFE_RELEASE(m_textFormat);
-    hr = GetDWriteFactory()->CreateTextFormat(
-        L"Î¢ÈíÑÅºÚ",
-        NULL,
-        DWRITE_FONT_WEIGHT_REGULAR,
-        DWRITE_FONT_STYLE_NORMAL,
-        DWRITE_FONT_STRETCH_NORMAL,
-        12.0f,
-        L"zh-cn",
-        &m_textFormat
-        );
-    assert(SUCCEEDED(hr));
-    m_textFormat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
 }
 
 void Window::OnPaint(HWND hwnd )

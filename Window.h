@@ -13,6 +13,7 @@ class Sprite;
 class Button;
 class ResizeHelper;
 class BoxLayout;
+class Label;
 
 class Window : public LuaObject
 {
@@ -123,7 +124,7 @@ private:
     Button *m_btnClose = nullptr;
     ResizeHelper *m_resizable = nullptr; // owner
     ID2D1SolidColorBrush *m_brush = nullptr; // owner
-    IDWriteTextFormat *m_textFormat = nullptr; // owner
+    Label *m_labelTitle = nullptr;
 
     BoxLayout *m_hboxCaption = nullptr;
 };
