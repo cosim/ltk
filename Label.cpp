@@ -30,7 +30,7 @@ bool Label::OnPaint(PaintEvent *ev)
         hr = GetDWriteFactory()->CreateTextFormat(
             L"Î¢ÈíÑÅºÚ",
             NULL,
-            DWRITE_FONT_WEIGHT_REGULAR,
+            m_fontWeight,
             DWRITE_FONT_STYLE_NORMAL,
             DWRITE_FONT_STRETCH_NORMAL,
             m_fontSize,
@@ -80,6 +80,27 @@ void Label::SetTextColor(D2D1_COLOR_F clr)
     this->Invalidate();
 }
 
+void Label::SetFontSize(float size)
+{
+    m_fontSize = size;
+    SAFE_RELEASE(m_textFormat);
+    this->Invalidate();
+}
+
+void Label::SetFontWeight(DWRITE_FONT_WEIGHT weight)
+{
+    m_fontWeight = weight;
+    SAFE_RELEASE(m_textFormat);
+    this->Invalidate();
+}
+
+void Label::SetFontName(const wchar_t *name)
+{
+    m_fontName = name;
+    SAFE_RELEASE(m_textFormat);
+    this->Invalidate();
+}
+
 #ifndef LTK_DISABLE_LUA
 
 int Label::LuaConstructor(lua_State *L)
@@ -106,8 +127,7 @@ int Label::SetTextAlign(lua_State *L)
     const char *options1[] = {
         "leading", "trailing", "center", "justified", nullptr
     };
-    thiz->m_textAlign = (DWRITE_TEXT_ALIGNMENT)luaL_checkoption(L, 2, nullptr, options1);
-    thiz->Invalidate();
+    thiz->SetTextAlign((DWRITE_TEXT_ALIGNMENT)luaL_checkoption(L, 2, nullptr, options1));
     return 0;
 }
 
@@ -117,8 +137,7 @@ int Label::SetParagraphAlign(lua_State *L)
     const char *options2[] = {
         "near", "far", "bottom", nullptr
     };
-    thiz->m_paragraphAlign = (DWRITE_PARAGRAPH_ALIGNMENT)luaL_checkoption(L, 2, nullptr, options2);
-    thiz->Invalidate();
+    thiz->SetParagraphAlign((DWRITE_PARAGRAPH_ALIGNMENT)luaL_checkoption(L, 2, nullptr, options2));
     return 0;
 }
 
@@ -133,9 +152,29 @@ int Label::SetTextColor(lua_State *L)
 int Label::SetFontSize(lua_State *L)
 {
     Label *thiz = CheckLuaObject<Label>(L, 1);
-    thiz->m_fontSize = (float)luaL_checknumber(L, 2);
-    SAFE_RELEASE(thiz->m_textFormat);
-    thiz->Invalidate();
+    thiz->SetFontSize((float)luaL_checknumber(L, 2));
+    return 0;
+}
+
+int Label::SetFontWeight(lua_State *L)
+{
+    Label *thiz = CheckLuaObject<Label>(L, 1);
+    const char *options1[] = {
+        "regular", "bold", nullptr
+    };
+    const DWRITE_FONT_WEIGHT enums[] = {
+        DWRITE_FONT_WEIGHT_REGULAR, DWRITE_FONT_WEIGHT_BOLD
+    };
+    int id = luaL_checkoption(L, 2, nullptr, options1);
+    thiz->SetFontWeight(enums[id]);
+    return 0;
+}
+
+int Label::SetFontName(lua_State *L)
+{
+    Label *thiz = CheckLuaObject<Label>(L, 1);
+    auto name = LuaCheckWString(L, 2);
+    thiz->SetFontName(name);
     return 0;
 }
 
