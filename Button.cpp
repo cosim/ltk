@@ -7,10 +7,10 @@ namespace ltk {
 
 Button::Button() : BoxLayout(BoxLayout::Horizontal)
 {
-    m_colorText = D2D1::ColorF(0.8f, 0.8f, 0.8f);
     m_colorBorder = D2D1::ColorF(0.3f, 0.3f, 0.4f);
     m_colorNormal = D2D1::ColorF(0.3f, 0.3f, 0.4f);
     m_colorHover = D2D1::ColorF(0.5f, 0.5f, 0.7f);
+    m_colorPressed = D2D1::ColorF(0x007ACC);
     m_label = new Label;
     this->AddChild(m_label);
 }
@@ -52,13 +52,12 @@ bool Button::OnPaint(PaintEvent *ev)
 
     auto rc = this->GetRect();
 
-    //if (m_bMousePress)
-    //    rc.Y = 2;
-    //else 
-        rc.Y = 0;
-
+    if (m_bMousePress) {
+        m_brush->SetColor(m_colorPressed);
+    }
     rc.X = 0;
-    rc.Height -= 2;
+    rc.Y = 0;
+    rc.Height -= 2; // TODO FIXME
     auto rc2 = D2D1RectF(rc);
     ev->target->FillRectangle(rc2, m_brush);
 
@@ -66,7 +65,6 @@ bool Button::OnPaint(PaintEvent *ev)
         m_brush->SetColor(m_colorBorder);
         ev->target->DrawRectangle(rc2, m_brush);
     }
-    m_brush->SetColor(m_colorText);
 
     return true;
 }
@@ -110,8 +108,8 @@ bool Button::OnLBtnUp(MouseEvent *ev)
     }
     else {
         this->OnMouseLeave(ev);
-        this->Invalidate();
     }
+    this->Invalidate();
     return true;
 }
 

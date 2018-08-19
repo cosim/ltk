@@ -56,10 +56,10 @@ private:
 
     ID2D1SolidColorBrush *m_brush = nullptr;
     bool m_bBorder = false;
-    D2D1_COLOR_F m_colorText;
     D2D1_COLOR_F m_colorBorder;
     D2D1_COLOR_F m_colorNormal;
     D2D1_COLOR_F m_colorHover;
+    D2D1_COLOR_F m_colorPressed;
     Label *m_label = nullptr;
 };
 
