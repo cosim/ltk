@@ -15,6 +15,7 @@ Serializer::~Serializer()
 
 void Serializer::RecSerialize(lua_State *L, int idx)
 {
+    LuaStackCheck chk(L);
     if (m_cnt > 200) {
         luaL_error(L, "Cycle detected when serializing data.");
         return;
@@ -25,8 +26,8 @@ void Serializer::RecSerialize(lua_State *L, int idx)
     // s string
     // i integer
     // d number
-    // t true
-    // f false
+    // 1 true
+    // 0 false
     // u lightuserdata
     // t table
     switch (type) {
@@ -51,10 +52,10 @@ void Serializer::RecSerialize(lua_State *L, int idx)
         break;
     case LUA_TBOOLEAN:
         if (lua_toboolean(L, idx)) {
-            m_buffer.WriteByte('t');
+            m_buffer.WriteByte('1');
         }
         else {
-            m_buffer.WriteByte('f');
+            m_buffer.WriteByte('0');
         }
         break;
     case LUA_TLIGHTUSERDATA:
@@ -68,7 +69,9 @@ void Serializer::RecSerialize(lua_State *L, int idx)
     case LUA_TTABLE:
         do {
             // array part
-            int head = m_buffer.Tell();
+            int arr_head = m_buffer.Tell();
+            m_buffer.WriteInt32(0);
+            int hash_head = m_buffer.Tell();
             m_buffer.WriteInt32(0);
             int arr_i = 1;
             int arr_size = 0;
@@ -91,10 +94,11 @@ void Serializer::RecSerialize(lua_State *L, int idx)
             }
             lua_pop(L, 1); // for nil
             int cur = m_buffer.Tell();
-            m_buffer.Seek(head);
+            m_buffer.Seek(arr_head);
             m_buffer.WriteInt32(arr_size);
             m_buffer.Seek(cur);
             
+            int hash_size = 0;
             // hash part
             lua_pushnil(L);
             while (lua_next(L, idx)) {
@@ -108,7 +112,12 @@ void Serializer::RecSerialize(lua_State *L, int idx)
                 RecSerialize(L, lua_gettop(L) - 1); // -2 key
                 RecSerialize(L, lua_gettop(L)); // -1 value
                 lua_pop(L, 1); // pop value
+                hash_size++;
             }
+            cur = m_buffer.Tell();
+            m_buffer.Seek(hash_head);
+            m_buffer.WriteInt32(hash_size);
+            m_buffer.Seek(cur);
         } while (0);
         break;
     }
@@ -134,6 +143,46 @@ int Serializer::LuaConstructor(lua_State *L)
     thiz->PushToLua(L, "Serializer");
     thiz->Unref();
     return 1;
+}
+
+int Serializer::Deserialize(lua_State *L)
+{
+    Serializer *thiz = CheckLuaObject<Serializer>(L, 1);
+    thiz->m_buffer.Rewind();
+    long size = 0;
+    if (thiz->m_buffer.ReadInt32(size) != NetworkBuffer::eBufferOk) {
+        goto fail;
+    }
+    for (int i = 0; i < size; i++) {
+        thiz->RecDeserialize(L);
+    }
+
+fail:
+    return 0;
+}
+
+void Serializer::RecDeserialize(lua_State *L)
+{
+    unsigned char type = 0;
+    if (m_buffer.ReadByte(type) != NetworkBuffer::eBufferOk) {
+        return;
+    }
+    switch (type) {
+    case 's':
+        break;
+    case 'i':
+        break;
+    case 'd':
+        break;
+    case '1':
+        break;
+    case '0':
+        break;
+    case 'u':
+        break;
+    case 't':
+        break;
+    }
 }
 
 }
