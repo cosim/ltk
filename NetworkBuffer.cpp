@@ -1,7 +1,9 @@
+#include "stdafx.h"
 #include "NetworkBuffer.h"
 #include "Common.h"
 #include <cassert>
 
+using std::shared_ptr;
 
 NetworkBuffer::NetworkBuffer(size_t capacity)
 {
@@ -33,7 +35,7 @@ shared_ptr<NetworkBuffer> NetworkBuffer::Create(size_t capacity)
     return std::move(ptr);
 }
 
-shared_ptr<IDataBuffer> NetworkBuffer::Clone()
+shared_ptr<NetworkBuffer> NetworkBuffer::Clone()
 {
 	shared_ptr<NetworkBuffer> ptr;
 	ptr.reset(new NetworkBuffer(m_length));
@@ -53,6 +55,45 @@ int NetworkBuffer::ReadInt32(long &data)
 	m_offset += 4;
 
 	return eBufferOk;
+}
+
+int NetworkBuffer::ReadByte(unsigned char &data)
+{
+    if (m_offset + 1 > m_length)
+    {
+        data = 0;
+        return eBufferOverflow;
+    }
+    data = *(unsigned char *)(m_buffer + m_offset);
+    m_offset += 1;
+
+    return eBufferOk;
+}
+
+int NetworkBuffer::ReadInt64(long long &data)
+{
+    if (m_offset + 8 > m_length)
+    {
+        data = 0;
+        return eBufferOverflow;
+    }
+    data = *(long long*)(m_buffer + m_offset);
+    m_offset += 8;
+
+    return eBufferOk;
+}
+
+int NetworkBuffer::ReadDouble(double &data)
+{
+    if (m_offset + 8 > m_length)
+    {
+        data = 0;
+        return eBufferOverflow;
+    }
+    data = *(double*)(m_buffer + m_offset);
+    m_offset += 8;
+
+    return eBufferOk;
 }
 
 int NetworkBuffer::ReadString(std::string &data, size_t limit)
@@ -130,6 +171,18 @@ shared_ptr<NetworkBuffer> NetworkBuffer::ReadNestedBuffer()
     return ptr;
 }
 
+int NetworkBuffer::WriteByte(unsigned char b)
+{
+    EnsureSpace(1);
+    *(unsigned char *)(m_buffer + m_offset) = b;
+    m_offset += 1;
+
+    if (m_length < m_offset)
+        m_length = m_offset;
+
+    return eBufferOk;
+}
+
 int NetworkBuffer::WriteInt32(long data)
 {
 	EnsureSpace(4);
@@ -142,11 +195,35 @@ int NetworkBuffer::WriteInt32(long data)
 	return eBufferOk;
 }
 
+int NetworkBuffer::WriteDouble(double data)
+{
+    EnsureSpace(8);
+    *(double *)(m_buffer + m_offset) = data;
+    m_offset += 8;
+
+    if (m_length < m_offset)
+        m_length = m_offset;
+
+    return eBufferOk;
+}
+
+int NetworkBuffer::WriteInt64(long long data)
+{
+    EnsureSpace(8);
+    *(long long *)(m_buffer + m_offset) = data;
+    m_offset += 8;
+
+    if (m_length < m_offset)
+        m_length = m_offset;
+
+    return eBufferOk;
+}
+
 int NetworkBuffer::WriteString(const std::string &data)
 {
 	EnsureSpace(4 + data.length());
 
-	*(long *)(m_buffer + m_offset) = data.length();
+	*(long *)(m_buffer + m_offset) = (long)data.length();
 	memcpy(m_buffer + m_offset + 4, &data[0], data.length());
 	m_offset = m_offset + 4 + data.length();
 
@@ -160,7 +237,7 @@ int NetworkBuffer::WriteData(const char *data, size_t length)
 {
     EnsureSpace(4 + length);
 
-    *(long *)(m_buffer + m_offset) = length;
+    *(long *)(m_buffer + m_offset) = (long)length;
     memcpy(m_buffer + m_offset + 4, data, length);
     m_offset = m_offset + 4 + length;
 
@@ -226,4 +303,3 @@ void NetworkBuffer::XorObfuscate()
         m_buffer[i] = m_buffer[i] ^ 0xAA;
     }
 }
-

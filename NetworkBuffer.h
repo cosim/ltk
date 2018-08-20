@@ -1,10 +1,9 @@
 #pragma once
 
-#include "IDataBuffer.h"
 #include <string>
 #include <memory>
 
-class NetworkBuffer : public IDataBuffer
+class NetworkBuffer
 {
 public:
 
@@ -25,9 +24,15 @@ public:
 
     static std::shared_ptr<NetworkBuffer> Create(size_t capacity = 8 * 2014);
 
-	std::shared_ptr<IDataBuffer> Clone();
+    std::shared_ptr<NetworkBuffer> Clone();
 
 	int ReadInt32(long &data);
+
+    int ReadByte(unsigned char &b);
+
+    int ReadInt64(long long &data);
+
+    int ReadDouble(double &data);
 
 	int ReadString(std::string &data, size_t limit = 8 * 1024);
 
@@ -35,9 +40,15 @@ public:
 
     int ReadData(char *data, size_t length);
 
-	shared_ptr<NetworkBuffer> ReadNestedBuffer();
+	std::shared_ptr<NetworkBuffer> ReadNestedBuffer();
 
 	int WriteInt32(long data);
+
+    int WriteByte(unsigned char b);
+
+    int WriteInt64(long long data);
+
+    int WriteDouble(double data);
 
 	int WriteString(const std::string &data);
 
