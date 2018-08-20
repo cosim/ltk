@@ -120,6 +120,9 @@ g_wnd_event = wnd:SetEventHandler({
 	end
 });
 
+local srlz = Ltk.Serializer:new()
+srlz:Serialize({ a = 1, b = 3.2, c = "fuck", [1] = 1, [2] = 2, [3] = 3}, "help me");
+
 LtkApi.RunMessageLoop();
 
 

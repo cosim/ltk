@@ -13,6 +13,7 @@
 #include "ApiBinding.h"
 #include "LuaObject.h"
 #include "Label.h"
+#include "Serializer.h"
 
 static ID2D1Factory *g_d2d_factory = NULL;
 static IWICImagingFactory  *g_wic_factory = NULL;
@@ -188,6 +189,7 @@ int luaopen_ltk(lua_State *L)
     LuaRegisterClass<Button>(L, "Button");
     LuaRegisterClass<BoxLayout>(L, "BoxLayout");
     LuaRegisterClass<Label>(L, "Label");
+    LuaRegisterClass<Serializer>(L, "Serializer");
 
     return 0;
 }

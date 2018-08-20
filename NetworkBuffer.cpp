@@ -303,3 +303,14 @@ void NetworkBuffer::XorObfuscate()
         m_buffer[i] = m_buffer[i] ^ 0xAA;
     }
 }
+
+int NetworkBuffer::Tell()
+{
+    return m_offset;
+}
+
+void NetworkBuffer::Seek(int offset)
+{
+    assert(offset >= 0 && offset <= m_length);
+    m_offset = offset;
+}

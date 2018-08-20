@@ -56,6 +56,10 @@ public:
 
 	int WriteNestedBuffer(const NetworkBuffer &buffer);
 
+    int Tell();
+
+    void Seek(int offset);
+
 	char *GetData();
 	size_t GetCapacity();  // 可以存放的数据大小 用于接收网络数据
 

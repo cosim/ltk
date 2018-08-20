@@ -184,6 +184,8 @@
     <ClCompile Include="Label.cpp" />
     <ClCompile Include="ltk.cpp" />
     <ClCompile Include="LuaObject.cpp" />
+    <ClCompile Include="NetworkBuffer.cpp" />
+    <ClCompile Include="Serializer.cpp" />
     <ClCompile Include="Slide.cpp" />
     <ClCompile Include="SpriteEx.cpp" />
     <ClCompile Include="Window.cpp" />
@@ -207,8 +209,10 @@
     <ClInclude Include="Label.h" />
     <ClInclude Include="ltk.h" />
     <ClInclude Include="LuaObject.h" />
+    <ClInclude Include="NetworkBuffer.h" />
     <ClInclude Include="RefCounted.h" />
     <ClInclude Include="RTTI.h" />
+    <ClInclude Include="Serializer.h" />
     <ClInclude Include="Slide.h" />
     <ClInclude Include="SpriteEx.h" />
     <ClInclude Include="Window.h" />
