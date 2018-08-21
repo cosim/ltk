@@ -66,6 +66,10 @@ void Serializer::RecSerialize(lua_State *L, int idx)
             m_buffer.WriteInt64(data);
         } while (0);
         break;
+    case LUA_TNIL:
+        check.SetReturn(1);// for error msg
+        luaL_error(L, "nil in parameter");
+        return;
     case LUA_TTABLE:
         do {
             m_buffer.WriteByte('t');

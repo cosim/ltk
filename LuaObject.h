@@ -122,11 +122,10 @@ public:
     ~LuaStackCheck()
     {
         lua_State *L = m_L;
-        if (lua_gettop(L) > m_top)
+        int top = lua_gettop(L);
+        if (top > m_top)
         {
-            assert(false);
-            //int top = lua_gettop(L);
-            lua_settop(L, m_top);
+            __debugbreak();
         }
     }
     int SetReturn(int n)

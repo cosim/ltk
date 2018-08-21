@@ -123,11 +123,16 @@ g_wnd_event = wnd:SetEventHandler({
 local pprint = require('pprint')
 
 local srlz = Ltk.Serializer:new()
-srlz:Serialize({ a = 1, b = 3.2, c = "fuck", [1] = 1, [2] = 2, [3] = 3}, "help me");
+srlz:Serialize(
+		{ {{x = 1, y = 2}, "dfdfadfdfsdfsdf", 232342234}, a = 1, b = 3.2, sub = {
+
+		}, c = "fuck", [1] = 1, [2] = 2, [3] = 3},
+		"help me");
 local res = srlz:Deserialize();
 pprint(res);
+io.flush();
 
-LtkApi.RunMessageLoop();
+--LtkApi.RunMessageLoop();
 
 
 
