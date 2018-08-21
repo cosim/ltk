@@ -15,7 +15,7 @@ Serializer::~Serializer()
 
 void Serializer::RecSerialize(lua_State *L, int idx)
 {
-    LuaStackCheck chk(L);
+    LuaStackCheck check(L);
     if (m_cnt > 200) {
         luaL_error(L, "Cycle detected when serializing data.");
         return;
@@ -68,10 +68,11 @@ void Serializer::RecSerialize(lua_State *L, int idx)
         break;
     case LUA_TTABLE:
         do {
+            m_buffer.WriteByte('t');
             // array part
-            int arr_head = m_buffer.Tell();
+            size_t arr_head = m_buffer.Tell();
             m_buffer.WriteInt32(0);
-            int hash_head = m_buffer.Tell();
+            size_t hash_head = m_buffer.Tell();
             m_buffer.WriteInt32(0);
             int arr_i = 1;
             int arr_size = 0;
@@ -93,7 +94,7 @@ void Serializer::RecSerialize(lua_State *L, int idx)
                 lua_rawgeti(L, idx, arr_i);
             }
             lua_pop(L, 1); // for nil
-            int cur = m_buffer.Tell();
+            size_t cur = m_buffer.Tell();
             m_buffer.Seek(arr_head);
             m_buffer.WriteInt32(arr_size);
             m_buffer.Seek(cur);
@@ -151,38 +152,109 @@ int Serializer::Deserialize(lua_State *L)
     thiz->m_buffer.Rewind();
     long size = 0;
     if (thiz->m_buffer.ReadInt32(size) != NetworkBuffer::eBufferOk) {
-        goto fail;
+        return 0;
     }
     for (int i = 0; i < size; i++) {
         thiz->RecDeserialize(L);
     }
-
-fail:
-    return 0;
+    return size;
 }
 
-void Serializer::RecDeserialize(lua_State *L)
+bool Serializer::RecDeserialize(lua_State *L)
 {
+    LuaStackCheck check(L);
+    int top = lua_gettop(L);
+
     unsigned char type = 0;
     if (m_buffer.ReadByte(type) != NetworkBuffer::eBufferOk) {
-        return;
+        return false;
     }
     switch (type) {
     case 's':
+        do 
+        {
+            const char *str = nullptr;
+            long len = 0;
+            if (m_buffer.GetDataPointer(len, str) != NetworkBuffer::eBufferOk) {
+                return false;
+            }
+            lua_pushlstring(L, str, len);
+        } while (0);
         break;
     case 'i':
+        do 
+        {
+            long long data = 0;
+            if (m_buffer.ReadInt64(data) != NetworkBuffer::eBufferOk) {
+                return false;
+            }
+            lua_pushinteger(L, data);
+        } while (0);
         break;
     case 'd':
+        do
+        {
+            double data = 0;
+            if (m_buffer.ReadDouble(data) != NetworkBuffer::eBufferOk) {
+                return false;
+            }
+            lua_pushnumber(L, data);
+        } while (0);
         break;
     case '1':
+        lua_pushboolean(L, 1);
         break;
     case '0':
+        lua_pushboolean(L, 0);
         break;
     case 'u':
+        do
+        {
+            long long data = 0;
+            if (m_buffer.ReadInt64(data) != NetworkBuffer::eBufferOk) {
+                return false;
+            }
+            lua_pushlightuserdata(L, (void*)data);
+        } while (0);
         break;
     case 't':
+        do 
+        {
+            long arr_size = 0;
+            long hash_size = 0;
+            if (m_buffer.ReadInt32(arr_size) != NetworkBuffer::eBufferOk) {
+                return false;
+            }
+            if (m_buffer.ReadInt32(hash_size) != NetworkBuffer::eBufferOk) {
+                return false;
+            }
+            lua_createtable(L, arr_size, hash_size);
+            int idx = lua_gettop(L);
+            for (long i = 1; i <= arr_size; i ++) {
+                if (!RecDeserialize(L)) { // stack +1
+                    lua_settop(L, top);
+                    return false;
+                }
+                lua_rawseti(L, idx, i);
+            }
+            for (long i = 1; i <= hash_size; i++) {
+                if (!RecDeserialize(L)) { // key
+                    lua_settop(L, top);
+                    return false;
+                }
+                if (!RecDeserialize(L)) { // value
+                    lua_settop(L, top);
+                    return false;
+                }
+                lua_rawset(L, idx);
+            }
+        } while (0);
         break;
+    default:
+        return false;
     }
+    check.SetReturn(1);
+    return true;
 }
 
 }

@@ -38,6 +38,8 @@ public:
 
     int GetDataLength(long &length);
 
+    int GetDataPointer(long &length, const char *&ptr);
+
     int ReadData(char *data, size_t length);
 
 	std::shared_ptr<NetworkBuffer> ReadNestedBuffer();
@@ -56,9 +58,9 @@ public:
 
 	int WriteNestedBuffer(const NetworkBuffer &buffer);
 
-    int Tell();
+    size_t Tell();
 
-    void Seek(int offset);
+    void Seek(size_t offset);
 
 	char *GetData();
 	size_t GetCapacity();  // 可以存放的数据大小 用于接收网络数据

@@ -1,5 +1,5 @@
 package.cpath = package.cpath..[[;E:\myworks\ltk\x64\Debug\?.dll]]
-
+package.path = [[E:\myworks\ltk\script\?.lua]]
 
 function SetupPrintWithLineInfo()
 	local old_print = _G.print;
@@ -120,8 +120,12 @@ g_wnd_event = wnd:SetEventHandler({
 	end
 });
 
+local pprint = require('pprint')
+
 local srlz = Ltk.Serializer:new()
 srlz:Serialize({ a = 1, b = 3.2, c = "fuck", [1] = 1, [2] = 2, [3] = 3}, "help me");
+local res = srlz:Deserialize();
+pprint(res);
 
 LtkApi.RunMessageLoop();
 

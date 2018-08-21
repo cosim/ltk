@@ -132,6 +132,25 @@ int NetworkBuffer::GetDataLength(long &length)
     return eBufferOk;
 }
 
+int NetworkBuffer::GetDataPointer(long &length, const char *&ptr)
+{
+    if (m_offset + 4 > m_length)
+    {
+        return eBufferOverflow;
+    }
+    size_t len = *(long *)(m_buffer + m_offset);
+
+    if (m_offset + 4 + len > m_length)
+    {
+        return eBufferOverflow;
+    }
+    ptr = m_buffer + m_offset + 4;
+    length = (long)len;
+    m_offset = m_offset + 4 + len;
+
+    return eBufferOk;
+}
+
 int NetworkBuffer::ReadData(char *data, size_t length)
 {
     if (m_offset + 4 > m_length)
@@ -304,12 +323,12 @@ void NetworkBuffer::XorObfuscate()
     }
 }
 
-int NetworkBuffer::Tell()
+size_t NetworkBuffer::Tell()
 {
     return m_offset;
 }
 
-void NetworkBuffer::Seek(int offset)
+void NetworkBuffer::Seek(size_t offset)
 {
     assert(offset >= 0 && offset <= m_length);
     m_offset = offset;
