@@ -14,7 +14,7 @@
 namespace ltk {
 
 const wchar_t * Window::ClsName = L"ltk_cls";
-static const long SYSBTN_WIDTH = 40;
+static const long SYSBTN_WIDTH = 35;
 static const long SYSBTN_HEIGHT = 25;
 static const long CAPTION_HEIGHT = 25;
 static const long SYSICON_SIZE = 24;
@@ -73,6 +73,16 @@ Window::~Window(void)
     }
     m_btnClose = INVALID_POINTER(Button);
 
+    if (m_btnMinimize) {
+        m_btnMinimize->Unref();
+    }
+    m_btnMinimize = INVALID_POINTER(Button);
+
+    if (m_btnMaximize) {
+        m_btnMaximize->Unref();
+    }
+    m_btnMaximize = INVALID_POINTER(Button);
+
     if (m_labelTitle) {
         m_labelTitle->Unref();
     }
@@ -104,12 +114,23 @@ void Window::Create(Window *parent, RectF rc, Mode mode)
 
         m_hboxCaption = new BoxLayout(BoxLayout::Horizontal);
         m_hboxCaption->SetMargin(0.0f);
+        m_hboxCaption->SetSpacing(0.0f);
         m_hboxCaption->AddSpaceItem(7.0f, 0.0f);
 
         m_labelTitle = new Label;
         m_labelTitle->SetTextColor(D2D1::ColorF(D2D1::ColorF::LightGray));
         m_labelTitle->SetTextAlign(DWRITE_TEXT_ALIGNMENT_LEADING);
         m_hboxCaption->AddLayoutItem(m_labelTitle, 0.0f, 1.0f);
+
+        m_btnMinimize = new Button;
+        m_btnMinimize->SetText(L"_");
+        m_btnMinimize->Clicked.Attach(std::bind(&Window::OnBtnMinimizeClicked, this));
+        m_hboxCaption->AddLayoutItem(m_btnMinimize, (float)SYSBTN_WIDTH);
+
+        m_btnMaximize = new Button;
+        m_btnMaximize->SetText(L"¿Ú");
+        m_btnMaximize->Clicked.Attach(std::bind(&Window::OnBtnMaximizeClicked, this));
+        m_hboxCaption->AddLayoutItem(m_btnMaximize, (float)SYSBTN_WIDTH);
 
         m_btnClose = new Button();
         m_btnClose->SetText(L"X");
@@ -164,7 +185,7 @@ SizeF Window::GetClientSize()
 void Window::RegisterWndClass()
 {
 	WNDCLASS wc;
-	wc.style         = CS_VREDRAW | CS_HREDRAW | CS_DBLCLKS;
+	wc.style         = CS_VREDRAW | CS_HREDRAW;
 	wc.lpfnWndProc   = WndProc;
 	wc.cbClsExtra    = 0;
 	wc.cbWndExtra    = 0;
@@ -279,7 +300,8 @@ LRESULT CALLBACK Window::WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM 
 	}
 	else if (WM_GETMINMAXINFO == message)
 	{
-		return 0; // return nil
+        // TODO FIXME this cause nc hit test not working.
+        return ::DefWindowProc(hwnd, message, wparam, lparam);
 	} else {
         thiz = reinterpret_cast<Window *>
             (GetWindowLongPtr(hwnd, GWLP_USERDATA));
@@ -416,7 +438,7 @@ void Window::DrawNonClient()
     m_brush->SetColor(D2D1::ColorF(0.5f, 0.5f, 0.6f));
     m_target->DrawRectangle(D2D1::RectF(0.0f, 0.0f, size.Width - 1.0f, size.Height - 1.0f), m_brush);
     // debug
-    //m_target->DrawRectangle(D2D1::RectF(20, 400, 60, 440), m_brush);
+    m_target->DrawRectangle(D2D1::RectF(20, 400, 60, 440), m_brush);
 }
 
 void Window::RecreateResouce()
@@ -666,6 +688,17 @@ void Window::OnBtnCloseClicked()
     ::SendMessage(m_hwnd, WM_CLOSE, 0, 0);
 }
 
+void Window::OnBtnMinimizeClicked()
+{
+    ::ShowWindow(m_hwnd, SW_MINIMIZE);
+}
+
+void Window::OnBtnMaximizeClicked()
+{
+    ::ShowWindow(m_hwnd, SW_MAXIMIZE);
+}
+
+
 #ifndef LTK_DISABLE_LUA
 
 class DtorTest
@@ -893,7 +926,7 @@ LRESULT ResizeHelper::HandleMessage(HWND hwnd, UINT message, WPARAM wparam, LPAR
             }
             break;
         case WM_LBUTTONDBLCLK:
-            if (pt.x < rc.right - SYSBTN_WIDTH - 5 && pt.y < rc.top + CAPTION_HEIGHT) {
+            if (pt.x < rc.right - SYSBTN_WIDTH * 3 - 5 && pt.y < rc.top + CAPTION_HEIGHT) {
                 if (wp.showCmd == SW_MAXIMIZE) {
                     wp.showCmd = SW_SHOWNORMAL;
                     ::SetWindowPlacement(hwnd, &wp);
@@ -917,6 +950,11 @@ LRESULT ResizeHelper::HandleMessage(HWND hwnd, UINT message, WPARAM wparam, LPAR
         break;
     }
     return 0;
+}
+
+void ResizeHelper::Maximize()
+{
+
 }
 
 ResizeHelper::State ResizeHelper::StateFromPoint(POINT pt, const RECT &rc)
@@ -949,7 +987,7 @@ ResizeHelper::State ResizeHelper::StateFromPoint(POINT pt, const RECT &rc)
     else if (pt.y > rc.bottom - WINDOW_BORDER) {
         return eBottom;
     }
-    else if (pt.x < rc.right - SYSBTN_WIDTH - 5 && pt.y < rc.top + CAPTION_HEIGHT) {
+    else if (pt.x < rc.right - SYSBTN_WIDTH * 2 - 5 && pt.y < rc.top + CAPTION_HEIGHT) {
         return eMove;
     }
     return eNone;

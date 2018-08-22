@@ -77,6 +77,8 @@ public:
     virtual bool OnDestroy() { return false; }
 
     void OnBtnCloseClicked();
+    void OnBtnMinimizeClicked();
+    void OnBtnMaximizeClicked();
 
 #ifndef LTK_DISABLE_LUA
     static int LuaConstructor(lua_State *L);
@@ -120,19 +122,23 @@ private:
 	std::unordered_set<Sprite *> m_setTrackMouseLeave;
     std::unordered_set<Sprite *> m_setAnimation;
 
-    ID2D1HwndRenderTarget *m_target = nullptr; // owner
-    Button *m_btnClose = nullptr;
     ResizeHelper *m_resizable = nullptr; // owner
-    ID2D1SolidColorBrush *m_brush = nullptr; // owner
-    Label *m_labelTitle = nullptr;
 
     BoxLayout *m_hboxCaption = nullptr;
+    Button *m_btnClose = nullptr;
+    Button *m_btnMaximize = nullptr;
+    Button *m_btnMinimize = nullptr;
+    Label *m_labelTitle = nullptr;
+
+    ID2D1HwndRenderTarget *m_target = nullptr; // owner
+    ID2D1SolidColorBrush *m_brush = nullptr; // owner
 };
 
 class ResizeHelper
 {
 public:
     LRESULT HandleMessage(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam, bool &bHandled);
+    void Maximize();
 
 private:
     POINT m_oldPoint;

@@ -132,7 +132,7 @@ local res = srlz:Deserialize();
 pprint(res);
 io.flush();
 
---LtkApi.RunMessageLoop();
+LtkApi.RunMessageLoop();
 
 
 

@@ -186,6 +186,7 @@
     <ClCompile Include="LuaObject.cpp" />
     <ClCompile Include="NetworkBuffer.cpp" />
     <ClCompile Include="Serializer.cpp" />
+    <ClCompile Include="ShadowFrame.cpp" />
     <ClCompile Include="Slide.cpp" />
     <ClCompile Include="SpriteEx.cpp" />
     <ClCompile Include="Window.cpp" />
@@ -213,6 +214,7 @@
     <ClInclude Include="RefCounted.h" />
     <ClInclude Include="RTTI.h" />
     <ClInclude Include="Serializer.h" />
+    <ClInclude Include="ShadowFrame.h" />
     <ClInclude Include="Slide.h" />
     <ClInclude Include="SpriteEx.h" />
     <ClInclude Include="Window.h" />

@@ -12,6 +12,7 @@ local RectF = {}
 ---@field Button Ltk.Button
 ---@field BoxLayout Ltk.BoxLayout
 ---@field Label Ltk.Label
+---@field Serializer Ltk.Serializer
 Ltk = {}
 
 ---@class Ltk.Object
@@ -111,3 +112,12 @@ function Label:SetFontWeight(weight) end
 
 ---@param name string
 function Label:SetFontName(name) end
+
+---@class Ltk.Serializer
+local Serializer = {}
+
+function Serializer:new() end
+
+function Serializer:Serialize(...) end
+
+function Serializer:Deserialize() end
