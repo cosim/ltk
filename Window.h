@@ -163,6 +163,7 @@ private:
     State StateFromPoint(POINT pt, const RECT &rc);
     void SetWindowRect(HWND hwnd, RECT &rc);
     State m_state = eNone;
+    HWND m_hwnd = 0;
 };
 
 } // namespace ltk

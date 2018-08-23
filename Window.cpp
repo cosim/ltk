@@ -185,7 +185,7 @@ SizeF Window::GetClientSize()
 void Window::RegisterWndClass()
 {
 	WNDCLASS wc;
-	wc.style         = CS_VREDRAW | CS_HREDRAW;
+	wc.style         = CS_VREDRAW | CS_HREDRAW | CS_DBLCLKS;
 	wc.lpfnWndProc   = WndProc;
 	wc.cbClsExtra    = 0;
 	wc.cbWndExtra    = 0;
@@ -223,9 +223,9 @@ void Window::HandleMouseMessage(UINT message, WPARAM wparam, LPARAM lparam)
 		event.y = (float)(short)HIWORD(lparam);
 		event.delta = 0.0f;
 	}
-    if (WM_LBUTTONDOWN == message)
+    if (WM_LBUTTONDBLCLK == message)
     {
-        //LOG("WM_LBUTTONDOWN: " << event.x << " " << event.y);
+        ::PostMessage(m_hwnd, WM_LBUTTONDOWN, wparam, lparam);
     }
 
 	if (m_spCapture)
@@ -309,7 +309,7 @@ LRESULT CALLBACK Window::WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM 
 	assert(NULL != thiz);
 
     bool bHandled = false;
-
+    
     if (thiz->m_resizable) {
         LRESULT ret = thiz->m_resizable->HandleMessage(hwnd, message, wparam, lparam, bHandled);
         if (bHandled) {
@@ -695,7 +695,9 @@ void Window::OnBtnMinimizeClicked()
 
 void Window::OnBtnMaximizeClicked()
 {
-    ::ShowWindow(m_hwnd, SW_MAXIMIZE);
+    if (m_resizable) {
+        m_resizable->Maximize();
+    }
 }
 
 
@@ -819,6 +821,10 @@ LRESULT ResizeHelper::HandleMessage(HWND hwnd, UINT message, WPARAM wparam, LPAR
     }
 
     switch (message) {
+    case WM_CREATE:
+        m_hwnd = hwnd;
+        bHandled = false;
+        break;
     case WM_MOUSEMOVE:
     case WM_LBUTTONDOWN:
     case WM_LBUTTONUP:
@@ -952,11 +958,6 @@ LRESULT ResizeHelper::HandleMessage(HWND hwnd, UINT message, WPARAM wparam, LPAR
     return 0;
 }
 
-void ResizeHelper::Maximize()
-{
-
-}
-
 ResizeHelper::State ResizeHelper::StateFromPoint(POINT pt, const RECT &rc)
 {
     if (pt.x < rc.left + WINDOW_BORDER) {
@@ -987,10 +988,30 @@ ResizeHelper::State ResizeHelper::StateFromPoint(POINT pt, const RECT &rc)
     else if (pt.y > rc.bottom - WINDOW_BORDER) {
         return eBottom;
     }
-    else if (pt.x < rc.right - SYSBTN_WIDTH * 2 - 5 && pt.y < rc.top + CAPTION_HEIGHT) {
+    else if (pt.x < rc.right - SYSBTN_WIDTH * 3 - 5 && pt.y < rc.top + CAPTION_HEIGHT) {
         return eMove;
     }
     return eNone;
+}
+
+void ResizeHelper::Maximize()
+{
+    if (m_bMaximized) {
+        SetWindowRect(m_hwnd, m_normalRect);
+        m_bMaximized = false;
+    }
+    else {
+        POINT pt;
+        ::GetCursorPos(&pt);
+        LTK_ASSERT(::IsWindow(m_hwnd));
+        ::GetWindowRect(m_hwnd, &m_normalRect);
+        HMONITOR mon = ::MonitorFromPoint(pt, MONITOR_DEFAULTTONEAREST);
+        MONITORINFO info = { 0 };
+        info.cbSize = sizeof(info);
+        ::GetMonitorInfoW(mon, &info);
+        SetWindowRect(m_hwnd, info.rcWork);
+        m_bMaximized = true;
+    }
 }
 
 } // namespace ltk
