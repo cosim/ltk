@@ -20,7 +20,11 @@ static const long CAPTION_HEIGHT = 25;
 static const long SYSICON_SIZE = 24;
 static const long WINDOW_BORDER = 6;
 
-Window::Window(void)
+Window::Window(void) : 
+    m_shadowLeft(ShadowFrame::eLeft),
+    m_shadowTop(ShadowFrame::eTop),
+    m_shadowRight(ShadowFrame::eRight),
+    m_shadowBottom(ShadowFrame::eBottom)
 {
 	m_hwnd = NULL;
 
@@ -138,6 +142,11 @@ void Window::Create(Window *parent, RectF rc, Mode mode)
         m_hboxCaption->AddLayoutItem(m_btnClose, (float)SYSBTN_WIDTH);
 
         m_sprite->AddLayoutItem(m_hboxCaption, (float)CAPTION_HEIGHT);
+
+        m_shadowLeft.Create();
+        m_shadowTop.Create();
+        m_shadowRight.Create();
+        m_shadowBottom.Create();
         break;
     default:
         break;
@@ -361,8 +370,18 @@ LRESULT CALLBACK Window::WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM 
                 thiz->m_target->Resize(D2D1::SizeU(cx, cy));
             }
             thiz->OnSize((float)cx, (float)cy, (DWORD)wparam);
+            thiz->UpdateShadowFrame(true);
         } while (0);
 		return 0;
+    case WM_MOVE:
+        thiz->UpdateShadowFrame(false);
+        break;
+    case WM_ACTIVATE:
+        if (LOWORD(wparam)) {
+            thiz->UpdateShadowFrame(false);
+        }
+        break;
+        // TODO hide shadow when maximized or hide main window.
     case WM_MOUSELEAVE:
         thiz->HandleMouseLeave();
         break;
@@ -700,6 +719,13 @@ void Window::OnBtnMaximizeClicked()
     }
 }
 
+void Window::UpdateShadowFrame(bool bRedraw)
+{
+    m_shadowLeft.Update(m_hwnd, bRedraw);
+    m_shadowTop.Update(m_hwnd, bRedraw);
+    m_shadowRight.Update(m_hwnd, bRedraw);
+    m_shadowBottom.Update(m_hwnd, bRedraw);
+}
 
 #ifndef LTK_DISABLE_LUA
 

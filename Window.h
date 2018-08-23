@@ -6,6 +6,7 @@
 #include "ImeInput.h"
 #include "LuaObject.h"
 #include "Button.h"
+#include "ShadowFrame.h"
 
 namespace ltk {
 
@@ -102,6 +103,7 @@ private:
     void HandleMouseLeave();
     void DrawNonClient();
     void RecreateResouce();
+    void UpdateShadowFrame(bool bRedraw);
 
     LRESULT OnImeEvent(UINT message, WPARAM wparam, LPARAM lparam);
     enum { TIMER_ANIMATION = 100 };
@@ -132,6 +134,11 @@ private:
 
     ID2D1HwndRenderTarget *m_target = nullptr; // owner
     ID2D1SolidColorBrush *m_brush = nullptr; // owner
+
+    ShadowFrame m_shadowLeft;
+    ShadowFrame m_shadowTop;
+    ShadowFrame m_shadowRight;
+    ShadowFrame m_shadowBottom;
 };
 
 class ResizeHelper

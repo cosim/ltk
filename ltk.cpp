@@ -14,11 +14,12 @@
 #include "LuaObject.h"
 #include "Label.h"
 #include "Serializer.h"
+#include "ShadowFrame.h"
 
 static ID2D1Factory *g_d2d_factory = NULL;
 static IWICImagingFactory  *g_wic_factory = NULL;
 static IDWriteFactory *g_dw_factory = NULL;
-
+static ULONG_PTR m_gdiplusToken;
 static lua_State *g_luaState = NULL;
 
 namespace ltk {
@@ -101,13 +102,21 @@ namespace ltk {
             reinterpret_cast<IUnknown**>(&g_dw_factory)
             );
         assert(SUCCEEDED(hr));
+
+        // InitInstance
+        Gdiplus::GdiplusStartupInput gdiplusStartupInput;
+        Gdiplus::GdiplusStartup(&m_gdiplusToken, &gdiplusStartupInput, NULL);
     }
 
     void LtkUninitialize()
     {
+        ShadowFrame::Free();
+
         g_dw_factory->Release();
         g_wic_factory->Release();
         g_d2d_factory->Release();
+
+        Gdiplus::GdiplusShutdown(m_gdiplusToken);
 
         ::CoUninitialize();
     }
@@ -190,6 +199,8 @@ int luaopen_ltk(lua_State *L)
     LuaRegisterClass<BoxLayout>(L, "BoxLayout");
     LuaRegisterClass<Label>(L, "Label");
     LuaRegisterClass<Serializer>(L, "Serializer");
+
+    ShadowFrame::Init();
 
     return 0;
 }

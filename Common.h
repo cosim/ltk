@@ -42,6 +42,6 @@ void LuaPushRectF(lua_State *L, const RectF &rc);
 EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 #define HINST_THISCOMPONENT ((HINSTANCE)&__ImageBase)
 
-#define LTK_ASSERT(expr) if (!expr) {\
+#define LTK_ASSERT(expr) if (!(expr)) {\
     CStringW msg; msg.Format(L"Assertion Failed: %s\r\n%s(%d)", L#expr, __FILEW__, __LINE__);\
     ::MessageBoxW(0, msg, 0, 0);__debugbreak();}

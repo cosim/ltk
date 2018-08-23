@@ -59,7 +59,8 @@ bool Button::OnPaint(PaintEvent *ev)
     rc.Y = 0;
     rc.Height -= 2; // TODO FIXME
     auto rc2 = D2D1RectF(rc);
-    ev->target->FillRectangle(rc2, m_brush);
+    auto rrc = D2D1::RoundedRect(rc2, 4, 4);
+    ev->target->FillRoundedRectangle(rrc, m_brush);
 
     if (m_bBorder) {
         m_brush->SetColor(m_colorBorder);
