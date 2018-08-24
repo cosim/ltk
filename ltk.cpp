@@ -15,6 +15,7 @@
 #include "Label.h"
 #include "Serializer.h"
 #include "ShadowFrame.h"
+#include "StyleManager.h"
 
 static ID2D1Factory *g_d2d_factory = NULL;
 static IWICImagingFactory  *g_wic_factory = NULL;
@@ -111,6 +112,7 @@ namespace ltk {
     void LtkUninitialize()
     {
         ShadowFrame::Free();
+        StyleManager::Free();
 
         g_dw_factory->Release();
         g_wic_factory->Release();

@@ -10,6 +10,7 @@
 #include "ApiBind.h"
 #include "BoxLayout.h"
 #include "Label.h"
+#include "StyleManager.h"
 
 namespace ltk {
 
@@ -451,10 +452,10 @@ void Window::DrawNonClient()
 {
     SizeF size = this->GetClientSize();
     if (m_mode == Window::eBorderless) {
-        m_brush->SetColor(D2D1::ColorF(0.3f, 0.3f, 0.4f));
+        m_brush->SetColor(StyleManager::Instance()->GetColor(StyleManager::clrCaption));
         m_target->FillRectangle(D2D1::RectF(0.0f, 0.0f, size.Width, (float)CAPTION_HEIGHT), m_brush);
     }
-    m_brush->SetColor(D2D1::ColorF(0.5f, 0.5f, 0.6f));
+    m_brush->SetColor(StyleManager::Instance()->GetColor(StyleManager::clrBorder));
     m_target->DrawRectangle(D2D1::RectF(0.0f, 0.0f, size.Width - 1.0f, size.Height - 1.0f), m_brush);
     // debug
     m_target->DrawRectangle(D2D1::RectF(20, 400, 60, 440), m_brush);
@@ -494,7 +495,7 @@ void Window::OnPaint(HWND hwnd )
     m_target->BeginDraw();
     m_target->SetTransform(D2D1::Matrix3x2F::Identity());
     TranslateTransform(m_target, 0.5f, 0.5f);
-    m_target->Clear(D2D1::ColorF(D2D1::ColorF(0.1f, 0.1f, 0.2f)));
+    m_target->Clear(StyleManager::Instance()->GetColor(StyleManager::clrBackground1));
     this->DrawNonClient();
 
     if (m_sprite)

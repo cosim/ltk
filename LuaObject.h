@@ -99,15 +99,25 @@ T* CheckLuaObject( lua_State *L, int idx)
 	if (ppObj)
 	{
         RTTI* obj = *ppObj;
-		assert(obj);
-		if (obj->Is(T::TypeIdClass()))
-		{
-			return (T*)obj;
-		}
+        if (obj) {
+            if (obj->Is(T::TypeIdClass()))
+            {
+                return (T*)obj;
+            }
+            else{
+                luaL_error(L, "TypeError: #%d is not a %s", idx, T::TypeName().c_str());
+                return nullptr;
+            }
+        }
+        else {
+            luaL_error(L, "TypeError: #%d invalid reference.");
+            return nullptr;
+        }
 	}
-    //LOG("type:" << lua_typename(L, idx));
-	luaL_error(L, "LuaObject TypeError: #%d is not a %s", idx, T::TypeName().c_str());
-	return NULL;
+    else {
+        luaL_error(L, "TypeError: #%d is not a userdata", idx);
+        return nullptr;
+    }
 }
 
 // 析构时自动平衡lua堆栈

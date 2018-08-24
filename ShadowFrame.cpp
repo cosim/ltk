@@ -6,6 +6,10 @@ namespace ltk {
 
 ShadowFrame::ShadowFrame(Mode m) : m_mode(m)
 {
+    m_sizeLeft = 12;
+    m_sizeTop = 8;
+    m_sizeRight = 15;
+    m_sizeBottom = 22;
 }
 
 

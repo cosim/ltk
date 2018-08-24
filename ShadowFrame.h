@@ -24,10 +24,10 @@ public:
 private:
     HWND m_hwnd = 0;
     Mode m_mode = eLeft;
-    long m_sizeLeft = 16;
-    long m_sizeTop = 15;
-    long m_sizeRight = 15;
-    long m_sizeBottom = 19;
+    long m_sizeLeft;
+    long m_sizeTop;
+    long m_sizeRight;
+    long m_sizeBottom;
     static Gdiplus::Bitmap *m_bitmap;
 };
 

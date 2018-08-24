@@ -189,6 +189,7 @@
     <ClCompile Include="ShadowFrame.cpp" />
     <ClCompile Include="Slide.cpp" />
     <ClCompile Include="SpriteEx.cpp" />
+    <ClCompile Include="StyleManager.cpp" />
     <ClCompile Include="Window.cpp" />
     <ClCompile Include="ImeInput.cpp" />
     <ClCompile Include="Sprite.cpp" />
@@ -217,6 +218,7 @@
     <ClInclude Include="ShadowFrame.h" />
     <ClInclude Include="Slide.h" />
     <ClInclude Include="SpriteEx.h" />
+    <ClInclude Include="StyleManager.h" />
     <ClInclude Include="Window.h" />
     <ClInclude Include="ImeInput.h" />
     <ClInclude Include="Sprite.h" />
