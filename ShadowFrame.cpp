@@ -144,12 +144,24 @@ void ShadowFrame::OnDraw(const RECT &rc)
 void ShadowFrame::DrawShadow(Gdiplus::Graphics &g, Gdiplus::Rect rc)
 {
     Gdiplus::Rect rc2;
+    int width = rc.Width;
+    int height = rc.Height;
     
     switch (m_mode) {
     case eLeft:
         rc.Y = m_sizeTop;
-        rc.Height = rc.Height - m_sizeTop - m_sizeBottom;
+        rc.Height = height - m_sizeTop - m_sizeBottom;
         g.DrawImage(m_bitmap, rc, 0, m_sizeTop, m_sizeLeft, m_bitmap->GetHeight() - m_sizeTop - m_sizeBottom,
+            Gdiplus::UnitPixel, NULL, NULL, NULL);
+        rc.X = 0;
+        rc.Y = 0;
+        rc.Width = m_sizeLeft;
+        rc.Height = m_sizeTop;
+        g.DrawImage(m_bitmap, rc, 0, 0, m_sizeLeft, m_sizeTop,
+            Gdiplus::UnitPixel, NULL, NULL, NULL);
+        rc.Y = height - m_sizeBottom;
+        rc.Height = m_sizeBottom;
+        g.DrawImage(m_bitmap, rc, 0, m_bitmap->GetHeight() - m_sizeBottom, m_sizeLeft, m_sizeBottom,
             Gdiplus::UnitPixel, NULL, NULL, NULL);
         break;
     case eTop:
@@ -157,11 +169,23 @@ void ShadowFrame::DrawShadow(Gdiplus::Graphics &g, Gdiplus::Rect rc)
             m_sizeTop, Gdiplus::UnitPixel, NULL, NULL, NULL);
         break;
     case eRight:
-        rc.X = rc.Width - m_sizeRight;
+        rc.X = width - m_sizeRight;
         rc.Y = m_sizeTop;
         rc.Width = m_sizeRight;
-        rc.Height = rc.Height - m_sizeTop - m_sizeBottom;
+        rc.Height = height - m_sizeTop - m_sizeBottom;
         g.DrawImage(m_bitmap, rc, m_bitmap->GetWidth() - m_sizeRight, m_sizeTop, m_sizeRight, m_bitmap->GetHeight() - m_sizeTop - m_sizeBottom,
+            Gdiplus::UnitPixel, NULL, NULL, NULL);
+        rc.X = 0;
+        rc.Y = 0;
+        rc.Width = m_sizeRight;
+        rc.Height = m_sizeTop;
+        g.DrawImage(m_bitmap, rc, m_bitmap->GetWidth() - m_sizeRight, 0, m_sizeRight, m_sizeTop,
+            Gdiplus::UnitPixel, NULL, NULL, NULL);
+        rc.X = width - m_sizeRight;
+        rc.Y = height - m_sizeBottom;
+        rc.Height = m_sizeBottom;
+        g.DrawImage(m_bitmap, rc, m_bitmap->GetWidth() - m_sizeRight, m_bitmap->GetHeight() - m_sizeBottom,
+            m_sizeRight, m_sizeBottom,
             Gdiplus::UnitPixel, NULL, NULL, NULL);
         break;
     case eBottom:
