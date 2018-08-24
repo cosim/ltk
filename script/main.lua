@@ -101,6 +101,7 @@ label:SetFontSize(20);
 hbox3:AddSpaceItem(0, 1);
 hbox3:AddLayoutItem(label, 300);
 hbox3:AddSpaceItem(0, 1);
+label:Unref();
 
 vbox:AddLayoutItem(hbox3, 50);
 

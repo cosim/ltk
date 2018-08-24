@@ -34,10 +34,12 @@ int LuaObject::GCMethod( lua_State *L )
     if (ppObj) // ÊÇ²»ÊÇuserdata
 	{
         thiz = *ppObj;
+        if (!thiz) {
+            return 0;
+        }
         if (!thiz->Is(TypeIdClass()))
 		{
-			assert(false);
-			OutputDebugStringA("GCMethod TypeError\r\n");
+			LTK_ASSERT(false);
 			return 0;
 		}
 	}
@@ -47,6 +49,7 @@ int LuaObject::GCMethod( lua_State *L )
 		{
 			thiz->GetWeakTable(L);
 			luaL_unref(L, -1, thiz->m_refUserData);
+            lua_pop(L, 1);
 		}
 	}
 	thiz->Unref();
@@ -145,6 +148,33 @@ void LuaObject::GetWeakTable( lua_State *L )
 		lua_pushvalue(L, ref_table); // 3
 		lua_rawset(L, LUA_REGISTRYINDEX); //1
 	}
+}
+
+int LuaObject::ReleaseReference(lua_State *L)
+{
+    RTTI **ppObj = (RTTI **)lua_touserdata(L, 1);
+    if (ppObj)
+    {
+        RTTI* obj = *ppObj;
+        if (obj) {
+            if (obj->Is(LuaObject::TypeIdClass()))
+            {
+                LuaObject *lobj = obj->As<LuaObject>();
+                lobj->Unref();
+                *ppObj = nullptr;
+                return 0;
+            }
+            else{
+                return luaL_error(L, "TypeError: #1 is not a Ltk.Object");
+            }
+        }
+        else {
+            return luaL_error(L, "TypeError: #1 invalid reference.");
+        }
+    }
+    else {
+        return luaL_error(L, "TypeError: #1 is not a userdata");
+    }
 }
 
 } // namespace ltk

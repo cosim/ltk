@@ -23,6 +23,8 @@ public:
 
     static int SetEventHandler(lua_State *L);
 
+    static int ReleaseReference(lua_State *L);
+
 	// 把这个对象放入lua中 创建一个新的userdata包裹之 引用计数+1 lua栈+1
     void PushToLua(lua_State *L, const char* clsName);
 
@@ -74,6 +76,9 @@ void LuaRegisterClass(lua_State *L, const char *className)
 
     lua_pushcfunction(L, T::SetEventHandler);
     lua_setfield(L, methods, "SetEventHandler");
+
+    lua_pushcfunction(L, T::ReleaseReference);
+    lua_setfield(L, methods, "Unref");
 
     // 注册方法
     T::RegisterMethods(L, methods);

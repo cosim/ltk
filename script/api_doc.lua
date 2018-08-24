@@ -21,6 +21,8 @@ local Object = {}
 ---@param handler table
 function Object:SetEventHandler(handler) end
 
+function Object:Unref() end
+
 ---@class Ltk.Window
 local Window = {}
 
