@@ -1,12 +1,13 @@
 #include "stdafx.h"
 #include "Label.h"
 #include "ltk.h"
+#include "StyleManager.h"
 
 namespace ltk {
 
 Label::Label()
 {
-    m_textColor = D2D1::ColorF(D2D1::ColorF::White);
+    m_textColor = StyleManager::Instance()->GetColor(StyleManager::clrText);
 }
 
 Label::~Label()

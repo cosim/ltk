@@ -2,15 +2,16 @@
 #include "Button.h"
 #include "Label.h"
 #include "ltk.h"
+#include "StyleManager.h"
 
 namespace ltk {
 
 Button::Button() : BoxLayout(BoxLayout::Horizontal)
 {
-    m_colorBorder = D2D1::ColorF(0.3f, 0.3f, 0.4f);
-    m_colorNormal = D2D1::ColorF(0.3f, 0.3f, 0.4f);
-    m_colorHover = D2D1::ColorF(0.5f, 0.5f, 0.7f);
-    m_colorPressed = D2D1::ColorF(0x007ACC);
+    m_colorBorder = StyleManager::Instance()->GetColor(StyleManager::clrBorder);
+    m_colorNormal = StyleManager::Instance()->GetColor(StyleManager::clrNormal);
+    m_colorHover = StyleManager::Instance()->GetColor(StyleManager::clrHover);
+    m_colorPressed = StyleManager::Instance()->GetColor(StyleManager::clrHighlight);
     m_label = new Label;
     this->AddChild(m_label);
 }
@@ -59,8 +60,8 @@ bool Button::OnPaint(PaintEvent *ev)
     rc.Y = 0;
     rc.Height -= 2; // TODO FIXME
     auto rc2 = D2D1RectF(rc);
-    auto rrc = D2D1::RoundedRect(rc2, 4, 4);
-    ev->target->FillRoundedRectangle(rrc, m_brush);
+    //auto rrc = D2D1::RoundedRect(rc2, 4, 4);
+    ev->target->FillRectangle(rc2, m_brush);
 
     if (m_bBorder) {
         m_brush->SetColor(m_colorBorder);
@@ -158,6 +159,18 @@ D2D1_COLOR_F Button::GetColor()
 Label *Button::GetLabel()
 {
     return m_label;
+}
+
+void Button::SetNormalColor(D2D1_COLOR_F clr)
+{
+    m_colorNormal = clr;
+    this->Invalidate();
+}
+
+void Button::SetHoverColor(D2D1_COLOR_F clr)
+{
+    m_colorHover = clr;
+    this->Invalidate();
 }
 
 #ifndef LTK_DISABLE_LUA

@@ -6,14 +6,14 @@ namespace ltk {
 StyleManager::StyleManager()
 {
     const D2D1_COLOR_F tbl[] = {
-        { 0.9f, 0.9f, 0.9f },  // clrBackground1
-        { 0.95f, 0.95f, 0.95f }, // clrBackground2
-        { 0.7f, 0.7f, 0.7f }, // clrNormal
-        { 0.7f, 0.7f, 0.9f }, // clrHover
-        { 0.1f, 0.1f, 0.1f }, // clrText
-        { 0.7f, 0.7f, 0.9f }, // clrHighlight
-        { 0.7f, 0.7f, 0.9f }, // clrBorder
-        { 0.95f, 0.95f, 0.95f }, // clrCaption
+        { 0.9f, 0.9f, 0.9f, 1.0f },  // clrBackground1
+        { 0.95f, 0.95f, 0.95f, 1.0f }, // clrBackground2
+        { 0.8f, 0.8f, 0.85f, 1.0f }, // clrNormal
+        { 0.7f, 0.7f, 1.0f, 1.0f }, // clrHover
+        { 0.1f, 0.1f, 0.1f, 1.0f }, // clrText
+        { 0.7f, 0.7f, 0.9f, 1.0f }, // clrHighlight
+        { 0.7f, 0.7f, 0.9f, 1.0f }, // clrBorder
+        { 0.95f, 0.95f, 0.95f, 1.0f }, // clrCaption
     };
     for (int i = 0; i < ARRAYSIZE(tbl); i ++) {
         m_colors.push_back(tbl[i]);

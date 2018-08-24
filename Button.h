@@ -22,6 +22,9 @@ public:
     void SetText(LPCWSTR text);
     Label *GetLabel();
 
+    void SetNormalColor(D2D1_COLOR_F clr);
+    void SetHoverColor(D2D1_COLOR_F clr);
+
     virtual bool OnPaint(PaintEvent *ev) override;
     virtual bool OnMouseEnter(MouseEvent *ev) override;
     virtual bool OnMouseLeave(MouseEvent *ev) override;
