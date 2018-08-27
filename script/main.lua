@@ -23,7 +23,18 @@ print("hello world", _VERSION);
 
 require("ltk");
 
-LtkApi.Trace("hi ZeroBrane");
+LtkApi.Trace("Hi EmmyLua!");
+
+Ltk.StyleManager:SetColorScheme({
+	"#2D2D30", -- clrBackground1
+	"#2D2D30", -- clrBackground2
+	"#2D2D30", -- clrNormal
+	"#3E3E40", -- clrHover
+	"#F1F1F1", -- clrText
+	"#007ACC", -- clrHighlight
+	"#007ACC", -- clrBorder
+	"#2D2D30", -- clrCaption
+})
 
 ---@type Ltk.Window
 local wnd = Ltk.Window:new();
@@ -101,7 +112,7 @@ label:SetFontSize(20);
 hbox3:AddSpaceItem(0, 1);
 hbox3:AddLayoutItem(label, 300);
 hbox3:AddSpaceItem(0, 1);
-label:Unref();
+--label:Unref();
 
 vbox:AddLayoutItem(hbox3, 50);
 

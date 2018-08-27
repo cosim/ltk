@@ -201,6 +201,7 @@ int luaopen_ltk(lua_State *L)
     LuaRegisterClass<BoxLayout>(L, "BoxLayout");
     LuaRegisterClass<Label>(L, "Label");
     LuaRegisterClass<Serializer>(L, "Serializer");
+    LuaRegisterClass<StyleManager>(L, "StyleManager");
 
     ShadowFrame::Init();
 
