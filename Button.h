@@ -1,16 +1,16 @@
 #pragma once
 
 #include "Delegate.h"
-#include "BoxLayout.h"
+#include "Sprite.h"
 
 namespace ltk {
 
 class Label;
 
-class Button : public BoxLayout
+class Button : public Sprite
 {
 public:
-    RTTI_DECLARATIONS(Button, BoxLayout)
+    RTTI_DECLARATIONS(Button, Sprite)
 
     enum Mode {
         Text, Icon, IconLeft, IconTop

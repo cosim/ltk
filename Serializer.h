@@ -11,6 +11,8 @@ public:
     Serializer();
     ~Serializer();
 
+    static const int DEPTH_LIMIT = 50;
+
     static int LuaConstructor(lua_State *L);
     static int Serialize(lua_State *L);
     static int Deserialize(lua_State *L);

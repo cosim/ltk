@@ -15,8 +15,10 @@ Serializer::~Serializer()
 
 void Serializer::RecSerialize(lua_State *L, int idx)
 {
-    LuaStackCheck check(L);
-    if (m_cnt > 200) {
+    //LuaStackCheck check(L);
+    LTK_ASSERT(lua_checkstack(L, 20));
+    if (m_cnt > DEPTH_LIMIT) {
+        //check.Ignore();
         luaL_error(L, "Cycle detected when serializing data.");
         return;
     }
@@ -67,7 +69,7 @@ void Serializer::RecSerialize(lua_State *L, int idx)
         } while (0);
         break;
     case LUA_TNIL:
-        check.SetReturn(1);// for error msg
+        //check.Ignore();
         luaL_error(L, "nil in parameter");
         return;
     case LUA_TTABLE:
@@ -166,7 +168,8 @@ int Serializer::Deserialize(lua_State *L)
 
 bool Serializer::RecDeserialize(lua_State *L)
 {
-    LuaStackCheck check(L);
+    //LuaStackCheck check(L);
+    LTK_ASSERT(lua_checkstack(L, 20));
     int top = lua_gettop(L);
 
     unsigned char type = 0;
@@ -257,7 +260,7 @@ bool Serializer::RecDeserialize(lua_State *L)
     default:
         return false;
     }
-    check.SetReturn(1);
+    //check.SetReturn(1);
     return true;
 }
 

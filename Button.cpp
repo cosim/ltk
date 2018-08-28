@@ -6,7 +6,7 @@
 
 namespace ltk {
 
-Button::Button() : BoxLayout(BoxLayout::Horizontal)
+Button::Button()
 {
     m_colorBorder = StyleManager::Instance()->GetColor(StyleManager::clrBorder);
     m_colorNormal = StyleManager::Instance()->GetColor(StyleManager::clrNormal);
