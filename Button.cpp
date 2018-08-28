@@ -29,25 +29,7 @@ Button::~Button()
 
 bool Button::OnPaint(PaintEvent *ev)
 {
-    DWORD timeDiff = ::GetTickCount() - m_lastTick;
-    //LOG("timeDiff: " << timeDiff);
-    m_lastTick = ::GetTickCount();
-    if (m_state == stNormal2Hover)
-    {
-        m_aniCounter += timeDiff;
-        if (m_aniCounter >= AniDuration)
-        {
-            this->EndAnimation();
-        }
-    }
-    else if (m_state == stHover2Normal)
-    {
-        m_aniCounter -= timeDiff;
-        if (m_aniCounter <= 0)
-        {
-            this->EndAnimation();
-        }
-    }
+    Update();
 
     m_brush->SetColor(this->GetColor());
 
@@ -69,6 +51,29 @@ bool Button::OnPaint(PaintEvent *ev)
     }
 
     return true;
+}
+
+void Button::Update()
+{
+    DWORD timeDiff = ::GetTickCount() - m_lastTick;
+    //LOG("timeDiff: " << timeDiff);
+    m_lastTick = ::GetTickCount();
+    if (m_state == stNormal2Hover)
+    {
+        m_aniCounter += timeDiff;
+        if (m_aniCounter >= AniDuration)
+        {
+            this->EndAnimation();
+        }
+    }
+    else if (m_state == stHover2Normal)
+    {
+        m_aniCounter -= timeDiff;
+        if (m_aniCounter <= 0)
+        {
+            this->EndAnimation();
+        }
+    }
 }
 
 bool Button::OnMouseEnter(MouseEvent *ev)
@@ -173,13 +178,25 @@ void Button::SetHoverColor(D2D1_COLOR_F clr)
     this->Invalidate();
 }
 
+void Button::SetAtlas(const RectF &rc)
+{
+    m_atlas = rc;
+    this->Invalidate();
+}
+
 #ifndef LTK_DISABLE_LUA
 
 int Button::LuaConstructor(lua_State *L)
 {
-    auto text = LuaCheckWString(L, 2);
-    Button *thiz = new Button;
-    thiz->SetText(text);
+    Button *thiz = nullptr;
+    if (lua_isstring(L, 2)) {
+        auto text = LuaCheckWString(L, 2);
+        thiz = new Button;
+        thiz->SetText(text);
+    }
+    else {
+        thiz = new Button;
+    }
     thiz->PushToLua(L, "Button");
     thiz->Unref();
     return 1;

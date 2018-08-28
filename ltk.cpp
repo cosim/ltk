@@ -149,10 +149,10 @@ void size_test()
     LOG("dlgt2: " << sizeof(dlgt2));
     std::function<void(int, float, std::string)> fn2;
     LOG("fn2: " << sizeof(fn2));
-    //LOG("Sprite: " << sizeof(Sprite));
+    LOG("Sprite: " << sizeof(Sprite));
+    LOG("LuaObject: " << sizeof(LuaObject));
+    LOG("RefCounted: " << sizeof(RefCounted));
 }
-
-
 
 int CALLBACK WinMain(
     _In_ HINSTANCE hInstance,
@@ -188,6 +188,7 @@ int luaopen_ltk(lua_State *L)
 {
     #pragma EXPORT
     
+    size_test();
     lua_newtable(L);
     lua_setglobal(L, "Ltk");
 

@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "StyleManager.h"
+#include "ltk.h"
 
 namespace ltk {
 
@@ -13,6 +14,10 @@ StyleManager::StyleManager()
 
 StyleManager::~StyleManager()
 {
+    if (m_bitmap) {
+        m_bitmap->Release();
+    }
+    m_bitmap = INVALID_POINTER(ID2D1Bitmap);
 }
 
 StyleManager * StyleManager::Instance()
@@ -31,6 +36,15 @@ void StyleManager::Free()
 D2D1_COLOR_F StyleManager::GetColor(Colors clr)
 {
     return m_colors.at((size_t)clr);
+}
+
+ID2D1Bitmap *StyleManager::GetBitmap(ID2D1RenderTarget *target, UINT idx)
+{
+    if (!m_bitmap) {
+        HRESULT hr = LoadBitmapFromFile(target, L"res\\atlas1.png", &m_bitmap);
+        LTK_ASSERT(SUCCEEDED(hr));
+    }
+    return m_bitmap;
 }
 
 D2D1_COLOR_F StyleManager::ColorFromString(const char *psz)

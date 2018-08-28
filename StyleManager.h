@@ -35,6 +35,7 @@ public:
         clrLast
     };
     D2D1_COLOR_F GetColor(Colors clr);
+    ID2D1Bitmap *GetBitmap(ID2D1RenderTarget *target, UINT idx = 0);
 
     static D2D1_COLOR_F ColorFromString(const char *psz);
 
@@ -51,6 +52,7 @@ private:
     static StyleManager *m_instance;
 
     std::vector<D2D1_COLOR_F> m_colors;
+    ID2D1Bitmap *m_bitmap = nullptr;
 };
 
 }

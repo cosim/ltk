@@ -25,7 +25,12 @@ public:
     void SetNormalColor(D2D1_COLOR_F clr);
     void SetHoverColor(D2D1_COLOR_F clr);
 
+    void SetAtlas(const RectF &rc);
+
     virtual bool OnPaint(PaintEvent *ev) override;
+
+    void Update();
+
     virtual bool OnMouseEnter(MouseEvent *ev) override;
     virtual bool OnMouseLeave(MouseEvent *ev) override;
     virtual bool OnLBtnDown(MouseEvent *ev) override;
@@ -64,6 +69,7 @@ private:
     D2D1_COLOR_F m_colorHover;
     D2D1_COLOR_F m_colorPressed;
     Label *m_label = nullptr;
+    RectF m_atlas;
 };
 
 } // namespace

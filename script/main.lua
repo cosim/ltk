@@ -70,7 +70,7 @@ local label = Ltk.Label:new("Label:");
 hbox1:AddLayoutItem(label, 40);
 
 ---@type Ltk.Button
-local btn = Ltk.Button:new("btn1");
+local btn = Ltk.Button:new();
 hbox1:AddLayoutItem(btn, 100);
 
 hbox1:AddSpaceItem(20, 0);
@@ -139,7 +139,7 @@ local rec = { data = "test text" }
 rec.parent = rec;
 srlz:Serialize(
 		{ {{x = 1, y = 2}, "dfdfadfdfsdfsdf", 232342234}, a = 1, b = 3.2, sub = {
-			bad_idea = rec
+			-- bad_idea = rec
 		}, c = "fuck", [1] = 1, [2] = 2, [3] = 3},
 		"help me");
 local res = srlz:Deserialize();
