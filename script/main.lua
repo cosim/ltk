@@ -72,10 +72,12 @@ hbox1:AddLayoutItem(label, 40);
 ---@type Ltk.Button
 local btn = Ltk.Button:new();
 hbox1:AddLayoutItem(btn, 100);
+btn:SetIcon({x = 0, y = 0, w = 64, h = 64}, 24 / 64);
 
 hbox1:AddSpaceItem(20, 0);
 
-btn = Ltk.Button:new("按钮样式");
+btn = Ltk.Button:new();
+btn:SetText("按钮样式");
 ---@type Ltk.Label
 local btn_label = btn:GetLabel();
 btn_label:SetTextColor(0.5,1,1);
@@ -87,14 +89,16 @@ hbox1:AddLayoutItem(btn, 100);
 local hbox2 = Ltk.BoxLayout:new("horizontal");
 vbox:AddLayoutItem(hbox2, 40);
 
-btn = Ltk.Button:new("Label Color Test");
+btn = Ltk.Button:new();
+btn:SetText("Label Color Test");
 g_btn_set_label_color = btn:SetEventHandler({
 	OnClick = function() label:SetTextColor(1, 1, 1) end,
 	Sprite = btn
 })
 hbox2:AddLayoutItem(btn, 100, 1);
 
-btn = Ltk.Button:new("Font Size Test");
+btn = Ltk.Button:new();
+btn:SetText("Font Size Test");
 g_btn_set_label_font_size = btn:SetEventHandler({
 	OnClick = function() label:SetFontSize(12) end,
 	Sprite = btn
@@ -119,7 +123,8 @@ vbox:AddLayoutItem(hbox3, 50);
 vbox:AddSpaceItem(0, 1);
 
 ---@type Ltk.Button
-local btn_status = Ltk.Button:new("status bar");
+local btn_status = Ltk.Button:new();
+btn:SetText("status bar");
 root:AddLayoutItem(btn_status, 20);
 
 root:SetSpacing(0);

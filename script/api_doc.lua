@@ -13,6 +13,7 @@ local RectF = {}
 ---@field BoxLayout Ltk.BoxLayout
 ---@field Label Ltk.Label
 ---@field Serializer Ltk.Serializer
+---@field StyleManager Ltk.StyleManager
 Ltk = {}
 
 ---@class Ltk.Object
@@ -58,11 +59,17 @@ function Sprite:SetRect(rc) end
 ---@class Ltk.Button:Ltk.Sprite
 local Button = {}
 
+function Button:new() end
+
 ---@param text string
-function Button:new(text) end
+function Button:SetText(text) end
 
 ---@return Ltk.Label
 function Button:GetLabel() end
+
+---@param atlas Ltk.RectF
+---@param scale number
+function Button:SetIcon(atlas, scale) end
 
 ---@class Ltk.BoxLayout: Ltk.Sprite
 local BoxLayout = {}
@@ -124,3 +131,9 @@ function Serializer:new() end
 function Serializer:Serialize(...) end
 
 function Serializer:Deserialize() end
+
+---@class Ltk.StyleManager
+local StyleManager = {}
+
+---@param colors table
+function StyleManager:SetColorScheme(colors) end

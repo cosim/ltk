@@ -41,7 +41,7 @@ D2D1_COLOR_F StyleManager::GetColor(Colors clr)
 ID2D1Bitmap *StyleManager::GetBitmap(ID2D1RenderTarget *target, UINT idx)
 {
     if (!m_bitmap) {
-        HRESULT hr = LoadBitmapFromFile(target, L"res\\atlas1.png", &m_bitmap);
+        HRESULT hr = LoadBitmapFromFile(target, L"E:\\myworks\\ltk\\res\\atlas.png", &m_bitmap);
         LTK_ASSERT(SUCCEEDED(hr));
     }
     return m_bitmap;

@@ -12,8 +12,6 @@ Button::Button()
     m_colorNormal = StyleManager::Instance()->GetColor(StyleManager::clrNormal);
     m_colorHover = StyleManager::Instance()->GetColor(StyleManager::clrHover);
     m_colorPressed = StyleManager::Instance()->GetColor(StyleManager::clrHighlight);
-    m_label = new Label;
-    this->AddChild(m_label);
 }
 
 Button::~Button()
@@ -23,6 +21,9 @@ Button::~Button()
 
     if (m_brush) m_brush->Release();
     m_brush = INVALID_POINTER(ID2D1SolidColorBrush);
+
+    if (m_icon) delete m_icon;
+    m_icon = INVALID_POINTER(IconInfo);
 
     this->EndAnimation();
 }
@@ -50,6 +51,21 @@ bool Button::OnPaint(PaintEvent *ev)
         ev->target->DrawRectangle(rc2, m_brush);
     }
 
+    if (m_icon) {
+        if (m_label) {
+
+        }
+        else {
+            RectF rc3;
+            rc3.X = (rc.Width - m_icon->atlas.Width * m_icon->scale) / 2.0f;
+            rc3.Y = (rc.Height - m_icon->atlas.Height * m_icon->scale) / 2.0f;
+            rc3.Width = m_icon->atlas.Width * m_icon->scale;
+            rc3.Height = m_icon->atlas.Height * m_icon->scale;
+            auto bitmap = StyleManager::Instance()->GetBitmap(ev->target);
+            ev->target->DrawBitmap(bitmap, D2D1RectF(rc3), 1.0f, D2D1_BITMAP_INTERPOLATION_MODE_LINEAR,
+                D2D1RectF(m_icon->atlas));
+        }
+    }
     return true;
 }
 
@@ -122,7 +138,16 @@ bool Button::OnLBtnUp(MouseEvent *ev)
 
 bool Button::OnSize(SizeEvent *ev)
 {
-    m_label->SetRect(RectF(0.0f, 0.0f, ev->width, ev->height));
+    if (m_icon) {
+        if (m_label) {
+
+        }
+    }
+    else {
+        if (m_label) {
+            m_label->SetRect(RectF(0.0f, 0.0f, ev->width, ev->height));
+        }
+    }
     return true;
 }
 
@@ -137,6 +162,10 @@ void Button::RecreateResouce(ID2D1RenderTarget *target)
 
 void Button::SetText(LPCWSTR text)
 {
+    if (!m_label) {
+        m_label = new Label;
+        this->AddChild(m_label);
+    }
     m_label->SetText(text);
 }
 
@@ -178,9 +207,15 @@ void Button::SetHoverColor(D2D1_COLOR_F clr)
     this->Invalidate();
 }
 
-void Button::SetAtlas(const RectF &rc)
+void Button::SetIcon(const RectF &rc, float scale, bool iconOnTop, UINT idx)
 {
-    m_atlas = rc;
+    if (!m_icon) {
+        m_icon = new IconInfo;
+    }
+    m_icon->atlas = rc;
+    m_icon->scale = scale;
+    m_icon->bIconOnTop = iconOnTop;
+    m_icon->idx = idx;
     this->Invalidate();
 }
 
@@ -188,26 +223,40 @@ void Button::SetAtlas(const RectF &rc)
 
 int Button::LuaConstructor(lua_State *L)
 {
-    Button *thiz = nullptr;
-    if (lua_isstring(L, 2)) {
-        auto text = LuaCheckWString(L, 2);
-        thiz = new Button;
-        thiz->SetText(text);
-    }
-    else {
-        thiz = new Button;
-    }
+    Button *thiz = new Button;
     thiz->PushToLua(L, "Button");
     thiz->Unref();
     return 1;
+}
+
+int Button::SetText(lua_State *L)
+{
+    Button *thiz = CheckLuaObject<Button>(L, 1);
+    auto text = LuaCheckWString(L, 2);
+    thiz->SetText(text);
+    return 0;
 }
 
 int Button::GetLabel(lua_State *L)
 {
     Button *thiz = CheckLuaObject<Button>(L, 1);
     Label *label = thiz->GetLabel();
-    label->PushToLua(L, "Label");
+    if (label) {
+        label->PushToLua(L, "Label");
+    }
+    else {
+        lua_pushnil(L);
+    }
     return 1;
+}
+
+int Button::SetIcon(lua_State *L)
+{
+    Button *thiz = CheckLuaObject<Button>(L, 1);
+    RectF atlas = LuaCheckRectF(L, 2);
+    float scale = (float)luaL_checknumber(L, 3);
+    thiz->SetIcon(atlas, scale);
+    return 0;
 }
 
 #endif // LTK_DISABLE_LUA

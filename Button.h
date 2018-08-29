@@ -7,6 +7,13 @@ namespace ltk {
 
 class Label;
 
+struct IconInfo {
+    UINT idx = 0;
+    RectF atlas;
+    bool bIconOnTop = false;
+    float scale = 1.0f;
+};
+
 class Button : public Sprite
 {
 public:
@@ -25,7 +32,7 @@ public:
     void SetNormalColor(D2D1_COLOR_F clr);
     void SetHoverColor(D2D1_COLOR_F clr);
 
-    void SetAtlas(const RectF &rc);
+    void SetIcon(const RectF &rc, float scale, bool iconOnTop = false, UINT idx = 0);
 
     virtual bool OnPaint(PaintEvent *ev) override;
 
@@ -43,11 +50,15 @@ public:
 
 #ifndef LTK_DISABLE_LUA
     static int LuaConstructor(lua_State *L);
+    static int SetText(lua_State *L);
     static int GetLabel(lua_State *L);
+    static int SetIcon(lua_State *L);
 
     BEGIN_LUA_METHOD_MAP(Button)
         LUA_CHAIN_METHOD_MAP(Sprite)
+        LUA_METHOD_ENTRY(SetText)
         LUA_METHOD_ENTRY(GetLabel)
+        LUA_METHOD_ENTRY(SetIcon)
     END_LUA_METHOD_MAP()
 #endif // LTK_DISABLE_LUA
 
@@ -68,8 +79,9 @@ private:
     D2D1_COLOR_F m_colorNormal;
     D2D1_COLOR_F m_colorHover;
     D2D1_COLOR_F m_colorPressed;
+
     Label *m_label = nullptr;
-    RectF m_atlas;
+    IconInfo *m_icon = nullptr;
 };
 
 } // namespace
