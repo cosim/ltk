@@ -41,4 +41,13 @@ namespace ltk {
     D2D1_RECT_F D2D1RectF(const RectF &rc);
 	HRESULT LoadBitmapFromFile(ID2D1RenderTarget * target, LPCWSTR path, ID2D1Bitmap ** bitmap);
     lua_State *GetGlobalLuaState();
+
+    struct Margin{
+        float left;
+        float top;
+        float right;
+        float bottom;
+    };
+    void DrawTextureNineInOne(ID2D1RenderTarget *target, ID2D1Bitmap *bitmap,
+        const RectF &atlas, const Margin& margin, RectF dst, float opacity, float scale);
 }
