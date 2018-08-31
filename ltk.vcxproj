@@ -181,6 +181,7 @@
     <ClCompile Include="BoxLayout.cpp" />
     <ClCompile Include="Button.cpp" />
     <ClCompile Include="Common.cpp" />
+    <ClCompile Include="ImageSprite.cpp" />
     <ClCompile Include="Label.cpp" />
     <ClCompile Include="ltk.cpp" />
     <ClCompile Include="LuaObject.cpp" />
@@ -208,6 +209,7 @@
     <ClInclude Include="Common.h" />
     <ClInclude Include="Delegate.h" />
     <ClInclude Include="Event.h" />
+    <ClInclude Include="ImageSprite.h" />
     <ClInclude Include="Label.h" />
     <ClInclude Include="ltk.h" />
     <ClInclude Include="LuaObject.h" />

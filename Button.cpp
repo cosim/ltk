@@ -3,10 +3,11 @@
 #include "Label.h"
 #include "ltk.h"
 #include "StyleManager.h"
+#include "ImageSprite.h"
 
 namespace ltk {
 
-Button::Button()
+Button::Button() : BoxLayout(BoxLayout::Horizontal)
 {
     m_colorBorder = StyleManager::Instance()->GetColor(StyleManager::clrBorder);
     m_colorNormal = StyleManager::Instance()->GetColor(StyleManager::clrNormal);
@@ -22,8 +23,8 @@ Button::~Button()
     if (m_brush) m_brush->Release();
     m_brush = INVALID_POINTER(ID2D1SolidColorBrush);
 
-    if (m_icon) delete m_icon;
-    m_icon = INVALID_POINTER(IconInfo);
+    if (m_image) m_image->Unref();
+    m_image = INVALID_POINTER(ImageSprite);
 
     this->EndAnimation();
 }
@@ -49,22 +50,6 @@ bool Button::OnPaint(PaintEvent *ev)
     if (m_bBorder) {
         m_brush->SetColor(m_colorBorder);
         ev->target->DrawRectangle(rc2, m_brush);
-    }
-
-    if (m_icon) {
-        if (m_label) {
-
-        }
-        else {
-            RectF rc3;
-            rc3.X = (rc.Width - m_icon->atlas.Width * m_icon->scale) / 2.0f;
-            rc3.Y = (rc.Height - m_icon->atlas.Height * m_icon->scale) / 2.0f;
-            rc3.Width = m_icon->atlas.Width * m_icon->scale;
-            rc3.Height = m_icon->atlas.Height * m_icon->scale;
-            auto bitmap = StyleManager::Instance()->GetBitmap(ev->target);
-            ev->target->DrawBitmap(bitmap, D2D1RectF(rc3), 1.0f, D2D1_BITMAP_INTERPOLATION_MODE_LINEAR,
-                D2D1RectF(m_icon->atlas));
-        }
     }
     return true;
 }
@@ -136,21 +121,6 @@ bool Button::OnLBtnUp(MouseEvent *ev)
     return true;
 }
 
-bool Button::OnSize(SizeEvent *ev)
-{
-    if (m_icon) {
-        if (m_label) {
-
-        }
-    }
-    else {
-        if (m_label) {
-            m_label->SetRect(RectF(0.0f, 0.0f, ev->width, ev->height));
-        }
-    }
-    return true;
-}
-
 void Button::RecreateResouce(ID2D1RenderTarget *target)
 {
     HRESULT hr;
@@ -164,7 +134,7 @@ void Button::SetText(LPCWSTR text)
 {
     if (!m_label) {
         m_label = new Label;
-        this->AddChild(m_label);
+        this->AddLayoutItem(m_label, 0.0f, 1.0f);
     }
     m_label->SetText(text);
 }
@@ -207,15 +177,14 @@ void Button::SetHoverColor(D2D1_COLOR_F clr)
     this->Invalidate();
 }
 
-void Button::SetIcon(const RectF &rc, float scale, bool iconOnTop, UINT idx)
+void Button::SetIcon(const RectF &rc, float scale, UINT idx)
 {
-    if (!m_icon) {
-        m_icon = new IconInfo;
+    if (!m_image) {
+        m_image = new ImageSprite();
+        m_image->SetIcon(rc, scale, idx);
+        this->InsertLayoutItem(0, m_image, rc.Width * scale, 0.0f);
     }
-    m_icon->atlas = rc;
-    m_icon->scale = scale;
-    m_icon->bIconOnTop = iconOnTop;
-    m_icon->idx = idx;
+    m_image->SetIcon(rc, scale, idx);
     this->Invalidate();
 }
 

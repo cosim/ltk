@@ -29,6 +29,16 @@ void BoxLayout::AddLayoutItem(Sprite *item, float preferedSize, float growFactor
     param.growFactor = growFactor;
     m_params.push_back(param);
 }
+void BoxLayout::InsertLayoutItem(UINT before, Sprite *item, float preferedSize, float growFactor)
+{
+    Sprite::AddChild(item);
+    item->Ref();
+    BoxLayoutParam param;
+    param.item = item;
+    param.size = preferedSize;
+    param.growFactor = growFactor;
+    m_params.insert(m_params.begin() + before, param);
+}
 
 void BoxLayout::AddSpaceItem(float preferedSize, float growFactor)
 {

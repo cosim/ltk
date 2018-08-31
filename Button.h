@@ -1,23 +1,18 @@
 #pragma once
 
 #include "Delegate.h"
-#include "Sprite.h"
+#include "BoxLayout.h"
 
 namespace ltk {
 
 class Label;
+class ImageSprite;
+struct IconInfo;
 
-struct IconInfo {
-    UINT idx = 0;
-    RectF atlas;
-    bool bIconOnTop = false;
-    float scale = 1.0f;
-};
-
-class Button : public Sprite
+class Button : public BoxLayout
 {
 public:
-    RTTI_DECLARATIONS(Button, Sprite)
+    RTTI_DECLARATIONS(Button, BoxLayout)
 
     enum Mode {
         Text, Icon, IconLeft, IconTop
@@ -32,7 +27,7 @@ public:
     void SetNormalColor(D2D1_COLOR_F clr);
     void SetHoverColor(D2D1_COLOR_F clr);
 
-    void SetIcon(const RectF &rc, float scale, bool iconOnTop = false, UINT idx = 0);
+    void SetIcon(const RectF &rc, float scale, UINT idx = 0);
 
     virtual bool OnPaint(PaintEvent *ev) override;
 
@@ -42,7 +37,7 @@ public:
     virtual bool OnMouseLeave(MouseEvent *ev) override;
     virtual bool OnLBtnDown(MouseEvent *ev) override;
     virtual bool OnLBtnUp(MouseEvent *ev) override;
-    virtual bool OnSize(SizeEvent *ev) override;
+    //virtual bool OnSize(SizeEvent *ev) override;
 
     virtual void RecreateResouce(ID2D1RenderTarget *target) override;
 
@@ -55,7 +50,7 @@ public:
     static int SetIcon(lua_State *L);
 
     BEGIN_LUA_METHOD_MAP(Button)
-        LUA_CHAIN_METHOD_MAP(Sprite)
+        LUA_CHAIN_METHOD_MAP(BoxLayout)
         LUA_METHOD_ENTRY(SetText)
         LUA_METHOD_ENTRY(GetLabel)
         LUA_METHOD_ENTRY(SetIcon)
@@ -81,7 +76,7 @@ private:
     D2D1_COLOR_F m_colorPressed;
 
     Label *m_label = nullptr;
-    IconInfo *m_icon = nullptr;
+    ImageSprite *m_image = nullptr;
 };
 
 } // namespace

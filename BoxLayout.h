@@ -10,11 +10,6 @@ struct BoxLayoutParam {
     float growFactor = 0.0f;
 };
 
-class SpaceItem : public Sprite
-{
-public:
-};
-
 class BoxLayout : public Sprite
 {
 public:
@@ -32,6 +27,8 @@ public:
     void SetSpacing(float spacing);
 
     void AddLayoutItem(Sprite *sp, float preferedSize, float growFactor = 0.0f);
+
+    void InsertLayoutItem(UINT before, Sprite *item, float preferedSize, float growFactor);
 
     void AddSpaceItem(float preferedSize, float growFactor);
 
