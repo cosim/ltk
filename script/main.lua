@@ -71,7 +71,7 @@ hbox1:AddLayoutItem(label, 40);
 
 ---@type Ltk.Button
 local btn = Ltk.Button:new();
-hbox1:AddLayoutItem(btn, 100);
+hbox1:AddLayoutItem(btn, 100, 0.3);
 btn:SetIcon({x = 0, y = 0, w = 64, h = 64}, 16 / 64);
 btn:SetText("点击下载");
 btn:SetMargin(12);

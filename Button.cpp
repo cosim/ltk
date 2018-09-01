@@ -9,10 +9,6 @@ namespace ltk {
 
 Button::Button() : BoxLayout(BoxLayout::Horizontal)
 {
-    m_colorBorder = StyleManager::Instance()->GetColor(StyleManager::clrBorder);
-    m_colorNormal = StyleManager::Instance()->GetColor(StyleManager::clrNormal);
-    m_colorHover = StyleManager::Instance()->GetColor(StyleManager::clrHover);
-    m_colorPressed = StyleManager::Instance()->GetColor(StyleManager::clrHighlight);
 }
 
 Button::~Button()
@@ -26,6 +22,9 @@ Button::~Button()
     if (m_image) m_image->Unref();
     m_image = INVALID_POINTER(ImageSprite);
 
+    delete m_colors;
+    m_colors = INVALID_POINTER(ColorInfo);
+
     this->EndAnimation();
 }
 
@@ -38,7 +37,12 @@ bool Button::OnPaint(PaintEvent *ev)
     auto rc = this->GetRect();
 
     if (m_bMousePress) {
-        m_brush->SetColor(m_colorPressed);
+        if (m_colors) {
+            m_brush->SetColor(m_colors->pressed);
+        }
+        else {
+            m_brush->SetColor(StyleManager::Instance()->GetColor(StyleManager::clrHighlight));
+        }
     }
     rc.X = 0;
     rc.Y = 0;
@@ -48,7 +52,12 @@ bool Button::OnPaint(PaintEvent *ev)
     ev->target->FillRectangle(rc2, m_brush);
 
     if (m_bBorder) {
-        m_brush->SetColor(m_colorBorder);
+        if (m_colors) {
+            m_brush->SetColor(m_colors->border);
+        }
+        else {
+            m_brush->SetColor(StyleManager::Instance()->GetColor(StyleManager::clrBorder));
+        }
         ev->target->DrawRectangle(rc2, m_brush);
     }
     return true;
@@ -146,16 +155,28 @@ D2D1_COLOR_F Button::GetColor()
     if (m_aniCounter < 0)
         m_aniCounter = 0;
 
+    D2D1_COLOR_F clrNormal;
+    D2D1_COLOR_F clrHover;
+    if (m_colors) {
+        clrNormal = m_colors->normal;
+        clrHover = m_colors->hover;
+    }
+    else {
+        clrNormal = StyleManager::Instance()->GetColor(StyleManager::clrNormal);
+        clrHover = StyleManager::Instance()->GetColor(StyleManager::clrHover);
+    }
+
+
     float ratio = (float)m_aniCounter / (float)AniDuration;
-    float dRed = m_colorHover.r - m_colorNormal.r;
-    float dGreen = m_colorHover.g - m_colorNormal.g;
-    float dBlue = m_colorHover.b - m_colorNormal.b;
+    float dRed = clrHover.r - clrNormal.r;
+    float dGreen = clrHover.g - clrNormal.g;
+    float dBlue = clrHover.b - clrNormal.b;
 
     D2D1_COLOR_F result;
     result.a = 1.0f;
-    result.r = dRed * ratio + m_colorNormal.r;
-    result.g = dGreen * ratio + m_colorNormal.g;
-    result.b = dBlue * ratio + m_colorNormal.b;
+    result.r = dRed * ratio + clrNormal.r;
+    result.g = dGreen * ratio + clrNormal.g;
+    result.b = dBlue * ratio + clrNormal.b;
 
     return result;
 }
@@ -167,13 +188,19 @@ Label *Button::GetLabel()
 
 void Button::SetNormalColor(D2D1_COLOR_F clr)
 {
-    m_colorNormal = clr;
+    if (!m_colors) {
+        m_colors = new ColorInfo;
+    }
+    m_colors->normal = clr;
     this->Invalidate();
 }
 
 void Button::SetHoverColor(D2D1_COLOR_F clr)
 {
-    m_colorHover = clr;
+    if (!m_colors) {
+        m_colors = new ColorInfo;
+    }
+    m_colors->hover = clr;
     this->Invalidate();
 }
 
@@ -229,5 +256,13 @@ int Button::SetIcon(lua_State *L)
 }
 
 #endif // LTK_DISABLE_LUA
+
+ColorInfo::ColorInfo()
+{
+    border = StyleManager::Instance()->GetColor(StyleManager::clrBorder);
+    normal = StyleManager::Instance()->GetColor(StyleManager::clrNormal);
+    hover = StyleManager::Instance()->GetColor(StyleManager::clrHover);
+    pressed = StyleManager::Instance()->GetColor(StyleManager::clrHighlight);
+}
 
 } // namespace

@@ -9,6 +9,14 @@ class Label;
 class ImageSprite;
 struct IconInfo;
 
+struct ColorInfo {
+    ColorInfo();
+    D2D1_COLOR_F border;
+    D2D1_COLOR_F normal;
+    D2D1_COLOR_F hover;
+    D2D1_COLOR_F pressed;
+};
+
 class Button : public BoxLayout
 {
 public:
@@ -65,15 +73,12 @@ private:
     enum AniState { stStoped, stNormal2Hover, stHover2Normal };
     AniState m_state = stStoped;
     int m_aniCounter = 0;
-    enum { AniDuration = 200 };
+    static const int AniDuration = 200;
     DWORD m_lastTick = 0;
 
     ID2D1SolidColorBrush *m_brush = nullptr;
     bool m_bBorder = false;
-    D2D1_COLOR_F m_colorBorder;
-    D2D1_COLOR_F m_colorNormal;
-    D2D1_COLOR_F m_colorHover;
-    D2D1_COLOR_F m_colorPressed;
+    ColorInfo *m_colors = nullptr;
 
     Label *m_label = nullptr;
     ImageSprite *m_image = nullptr;
