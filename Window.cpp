@@ -182,7 +182,9 @@ void Window::SetRect(RectF rc)
 void Window::SetTitle(const wchar_t *title)
 {
     ::SetWindowText(m_hwnd, title);
-    m_labelTitle->SetText(title);
+    if (m_labelTitle) {
+        m_labelTitle->SetText(title);
+    }
 }
 
 SizeF Window::GetClientSize()
@@ -725,10 +727,12 @@ void Window::OnBtnMaximizeClicked()
 
 void Window::UpdateShadowFrame(bool bRedraw)
 {
-    m_shadowLeft.Update(m_hwnd, bRedraw);
-    m_shadowTop.Update(m_hwnd, bRedraw);
-    m_shadowRight.Update(m_hwnd, bRedraw);
-    m_shadowBottom.Update(m_hwnd, bRedraw);
+    if (m_mode == Mode::eBorderless) {
+        m_shadowLeft.Update(m_hwnd, bRedraw);
+        m_shadowTop.Update(m_hwnd, bRedraw);
+        m_shadowRight.Update(m_hwnd, bRedraw);
+        m_shadowBottom.Update(m_hwnd, bRedraw);
+    }
 }
 
 #ifndef LTK_DISABLE_LUA
