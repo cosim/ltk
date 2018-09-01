@@ -524,7 +524,7 @@ bool Window::OnSize(float cx, float cy, DWORD flag)
     //    m_btnClose->SetRect(RectF((float)(cx - SYSBTN_WIDTH - 2), (float)(1.0f - CAPTION_HEIGHT),
     //        (float)SYSBTN_WIDTH, (float)(CAPTION_HEIGHT - 1)));
     //}
-    m_sprite->SetRect(RectF(1.0f, 1.0f, (float)(cx - 3.0f), (float)(cy - 1.0f)));
+    m_sprite->SetRect(RectF(1.0f, 1.0f, (float)(cx - 2.0f), (float)(cy - 1.0f)));
     return false;
 }
 

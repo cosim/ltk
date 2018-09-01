@@ -34,8 +34,6 @@ bool Button::OnPaint(PaintEvent *ev)
 
     m_brush->SetColor(this->GetColor());
 
-    auto rc = this->GetRect();
-
     if (m_bMousePress) {
         if (m_colors) {
             m_brush->SetColor(m_colors->pressed);
@@ -44,14 +42,16 @@ bool Button::OnPaint(PaintEvent *ev)
             m_brush->SetColor(StyleManager::Instance()->GetColor(StyleManager::clrHighlight));
         }
     }
+    auto rc = this->GetRect();
     rc.X = 0;
     rc.Y = 0;
     rc.Height -= 2; // TODO FIXME
+    rc.Width -= 1;
     auto rc2 = D2D1RectF(rc);
     //auto rrc = D2D1::RoundedRect(rc2, 4, 4);
     ev->target->FillRectangle(rc2, m_brush);
 
-    if (m_bBorder) {
+    if (m_bMouseIn) {
         if (m_colors) {
             m_brush->SetColor(m_colors->border);
         }

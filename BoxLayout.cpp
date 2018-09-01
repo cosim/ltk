@@ -93,6 +93,10 @@ bool BoxLayout::OnSize(SizeEvent *ev)
             y += size + m_spacing;
         }
         if (m_params[i].item) {
+            rc2.X = (float)(int)(rc2.X + 0.5f);
+            rc2.Y = (float)(int)(rc2.Y + 0.5f);
+            rc2.Width = (float)(int)(rc2.Width + 0.5f);
+            rc2.Height = (float)(int)(rc2.Height + 0.5f);
             m_params[i].item->SetRect(rc2);
         }
     }

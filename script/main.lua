@@ -25,7 +25,8 @@ require("ltk");
 
 LtkApi.Trace("Hi EmmyLua!");
 
-Ltk.StyleManager:SetColorScheme({
+-- Dark Scheme
+--[[Ltk.StyleManager:SetColorScheme({
 	"#2D2D30", -- clrBackground1
 	"#2D2D30", -- clrBackground2
 	"#2D2D30", -- clrNormal
@@ -34,6 +35,18 @@ Ltk.StyleManager:SetColorScheme({
 	"#007ACC", -- clrHighlight
 	"#007ACC", -- clrBorder
 	"#2D2D30", -- clrCaption
+})]]
+
+-- Light Scheme
+Ltk.StyleManager:SetColorScheme({
+	"#EEEEF2", -- clrBackground1
+	"#EEEEF2", -- clrBackground2
+	"#CCCEDB", -- clrNormal
+	"#C9DEF5", -- clrHover
+	"#1E1E1E", -- clrText
+	"#007ACC", -- clrHighlight
+	"#007ACC", -- clrBorder
+	"#EEEEF2", -- clrCaption
 })
 
 ---@type Ltk.Window
