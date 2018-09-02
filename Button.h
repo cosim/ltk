@@ -9,14 +9,6 @@ class Label;
 class ImageSprite;
 struct IconInfo;
 
-struct ColorInfo {
-    ColorInfo();
-    D2D1_COLOR_F border;
-    D2D1_COLOR_F normal;
-    D2D1_COLOR_F hover;
-    D2D1_COLOR_F pressed;
-};
-
 class Button : public BoxLayout
 {
 public:
@@ -78,7 +70,10 @@ private:
 
     ID2D1SolidColorBrush *m_brush = nullptr;
     bool m_bBorder = false;
-    ColorInfo *m_colors = nullptr;
+    D2D1_COLOR_F m_colorBorder;
+    D2D1_COLOR_F m_colorNormal;
+    D2D1_COLOR_F m_colorHover;
+    D2D1_COLOR_F m_colorPressed;
 
     Label *m_label = nullptr;
     ImageSprite *m_image = nullptr;

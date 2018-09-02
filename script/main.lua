@@ -52,7 +52,7 @@ Ltk.StyleManager:SetColorScheme({
 ---@type Ltk.Window
 local wnd = Ltk.Window:new();
 
-wnd:Create({x = 10, y = 10, w = 800, h = 600}, 'overlapped');
+wnd:Create({x = 10, y = 10, w = 800, h = 600}, 'borderless');
 wnd:SetTitle("LTK测试窗口");
 
 ---@type Ltk.RectF

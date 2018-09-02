@@ -146,6 +146,9 @@
     <ClInclude Include="ImageSprite.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ScrollBar.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />

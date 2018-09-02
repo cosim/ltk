@@ -216,6 +216,7 @@
     <ClInclude Include="NetworkBuffer.h" />
     <ClInclude Include="RefCounted.h" />
     <ClInclude Include="RTTI.h" />
+    <ClInclude Include="ScrollBar.h" />
     <ClInclude Include="Serializer.h" />
     <ClInclude Include="ShadowFrame.h" />
     <ClInclude Include="Slide.h" />
