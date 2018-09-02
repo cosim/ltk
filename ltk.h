@@ -25,6 +25,8 @@
 ** [ MIT license: http://www.opensource.org/licenses/mit-license.php ]
 */
 
+#pragma once
+
 #ifdef LTK_EXPORTS
 #define LTK_API __declspec(dllexport)
 #else
@@ -43,11 +45,19 @@ namespace ltk {
     lua_State *GetGlobalLuaState();
 
     struct Margin{
-        float left;
-        float top;
-        float right;
-        float bottom;
+        float left = 0.0f;
+        float top = 0.0f;
+        float right = 0.0f;
+        float bottom = 0.0f;
     };
     void DrawTextureNineInOne(ID2D1RenderTarget *target, ID2D1Bitmap *bitmap,
         const RectF &atlas, const Margin& margin, RectF dst, float opacity, float scale);
+
+    struct TextureInfo {
+        UINT idx = 0;
+        RectF atlas;
+        Margin margin;
+        float scale = 1.0f;
+    };
+
 }

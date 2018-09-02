@@ -16,6 +16,7 @@
 #include "Serializer.h"
 #include "ShadowFrame.h"
 #include "StyleManager.h"
+#include "ImageSprite.h"
 
 static ID2D1Factory *g_d2d_factory = NULL;
 static IWICImagingFactory  *g_wic_factory = NULL;
@@ -314,6 +315,7 @@ int luaopen_ltk(lua_State *L)
     LuaRegisterClass<Label>(L, "Label");
     LuaRegisterClass<Serializer>(L, "Serializer");
     LuaRegisterClass<StyleManager>(L, "StyleManager");
+    LuaRegisterClass<ImageSprite>(L, "ImageSprite");
 
     ShadowFrame::Init();
 

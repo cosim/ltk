@@ -141,51 +141,37 @@ void LuaShowStack(lua_State *L)
     OutputDebugStringA(msg);
 }
 
-RectF LuaCheckRectF(lua_State *L, int index)
+void LuaGetField(lua_State *L, int idx, const char *name, float &value)
+{
+    lua_getfield(L, idx, name);
+    if (!lua_isnumber(L, -1)) {
+        lua_pop(L, 1); 
+        luaL_error(L, "#%d[\"%s\"] is not a number.", idx, name);
+        return;
+    }
+    value = (float)lua_tonumber(L, -1);
+    lua_pop(L, 1);
+}
+
+ltk::Margin LuaCheckMargin(lua_State *L, int idx)
+{
+    ltk::Margin margin;
+    luaL_checktype(L, idx, LUA_TTABLE);
+    LuaGetField(L, idx, "left", margin.left);
+    LuaGetField(L, idx, "top", margin.top);
+    LuaGetField(L, idx, "right", margin.right);
+    LuaGetField(L, idx, "bottom", margin.bottom);
+    return margin;
+}
+
+RectF LuaCheckRectF(lua_State *L, int idx)
 {
     RectF rc;
-    luaL_checktype(L, index, LUA_TTABLE);
-    lua_getfield(L, index, "x");
-    if (lua_isnumber(L, -1))
-    {
-        rc.X = (float)luaL_checknumber(L, -1);
-        lua_pop(L, 1);
-    }
-    else
-    {
-        luaL_error(L, "#%d.x is not a number.", index);
-    }
-    lua_getfield(L, index, "y");
-    if (lua_isnumber(L, -1))
-    {
-        rc.Y = (float)luaL_checknumber(L, -1);
-        lua_pop(L, 1);
-    }
-    else
-    {
-        luaL_error(L, "#%d.y is not a number.", index);
-    }
-
-    lua_getfield(L, index, "w");
-    if (lua_isnumber(L, -1))
-    {
-        rc.Width = (float)luaL_checknumber(L, -1);
-        lua_pop(L, 1);
-    }
-    else
-    {
-        luaL_error(L, "#%d.w is not a number.", index);
-    }
-    lua_getfield(L, index, "h");
-    if (lua_isnumber(L, -1))
-    {
-        rc.Height = (float)luaL_checknumber(L, -1);
-        lua_pop(L, 1);
-    }
-    else
-    {
-        luaL_error(L, "#%d.h is not a number.", index);
-    }
+    luaL_checktype(L, idx, LUA_TTABLE);
+    LuaGetField(L, idx, "x", rc.X);
+    LuaGetField(L, idx, "y", rc.Y);
+    LuaGetField(L, idx, "w", rc.Width);
+    LuaGetField(L, idx, "h", rc.Height);
     return rc;
 }
 

@@ -186,6 +186,7 @@
     <ClCompile Include="ltk.cpp" />
     <ClCompile Include="LuaObject.cpp" />
     <ClCompile Include="NetworkBuffer.cpp" />
+    <ClCompile Include="ScrollBar.cpp" />
     <ClCompile Include="Serializer.cpp" />
     <ClCompile Include="ShadowFrame.cpp" />
     <ClCompile Include="Slide.cpp" />

@@ -102,7 +102,7 @@ hbox1:AddLayoutItem(btn, 100);
 
 ---@type Ltk.BoxLayout
 local hbox2 = Ltk.BoxLayout:new("horizontal");
-vbox:AddLayoutItem(hbox2, 40);
+vbox:AddLayoutItem(hbox2, 30, 0.4);
 
 btn = Ltk.Button:new();
 btn:SetText("Label Color Test");
@@ -119,6 +119,11 @@ g_btn_set_label_font_size = btn:SetEventHandler({
 	Sprite = btn
 })
 hbox2:AddLayoutItem(btn, 100, 1);
+
+local img = Ltk.ImageSprite:new();
+img:SetTexture({ x = 0, y = 85, w = 600, h = 178},
+		{ left = 100, top = 85, right = 100, bottom = 85}, 0.25, 0);
+hbox2:AddLayoutItem(img, 200, 1);
 hbox2:AddSpaceItem(0, 4);
 
 ---@type Ltk.BoxLayout

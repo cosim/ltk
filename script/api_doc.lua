@@ -5,7 +5,16 @@
 ---@field h number
 local RectF = {}
 
+---@class Ltk.Margin
+---@field left number
+---@field top number
+---@field right number
+---@field bottom number
+local Margin = {}
+
 ---@class Ltk
+---@field RectF Ltk.RectF
+---@field Margin Ltk.Margin
 ---@field Object Ltk.Object
 ---@field Window Ltk.Window
 ---@field Sprite Ltk.Sprite
@@ -14,6 +23,7 @@ local RectF = {}
 ---@field Label Ltk.Label
 ---@field Serializer Ltk.Serializer
 ---@field StyleManager Ltk.StyleManager
+---@field ImageSprite Ltk.ImageSprite
 Ltk = {}
 
 ---@class Ltk.Object
@@ -137,3 +147,14 @@ local StyleManager = {}
 
 ---@param colors table
 function StyleManager:SetColorScheme(colors) end
+
+---@class Ltk.ImageSprite
+local ImageSprite = {}
+
+function ImageSprite:new() end
+
+---@param atlas Ltk.RectF
+---@param margin Ltk.Margin
+---@param scale number
+---@param idx number
+function ImageSprite:SetTexture(atlas, margin, scale, idx) end
