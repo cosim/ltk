@@ -499,7 +499,7 @@ void Window::OnPaint(HWND hwnd )
 
     m_target->BeginDraw();
     m_target->SetTransform(D2D1::Matrix3x2F::Identity());
-    TranslateTransform(m_target, 0.5f, 0.5f);
+    //TranslateTransform(m_target, 0.5f, 0.5f);
     m_target->Clear(StyleManager::Instance()->GetColor(StyleManager::clrBackground1));
     this->DrawNonClient();
 

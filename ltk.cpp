@@ -30,6 +30,19 @@ namespace ltk {
     IDWriteFactory *GetDWriteFactory() { return g_dw_factory; }
     lua_State *GetGlobalLuaState() { return g_luaState; }
 
+    static void AdjustRect(D2D1_RECT_F &src, D2D1_RECT_F &dst, float scale)
+    {
+        src.left = (float)(int)(src.left + 0.5f);
+        src.top = (float)(int)(src.top + 0.5f);
+        src.right = (float)(int)(src.right + 0.5f);
+        src.bottom = (float)(int)(src.bottom + 0.5f);
+
+        dst.left = (float)(int)(dst.left + 0.5f);
+        dst.top = (float)(int)(dst.top + 0.5f);
+        dst.right = (float)(int)(dst.right + 0.5f);
+        dst.bottom = (float)(int)(dst.bottom + 0.5f);
+    }
+
     void DrawTextureNineInOne(ID2D1RenderTarget *target, ID2D1Bitmap *bitmap, 
         const RectF &atlas, const Margin& margin, RectF dst2, float opacity, float scale)
     {
@@ -50,7 +63,8 @@ namespace ltk {
         dst.top = dst2.Y;
         dst.right = dst2.X + dMargin.left;
         dst.bottom = dst2.Y + dMargin.top;
-        target->DrawBitmap(bitmap, dst, opacity, D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR, src);
+        AdjustRect(src, dst, scale);
+        target->DrawBitmap(bitmap, dst, opacity, D2D1_BITMAP_INTERPOLATION_MODE_LINEAR, src);
 
         // left center
         src.left = atlas.X;
@@ -61,7 +75,8 @@ namespace ltk {
         dst.top = dst2.Y + dMargin.top ;
         dst.right = dst2.X + dMargin.left;
         dst.bottom = dst2.Y + dst2.Height - dMargin.bottom;
-        target->DrawBitmap(bitmap, dst, opacity, D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR, src);
+        AdjustRect(src, dst, scale);
+        target->DrawBitmap(bitmap, dst, opacity, D2D1_BITMAP_INTERPOLATION_MODE_LINEAR, src);
     
         // left bottom
         src.left = atlas.X;
@@ -72,7 +87,8 @@ namespace ltk {
         dst.top = dst2.Y + dst2.Height - dMargin.bottom;
         dst.right = dst2.X + dMargin.left;
         dst.bottom = dst2.Y + dst2.Height;
-        target->DrawBitmap(bitmap, dst, opacity, D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR, src);
+        AdjustRect(src, dst, scale);
+        target->DrawBitmap(bitmap, dst, opacity, D2D1_BITMAP_INTERPOLATION_MODE_LINEAR, src);
 
         // center top
         src.left = atlas.X + margin.left;
@@ -83,7 +99,8 @@ namespace ltk {
         dst.top = dst2.Y;
         dst.right = dst2.X + dst2.Width - dMargin.right;
         dst.bottom = dst2.Y + dMargin.top;
-        target->DrawBitmap(bitmap, dst, opacity, D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR, src);
+        AdjustRect(src, dst, scale);
+        target->DrawBitmap(bitmap, dst, opacity, D2D1_BITMAP_INTERPOLATION_MODE_LINEAR, src);
 
         // center center
         src.left = atlas.X + margin.left;
@@ -94,7 +111,8 @@ namespace ltk {
         dst.top = dst2.Y + dMargin.top;
         dst.right = dst2.X + dst2.Width - dMargin.right;
         dst.bottom = dst2.Y + dst2.Height - dMargin.bottom;
-        target->DrawBitmap(bitmap, dst, opacity, D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR, src);
+        AdjustRect(src, dst, scale);
+        target->DrawBitmap(bitmap, dst, opacity, D2D1_BITMAP_INTERPOLATION_MODE_LINEAR, src);
 
         // center bottom
         src.left = atlas.X + margin.left;
@@ -105,7 +123,8 @@ namespace ltk {
         dst.top = dst2.Y + dst2.Height - dMargin.bottom;
         dst.right = dst2.X + dst2.Width - dMargin.right;
         dst.bottom = dst2.Y + dst2.Height;
-        target->DrawBitmap(bitmap, dst, opacity, D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR, src);
+        AdjustRect(src, dst, scale);
+        target->DrawBitmap(bitmap, dst, opacity, D2D1_BITMAP_INTERPOLATION_MODE_LINEAR, src);
 
         // right top
         src.left = atlas.X + atlas.Width - margin.right;
@@ -116,7 +135,8 @@ namespace ltk {
         dst.top = dst2.Y;
         dst.right = dst2.X + dst2.Width;
         dst.bottom = dst2.Y + dMargin.top;
-        target->DrawBitmap(bitmap, dst, opacity, D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR, src);
+        AdjustRect(src, dst, scale);
+        target->DrawBitmap(bitmap, dst, opacity, D2D1_BITMAP_INTERPOLATION_MODE_LINEAR, src);
 
         // right center
         src.left = atlas.X + atlas.Width - margin.right;
@@ -127,7 +147,8 @@ namespace ltk {
         dst.top = dst2.Y + dMargin.top;
         dst.right = dst2.X + dst2.Width;
         dst.bottom = dst2.Y + dst2.Height - dMargin.bottom;
-        target->DrawBitmap(bitmap, dst, opacity, D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR, src);
+        AdjustRect(src, dst, scale);
+        target->DrawBitmap(bitmap, dst, opacity, D2D1_BITMAP_INTERPOLATION_MODE_LINEAR, src);
 
         // right bottom
         src.left = atlas.X + atlas.Width - margin.right;
@@ -138,7 +159,8 @@ namespace ltk {
         dst.top = dst2.Y + dst2.Height - dMargin.bottom;
         dst.right = dst2.X + dst2.Width;
         dst.bottom = dst2.Y + dst2.Height;
-        target->DrawBitmap(bitmap, dst, opacity, D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR, src);
+        AdjustRect(src, dst, scale);
+        target->DrawBitmap(bitmap, dst, opacity, D2D1_BITMAP_INTERPOLATION_MODE_LINEAR, src);
     }
 
     void TranslateTransform(ID2D1RenderTarget *target, float dx, float dy)
