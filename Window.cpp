@@ -728,10 +728,13 @@ void Window::OnBtnMaximizeClicked()
 void Window::UpdateShadowFrame(bool bRedraw)
 {
     if (m_mode == Mode::eBorderless) {
-        m_shadowLeft.Update(m_hwnd, bRedraw);
-        m_shadowTop.Update(m_hwnd, bRedraw);
-        m_shadowRight.Update(m_hwnd, bRedraw);
-        m_shadowBottom.Update(m_hwnd, bRedraw);
+        HDWP hdwp = ::BeginDeferWindowPos(4);
+        m_shadowLeft.Update(m_hwnd, hdwp, bRedraw);
+        m_shadowTop.Update(m_hwnd, hdwp, bRedraw);
+        m_shadowRight.Update(m_hwnd, hdwp, bRedraw);
+        m_shadowBottom.Update(m_hwnd, hdwp, bRedraw);
+        BOOL ret = ::EndDeferWindowPos(hdwp);
+        LTK_ASSERT(ret);
     }
 }
 

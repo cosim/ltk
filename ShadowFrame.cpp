@@ -4,6 +4,8 @@
 
 namespace ltk {
 
+const UINT ShadowFrame::WM_RENDER_LATER = WM_USER + 1;
+
 ShadowFrame::ShadowFrame(Mode m) : m_mode(m)
 {
     m_sizeLeft = 12;
@@ -38,9 +40,7 @@ void ShadowFrame::RegisterWndClass()
 LRESULT CALLBACK ShadowFrame::WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
 {
     ShadowFrame *thiz = nullptr;
-
-    if (WM_NCCREATE == message)
-    {
+    if (WM_NCCREATE == message) {
         LPCREATESTRUCT lpcs = reinterpret_cast<LPCREATESTRUCT>(lparam);
         thiz = reinterpret_cast<ShadowFrame*>(lpcs->lpCreateParams);
         thiz->m_hwnd = hwnd;
@@ -48,6 +48,16 @@ LRESULT CALLBACK ShadowFrame::WndProc(HWND hwnd, UINT message, WPARAM wparam, LP
     }
     else {
         thiz = reinterpret_cast<ShadowFrame *>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
+    }
+    switch (message) {
+    case WM_RENDER_LATER:
+        do 
+        {
+            RECT rc;
+            ::GetWindowRect(hwnd, &rc);
+            thiz->OnDraw(rc);
+        } while (0);
+        break;
     }
     return ::DefWindowProc(hwnd, message, wparam, lparam);
 }
@@ -71,7 +81,7 @@ void ShadowFrame::Free()
     delete m_bitmap;
 }
 
-void ShadowFrame::Update(HWND hParent, bool bRedraw)
+void ShadowFrame::Update(HWND hParent, HDWP &hdwp, bool bRedraw)
 {
     RECT rc;
     ::GetWindowRect(hParent, &rc);
@@ -105,9 +115,10 @@ void ShadowFrame::Update(HWND hParent, bool bRedraw)
     default:
         LTK_ASSERT(false);
     }
-    ::SetWindowPos(m_hwnd, HWND_TOP, rc2.left, rc2.top, rc2.right - rc2.left, rc2.bottom - rc2.top, SWP_NOACTIVATE);
+    hdwp = ::DeferWindowPos(hdwp, m_hwnd, hParent, rc2.left, rc2.top, rc2.right - rc2.left, rc2.bottom - rc2.top, SWP_NOACTIVATE);
     if (bRedraw) {
-        OnDraw(rc2);
+        //OnDraw(rc2);
+        ::PostMessage(m_hwnd, WM_RENDER_LATER, 0, 0);
     }
 }
 
