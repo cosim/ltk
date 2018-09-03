@@ -44,7 +44,7 @@ namespace ltk {
 	HRESULT LoadBitmapFromFile(ID2D1RenderTarget * target, LPCWSTR path, ID2D1Bitmap ** bitmap);
     lua_State *GetGlobalLuaState();
 
-    struct Margin{
+    struct Margin {
         float left = 0.0f;
         float top = 0.0f;
         float right = 0.0f;
@@ -53,6 +53,8 @@ namespace ltk {
     void DrawTextureNineInOne(ID2D1RenderTarget *target, ID2D1Bitmap *bitmap,
         const RectF &atlas, const Margin& margin, RectF dst, float opacity, float scale);
 
+    void DrawRectSnapped(ID2D1RenderTarget *target, const RectF &rc, ID2D1Brush *brush);
+
     struct TextureInfo {
         UINT idx = 0;
         RectF atlas;
@@ -60,4 +62,18 @@ namespace ltk {
         float scale = 1.0f;
     };
 
+    inline float Round45(float value) 
+    {
+        return (float)(int)(value + 0.5f);
+    }
+
+    inline D2D1_RECT_F D2D1RectF(const RectF &rc)
+    {
+        D2D1_RECT_F rc2;
+        rc2.left = rc.X;
+        rc2.top = rc.Y;
+        rc2.right = rc.X + rc.Width;
+        rc2.bottom = rc.Y + rc.Height;
+        return rc2;
+    }
 }

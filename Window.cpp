@@ -461,9 +461,9 @@ void Window::DrawNonClient()
         m_target->FillRectangle(D2D1::RectF(0.0f, 0.0f, size.Width, (float)CAPTION_HEIGHT), m_brush);
     }
     m_brush->SetColor(StyleManager::Instance()->GetColor(StyleManager::clrBorder));
-    m_target->DrawRectangle(D2D1::RectF(0.0f, 0.0f, size.Width - 1.0f, size.Height - 1.0f), m_brush);
+    DrawRectSnapped(m_target, RectF(0.0f, 0.0f, size.Width - 1.0f, size.Height - 1.0f), m_brush);
     // debug
-    m_target->DrawRectangle(D2D1::RectF(20, 400, 60, 440), m_brush);
+    //m_target->DrawRectangle(D2D1::RectF(20, 400, 60, 440), m_brush);
 }
 
 void Window::RecreateResouce()

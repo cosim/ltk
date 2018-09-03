@@ -163,6 +163,16 @@ namespace ltk {
         target->DrawBitmap(bitmap, dst, opacity, D2D1_BITMAP_INTERPOLATION_MODE_LINEAR, src);
     }
 
+    void DrawRectSnapped(ID2D1RenderTarget *target, const RectF &rc, ID2D1Brush *brush)
+    {
+        D2D1_RECT_F rc2 = D2D1RectF(rc);
+        rc2.left = Round45(rc2.left) + 0.5f;
+        rc2.top = Round45(rc2.top) + 0.5f;
+        rc2.right = Round45(rc2.right) + 0.5f;
+        rc2.bottom = Round45(rc2.bottom) + 0.5f;
+        target->DrawRectangle(rc2, brush);
+    }
+
     void TranslateTransform(ID2D1RenderTarget *target, float dx, float dy)
     {
         D2D1_MATRIX_3X2_F matrix;
@@ -172,15 +182,7 @@ namespace ltk {
         target->SetTransform(&matrix);
     }
 
-    D2D1_RECT_F D2D1RectF(const RectF &rc)
-    {
-        D2D1_RECT_F rc2;
-        rc2.left = rc.X;
-        rc2.top = rc.Y;
-        rc2.right = rc.X + rc.Width;
-        rc2.bottom = rc.Y + rc.Height;
-        return rc2;
-    }
+
 
 
 	HRESULT LoadBitmapFromFile(ID2D1RenderTarget *target, LPCWSTR path, ID2D1Bitmap **bitmap)

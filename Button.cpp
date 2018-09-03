@@ -49,7 +49,7 @@ bool Button::OnPaint(PaintEvent *ev)
 
     if (m_bMouseIn) {
         m_brush->SetColor(m_colorBorder);
-        ev->target->DrawRectangle(rc2, m_brush);
+        DrawRectSnapped(ev->target, rc, m_brush);
     }
     return true;
 }
