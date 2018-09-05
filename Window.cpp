@@ -691,11 +691,14 @@ void Window::TrackMouseLeave( Sprite *sp )
 
 void Window::BeginAnimation(Sprite *sp)
 {
-    if (m_setAnimation.size() == 0)
+    if (!::IsIconic(m_hwnd))
     {
-        ::SetTimer(m_hwnd, TIMER_ANIMATION, 0, NULL);
+        if (m_setAnimation.size() == 0)
+        {
+            ::SetTimer(m_hwnd, TIMER_ANIMATION, 0, NULL);
+        }
+        m_setAnimation.insert(sp);
     }
-    m_setAnimation.insert(sp);
 }
 
 void Window::EndAnimation(Sprite *sp)
