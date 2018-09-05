@@ -406,7 +406,7 @@ LRESULT CALLBACK Window::WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM 
 	case WM_INPUTLANGCHANGE:
 		return thiz->OnImeEvent(message, wparam, lparam);
 	case WM_SETFOCUS:
-		LOG("WM_SETFOCUS");
+		//LOG("WM_SETFOCUS");
 		::CreateCaret(hwnd, NULL, 1, thiz->m_caretHeight);
 		//::ShowCaret(hwnd);
 		if (thiz->m_spFocus)
@@ -417,7 +417,7 @@ LRESULT CALLBACK Window::WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM 
 		}
 		return 0;
 	case WM_KILLFOCUS:
-		LOG("WM_KILLFOCUS");
+		//LOG("WM_KILLFOCUS");
 		::DestroyCaret();
 		if (thiz->m_spFocus)
 		{
@@ -425,8 +425,10 @@ LRESULT CALLBACK Window::WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM 
             ev.id = eKillFocus;
             thiz->m_spFocus->OnEvent(&ev);
         }
+        KillTimer(hwnd, TIMER_ANIMATION);
 		return 0;
 	case WM_CREATE:
+        LTK_LOG("window created: 0x%08X", hwnd);
 		//do 
 		//{
 		//	RECT rc;
@@ -482,6 +484,7 @@ void Window::OnPaint(HWND hwnd )
 
     if (!m_target)
     {
+        LTK_LOG("RecreateResouce %d", ::GetTickCount());
         RECT rc;
         ::GetClientRect(hwnd, &rc);
 
@@ -490,6 +493,7 @@ void Window::OnPaint(HWND hwnd )
             hwnd, D2D1::SizeU(rc.right, rc.bottom)), &m_target);
         assert(SUCCEEDED(hr));
 
+        StyleManager::Instance()->RecreateResource();
         if (m_sprite)
         {
             m_sprite->HandleRecreateResouce(m_target);
@@ -515,7 +519,11 @@ void Window::OnPaint(HWND hwnd )
     if (hr == D2DERR_RECREATE_TARGET)
     {
         hr = S_OK;
+        LTK_LOG("release the render target.");
         SAFE_RELEASE(m_target);
+    }
+    else if (FAILED(hr)) {
+        LTK_LOG("EndDraw failed: %d", hr);
     }
     ::EndPaint(hwnd, &ps);
 }
@@ -543,7 +551,7 @@ LRESULT Window::OnImeEvent( UINT uMsg, WPARAM wParam, LPARAM lParam )
 	case WM_IME_SETCONTEXT:
 		do 
 		{
-			LOG(<<"WM_IME_SETCONTEXT");
+			//LOG(<<"WM_IME_SETCONTEXT");
 			BOOL handled = FALSE;
 			m_ime.CreateImeWindow(m_hwnd);
 			m_ime.CleanupComposition(m_hwnd);
@@ -551,14 +559,14 @@ LRESULT Window::OnImeEvent( UINT uMsg, WPARAM wParam, LPARAM lParam )
 		} while (0);
 		return 0;
 	case WM_IME_STARTCOMPOSITION:
-		LOG(<<"WM_IME_STARTCOMPOSITION");
+		//LOG(<<"WM_IME_STARTCOMPOSITION");
 		m_ime.CreateImeWindow(m_hwnd);
 		m_ime.ResetComposition(m_hwnd);
 		return 0;
 	case WM_IME_COMPOSITION:
 		do
 		{
-			LOG(<<"WM_IME_COMPOSITION");
+			//LOG(<<"WM_IME_COMPOSITION");
 			ImeComposition comp;
 			m_ime.UpdateImeWindow(m_hwnd);
 			m_ime.GetResult(m_hwnd, lParam, &comp);
@@ -576,14 +584,14 @@ LRESULT Window::OnImeEvent( UINT uMsg, WPARAM wParam, LPARAM lParam )
 		}while(0);
 		return 0;
 	case WM_IME_ENDCOMPOSITION:
-		LOG(<<"WM_IME_ENDCOMPOSITION");
+		//LOG(<<"WM_IME_ENDCOMPOSITION");
 		m_ime.ResetComposition(m_hwnd);
 		m_ime.DestroyImeWindow(m_hwnd);
 		//::ShowCaret(m_hwnd);
 		::DefWindowProc(m_hwnd, uMsg, wParam, lParam);
 		return 0;
 	case WM_INPUTLANGCHANGE:
-		LOG(<<"WM_INPUTLANGCHANGE");
+		//LOG(<<"WM_INPUTLANGCHANGE");
 		m_ime.SetInputLanguage();
 		::DefWindowProc(m_hwnd, uMsg, wParam, lParam);
 		return 0;

@@ -48,3 +48,9 @@ EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 #define LTK_ASSERT(expr) if (!(expr)) {\
     CStringW msg; msg.Format(L"Assertion Failed: %s\r\n%s(%d)", L#expr, __FILEW__, __LINE__);\
     ::MessageBoxW(0, msg, 0, 0);__debugbreak();}
+
+
+#define  LTK_LOG(...) LtkLogImpl(__FUNCTION__, __FILE__, __LINE__, __VA_ARGS__)
+
+void LtkLogInit();
+void LtkLogImpl(const char * func, const char *source, int line, const char *format, ...);

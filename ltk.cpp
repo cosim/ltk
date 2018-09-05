@@ -329,6 +329,7 @@ int luaopen_ltk(lua_State *L)
     lua_setglobal(L, "Ltk");
 
     g_luaState = L;
+    LtkLogInit();
     LtkInitialize();
     ApiBindingInit(L);
     Window::RegisterWndClass();

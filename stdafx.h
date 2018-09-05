@@ -19,11 +19,18 @@
 #include <unordered_set>
 #include <stack>
 #include <memory>
+#include <algorithm>
 
 using std::wstring;
 using std::wstringstream;
 using std::stringstream;
 using std::unique_ptr;
+
+#include <stdio.h>
+#include <stdarg.h>
+#include <tchar.h>
+#include <strsafe.h>
+#include <time.h>
 
 #include <new> // for `placement new`
 #include <cassert>

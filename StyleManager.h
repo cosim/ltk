@@ -38,6 +38,8 @@ public:
 
     ID2D1Bitmap *GetBitmap(ID2D1RenderTarget *target, UINT idx = 0);
 
+    void RecreateResource();
+
     static D2D1_COLOR_F ColorFromString(const char *psz);
 
     static int LuaConstructor(lua_State *L);
