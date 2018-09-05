@@ -21,11 +21,7 @@ static const long CAPTION_HEIGHT = 25;
 static const long SYSICON_SIZE = 24;
 static const long WINDOW_BORDER = 6;
 
-Window::Window(void) : 
-    m_shadowLeft(ShadowFrame::eLeft),
-    m_shadowTop(ShadowFrame::eTop),
-    m_shadowRight(ShadowFrame::eRight),
-    m_shadowBottom(ShadowFrame::eBottom)
+Window::Window(void)
 {
 	m_hwnd = NULL;
 
@@ -146,11 +142,6 @@ void Window::Create(Window *parent, RectF rc, Mode mode)
         m_hboxCaption->AddLayoutItem(m_btnClose, (float)SYSBTN_WIDTH);
 
         m_sprite->AddLayoutItem(m_hboxCaption, (float)CAPTION_HEIGHT);
-
-        m_shadowLeft.Create();
-        m_shadowTop.Create();
-        m_shadowRight.Create();
-        m_shadowBottom.Create();
         break;
     default:
         break;
@@ -376,15 +367,21 @@ LRESULT CALLBACK Window::WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM 
                 thiz->m_target->Resize(D2D1::SizeU(cx, cy));
             }
             thiz->OnSize((float)cx, (float)cy, (DWORD)wparam);
-            thiz->UpdateShadowFrame(true);
+            if (thiz->m_resizable) {
+                thiz->m_resizable->UpdateShadowFrame(true);
+            }
         } while (0);
 		return 0;
     case WM_MOVE:
-        thiz->UpdateShadowFrame(false);
+        if (thiz->m_resizable) {
+            thiz->m_resizable->UpdateShadowFrame(false);
+        }
         break;
     case WM_ACTIVATE:
         if (LOWORD(wparam)) {
-            thiz->UpdateShadowFrame(false);
+            if (thiz->m_resizable) {
+                thiz->m_resizable->UpdateShadowFrame(false);
+            }
         }
         break;
         // TODO hide shadow when maximized or hide main window.
@@ -736,19 +733,6 @@ void Window::OnBtnMaximizeClicked()
     }
 }
 
-void Window::UpdateShadowFrame(bool bRedraw)
-{
-    if (m_mode == Mode::eBorderless) {
-        HDWP hdwp = ::BeginDeferWindowPos(4);
-        m_shadowLeft.Update(m_hwnd, hdwp, bRedraw);
-        m_shadowTop.Update(m_hwnd, hdwp, bRedraw);
-        m_shadowRight.Update(m_hwnd, hdwp, bRedraw);
-        m_shadowBottom.Update(m_hwnd, hdwp, bRedraw);
-        BOOL ret = ::EndDeferWindowPos(hdwp);
-        LTK_ASSERT(ret);
-    }
-}
-
 #ifndef LTK_DISABLE_LUA
 
 class DtorTest
@@ -821,6 +805,31 @@ int Window::GetRootSprite(lua_State *L)
 
 #endif
 
+ResizeHelper::ResizeHelper() :
+    m_shadowLeft(ShadowFrame::eLeft),
+    m_shadowTop(ShadowFrame::eTop),
+    m_shadowRight(ShadowFrame::eRight),
+    m_shadowBottom(ShadowFrame::eBottom)
+{
+    m_shadowLeft.Create();
+    m_shadowTop.Create();
+    m_shadowRight.Create();
+    m_shadowBottom.Create();
+}
+
+void ResizeHelper::UpdateShadowFrame(bool bRedraw)
+{
+    //if (m_mode == Mode::eBorderless) {
+        HDWP hdwp = ::BeginDeferWindowPos(4);
+        m_shadowLeft.Update(m_hwnd, hdwp, bRedraw);
+        m_shadowTop.Update(m_hwnd, hdwp, bRedraw);
+        m_shadowRight.Update(m_hwnd, hdwp, bRedraw);
+        m_shadowBottom.Update(m_hwnd, hdwp, bRedraw);
+        BOOL ret = ::EndDeferWindowPos(hdwp);
+        LTK_ASSERT(ret);
+    //}
+}
+
 void ResizeHelper::SetWindowRect(HWND hwnd, RECT &rc)
 {
     if (rc.right - rc.left < m_minWidth) {
@@ -871,6 +880,13 @@ LRESULT ResizeHelper::HandleMessage(HWND hwnd, UINT message, WPARAM wparam, LPAR
     switch (message) {
     case WM_CREATE:
         m_hwnd = hwnd;
+        bHandled = false;
+        break;
+    case WM_DESTROY:
+        m_shadowLeft.Destroy();
+        m_shadowTop.Destroy();
+        m_shadowRight.Destroy();
+        m_shadowBottom.Destroy();
         bHandled = false;
         break;
     case WM_MOUSEMOVE:

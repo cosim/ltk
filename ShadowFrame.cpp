@@ -69,6 +69,11 @@ void ShadowFrame::Create()
      LTK_ASSERT(hwnd != NULL);
 }
 
+void ShadowFrame::Destroy()
+{
+    ::DestroyWindow(m_hwnd);
+}
+
 void ShadowFrame::Init()
 {
     m_bitmap = Gdiplus::Bitmap::FromFile(L"E:\\myworks\\ltk\\res\\shadow.png");

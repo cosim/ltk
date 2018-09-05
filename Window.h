@@ -134,16 +134,13 @@ private:
 
     ID2D1HwndRenderTarget *m_target = nullptr; // owner
     ID2D1SolidColorBrush *m_brush = nullptr; // owner
-
-    ShadowFrame m_shadowLeft;
-    ShadowFrame m_shadowTop;
-    ShadowFrame m_shadowRight;
-    ShadowFrame m_shadowBottom;
 };
 
 class ResizeHelper
 {
 public:
+    ResizeHelper();
+    void UpdateShadowFrame(bool bRedraw);
     LRESULT HandleMessage(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam, bool &bHandled);
     void Maximize();
 
@@ -154,6 +151,10 @@ private:
     bool m_bMaximized = false;
     long m_minWidth = 400;
     long m_minHeight = 300;
+    ShadowFrame m_shadowLeft;
+    ShadowFrame m_shadowTop;
+    ShadowFrame m_shadowRight;
+    ShadowFrame m_shadowBottom;
 
     enum State {
         eNone,

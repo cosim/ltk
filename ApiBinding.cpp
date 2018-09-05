@@ -30,6 +30,7 @@ static int l_RunMessageLoop(lua_State *L)
         }
     }
     LOG(<< "WM_QUIT");
+    ::Sleep(2000);
     ltk::LtkUninitialize();
     return 0;
 }
