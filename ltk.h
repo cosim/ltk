@@ -55,6 +55,9 @@ namespace ltk {
 
     void DrawRectSnapped(ID2D1RenderTarget *target, const RectF &rc, ID2D1Brush *brush);
 
+    void MapCoordByDpi(float &x, float &y);
+    void UnmapCoordByDpi(float &x, float &y);
+
     struct TextureInfo {
         UINT idx = 0;
         RectF atlas;

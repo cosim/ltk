@@ -30,6 +30,30 @@ namespace ltk {
     IDWriteFactory *GetDWriteFactory() { return g_dw_factory; }
     lua_State *GetGlobalLuaState() { return g_luaState; }
 
+    // convert DIP to screen
+    void MapCoordByDpi(float &x, float &y) 
+    {
+        static float dpi_x = 0.0f;
+        static float dpi_y = 0.0f;
+        if (dpi_x == 0.0f) {
+            g_d2d_factory->GetDesktopDpi(&dpi_x, &dpi_y); // wtf? non-square pixel?
+        }
+        x = dpi_x * x / 96.0f;
+        y = dpi_y * y / 96.0f;
+    }
+
+    // convert screen to DIP
+    void UnmapCoordByDpi(float &x, float &y)
+    {
+        static float dpi_x = 0.0f;
+        static float dpi_y = 0.0f;
+        if (dpi_x == 0.0f) {
+            g_d2d_factory->GetDesktopDpi(&dpi_x, &dpi_y); // wtf? non-square pixel?
+        }
+        x = x * 96.0f / dpi_x;
+        y = y * 96.0f / dpi_y;
+    }
+
     static void AdjustRect(D2D1_RECT_F &src, D2D1_RECT_F &dst, float scale)
     {
         src.left = (float)(int)(src.left + 0.5f);

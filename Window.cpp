@@ -148,6 +148,8 @@ void Window::Create(Window *parent, RectF rc, Mode mode)
     }
     style |=  WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX;
 
+    MapCoordByDpi(rc.X, rc.Y);
+    MapCoordByDpi(rc.Width, rc.Height);
     ::CreateWindowEx(0, ClsName, L"", style,
         (int)rc.X, (int)rc.Y, (int)rc.Width, (int)rc.Height,
         hParent, NULL, HINST_THISCOMPONENT, this);
@@ -229,6 +231,8 @@ void Window::HandleMouseMessage(UINT message, WPARAM wparam, LPARAM lparam)
 		event.y = (float)(short)HIWORD(lparam);
 		event.delta = 0.0f;
 	}
+    UnmapCoordByDpi(event.x, event.y);
+
     if (WM_LBUTTONDBLCLK == message)
     {
         ::PostMessage(m_hwnd, WM_LBUTTONDOWN, wparam, lparam);
@@ -531,6 +535,7 @@ bool Window::OnSize(float cx, float cy, DWORD flag)
     //    m_btnClose->SetRect(RectF((float)(cx - SYSBTN_WIDTH - 2), (float)(1.0f - CAPTION_HEIGHT),
     //        (float)SYSBTN_WIDTH, (float)(CAPTION_HEIGHT - 1)));
     //}
+    UnmapCoordByDpi(cx, cy);
     m_sprite->SetRect(RectF(1.0f, 1.0f, (float)(cx - 2.0f), (float)(cy - 1.0f)));
     return false;
 }
