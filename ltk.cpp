@@ -56,20 +56,29 @@ namespace ltk {
 
     static void AdjustRect(D2D1_RECT_F &src, D2D1_RECT_F &dst, float scale)
     {
+        MapCoordByDpi(src.left, src.top);
+        MapCoordByDpi(src.right, src.bottom);
         src.left = (float)(int)(src.left + 0.5f);
         src.top = (float)(int)(src.top + 0.5f);
         src.right = (float)(int)(src.right + 0.5f);
         src.bottom = (float)(int)(src.bottom + 0.5f);
+        UnmapCoordByDpi(src.left, src.top);
+        UnmapCoordByDpi(src.right, src.bottom);
 
+        MapCoordByDpi(dst.left, dst.top);
+        MapCoordByDpi(dst.right, dst.bottom);
         dst.left = (float)(int)(dst.left + 0.5f);
         dst.top = (float)(int)(dst.top + 0.5f);
         dst.right = (float)(int)(dst.right + 0.5f);
         dst.bottom = (float)(int)(dst.bottom + 0.5f);
+        UnmapCoordByDpi(dst.left, dst.top);
+        UnmapCoordByDpi(dst.right, dst.bottom);
     }
 
     void DrawTextureNineInOne(ID2D1RenderTarget *target, ID2D1Bitmap *bitmap, 
         const RectF &atlas, const Margin& margin, RectF dst2, float opacity, float scale)
     {
+        D2D1_BITMAP_INTERPOLATION_MODE interp_mode = D2D1_BITMAP_INTERPOLATION_MODE_LINEAR;
         D2D1_RECT_F src;
         D2D1_RECT_F dst;
         Margin dMargin;
@@ -88,7 +97,7 @@ namespace ltk {
         dst.right = dst2.X + dMargin.left;
         dst.bottom = dst2.Y + dMargin.top;
         AdjustRect(src, dst, scale);
-        target->DrawBitmap(bitmap, dst, opacity, D2D1_BITMAP_INTERPOLATION_MODE_LINEAR, src);
+        target->DrawBitmap(bitmap, dst, opacity, interp_mode, src);
 
         // left center
         src.left = atlas.X;
@@ -100,7 +109,7 @@ namespace ltk {
         dst.right = dst2.X + dMargin.left;
         dst.bottom = dst2.Y + dst2.Height - dMargin.bottom;
         AdjustRect(src, dst, scale);
-        target->DrawBitmap(bitmap, dst, opacity, D2D1_BITMAP_INTERPOLATION_MODE_LINEAR, src);
+        target->DrawBitmap(bitmap, dst, opacity, interp_mode, src);
     
         // left bottom
         src.left = atlas.X;
@@ -112,7 +121,7 @@ namespace ltk {
         dst.right = dst2.X + dMargin.left;
         dst.bottom = dst2.Y + dst2.Height;
         AdjustRect(src, dst, scale);
-        target->DrawBitmap(bitmap, dst, opacity, D2D1_BITMAP_INTERPOLATION_MODE_LINEAR, src);
+        target->DrawBitmap(bitmap, dst, opacity, interp_mode, src);
 
         // center top
         src.left = atlas.X + margin.left;
@@ -124,7 +133,7 @@ namespace ltk {
         dst.right = dst2.X + dst2.Width - dMargin.right;
         dst.bottom = dst2.Y + dMargin.top;
         AdjustRect(src, dst, scale);
-        target->DrawBitmap(bitmap, dst, opacity, D2D1_BITMAP_INTERPOLATION_MODE_LINEAR, src);
+        target->DrawBitmap(bitmap, dst, opacity, interp_mode, src);
 
         // center center
         src.left = atlas.X + margin.left;
@@ -136,7 +145,7 @@ namespace ltk {
         dst.right = dst2.X + dst2.Width - dMargin.right;
         dst.bottom = dst2.Y + dst2.Height - dMargin.bottom;
         AdjustRect(src, dst, scale);
-        target->DrawBitmap(bitmap, dst, opacity, D2D1_BITMAP_INTERPOLATION_MODE_LINEAR, src);
+        target->DrawBitmap(bitmap, dst, opacity, interp_mode, src);
 
         // center bottom
         src.left = atlas.X + margin.left;
@@ -148,7 +157,7 @@ namespace ltk {
         dst.right = dst2.X + dst2.Width - dMargin.right;
         dst.bottom = dst2.Y + dst2.Height;
         AdjustRect(src, dst, scale);
-        target->DrawBitmap(bitmap, dst, opacity, D2D1_BITMAP_INTERPOLATION_MODE_LINEAR, src);
+        target->DrawBitmap(bitmap, dst, opacity, interp_mode, src);
 
         // right top
         src.left = atlas.X + atlas.Width - margin.right;
@@ -160,7 +169,7 @@ namespace ltk {
         dst.right = dst2.X + dst2.Width;
         dst.bottom = dst2.Y + dMargin.top;
         AdjustRect(src, dst, scale);
-        target->DrawBitmap(bitmap, dst, opacity, D2D1_BITMAP_INTERPOLATION_MODE_LINEAR, src);
+        target->DrawBitmap(bitmap, dst, opacity, interp_mode, src);
 
         // right center
         src.left = atlas.X + atlas.Width - margin.right;
@@ -172,7 +181,7 @@ namespace ltk {
         dst.right = dst2.X + dst2.Width;
         dst.bottom = dst2.Y + dst2.Height - dMargin.bottom;
         AdjustRect(src, dst, scale);
-        target->DrawBitmap(bitmap, dst, opacity, D2D1_BITMAP_INTERPOLATION_MODE_LINEAR, src);
+        target->DrawBitmap(bitmap, dst, opacity, interp_mode, src);
 
         // right bottom
         src.left = atlas.X + atlas.Width - margin.right;
@@ -184,7 +193,7 @@ namespace ltk {
         dst.right = dst2.X + dst2.Width;
         dst.bottom = dst2.Y + dst2.Height;
         AdjustRect(src, dst, scale);
-        target->DrawBitmap(bitmap, dst, opacity, D2D1_BITMAP_INTERPOLATION_MODE_LINEAR, src);
+        target->DrawBitmap(bitmap, dst, opacity, interp_mode, src);
     }
 
     void DrawRectSnapped(ID2D1RenderTarget *target, const RectF &rc, ID2D1Brush *brush)
