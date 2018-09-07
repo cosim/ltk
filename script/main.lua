@@ -92,11 +92,11 @@ btn:SetMargin(12);
 hbox1:AddSpaceItem(20, 0);
 
 btn = Ltk.Button:new();
-btn:SetText("按钮样式");
+btn:SetText("按钮样式 囧");
 ---@type Ltk.Label
 local btn_label = btn:GetLabel();
-btn_label:SetTextColor(0.5,1,1);
-btn_label:SetFontSize(16);
+-- btn_label:SetTextColor(0.5,1,1);
+btn_label:SetFontSize(12);
 btn_label:SetFontName("宋体");
 hbox1:AddLayoutItem(btn, 100);
 
@@ -115,7 +115,16 @@ hbox2:AddLayoutItem(btn, 100, 1);
 btn = Ltk.Button:new();
 btn:SetText("Font Size Test");
 g_btn_set_label_font_size = btn:SetEventHandler({
-	OnClick = function() label:SetFontSize(12) end,
+	OnClick = function()
+		local tick = LtkApi.GetTickCount();
+		local second = tick / 1000;
+		local minute = second / 60;
+		second = second % 60;
+		local hour = minute / 60;
+		minute = minute % 60;
+		label:SetText(("System Uptime: %02d:%02d:%02d"):format(
+				math.floor(hour), math.floor(minute), math.floor(second)));
+	end,
 	Sprite = btn
 })
 hbox2:AddLayoutItem(btn, 100, 1);

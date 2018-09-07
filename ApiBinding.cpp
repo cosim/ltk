@@ -218,6 +218,13 @@ static int l_GetOpenFileName(lua_State *L)
     }
 }
 
+static int l_GetTickCount(lua_State *L)
+{
+    auto tick = (long long)::GetTickCount64();
+    lua_pushinteger(L, tick);
+    return 1;
+}
+
 static const struct luaL_Reg cfunctions[] = {
     { "RunMessageLoop", l_RunMessageLoop },
     { "PostQuitMessage", l_PostQuitMessage },
@@ -229,6 +236,7 @@ static const struct luaL_Reg cfunctions[] = {
     { "SetCursor", l_SetCursor },
     { "GetModuleFileName", l_GetModuleFileName },
     { "SHGetFolderPath", l_SHGetFolderPath },
+    { "GetTickCount", l_GetTickCount },
     { NULL, NULL }
 };
 

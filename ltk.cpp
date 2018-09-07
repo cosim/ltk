@@ -374,11 +374,11 @@ BOOL APIENTRY DllMain(HMODULE hModule,
     return TRUE;
 }
 
-#define EXPORT comment(linker, "/EXPORT:" __FUNCTION__ "=" __FUNCDNAME__)
+#define LTK_EXPORT_CURRENT_FUNCTION comment(linker, "/EXPORT:" __FUNCTION__ "=" __FUNCDNAME__)
 
 int luaopen_ltk(lua_State *L)
 {
-    #pragma EXPORT
+    #pragma LTK_EXPORT_CURRENT_FUNCTION
     
     size_test();
     lua_newtable(L);
