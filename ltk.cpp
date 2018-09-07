@@ -312,7 +312,7 @@ void test_gdip_font()
 }
 */
 
-void size_test()
+static void size_test()
 {
     std::map<int, void*> map1;
     LOG("map1: " << sizeof(map1));
@@ -327,6 +327,23 @@ void size_test()
     LOG("Sprite: " << sizeof(Sprite));
     LOG("LuaObject: " << sizeof(LuaObject));
     LOG("RefCounted: " << sizeof(RefCounted));
+}
+
+static void log_thread_test()
+{
+    auto tfunc = [](){
+        for (int i = 0; i < 1000; i++) {
+            LTK_LOG("log in thread test: [%d] %i", ::GetCurrentThreadId(), i);
+        }
+    };
+    auto start_time = ::GetTickCount();
+    std::thread tt1(tfunc);
+    std::thread tt2(tfunc);
+    std::thread tt3(tfunc);
+    tt1.join();
+    tt2.join();
+    tt3.join();
+    LTK_LOG("time: %d", ::GetTickCount() - start_time);
 }
 
 int CALLBACK WinMain(
@@ -369,6 +386,7 @@ int luaopen_ltk(lua_State *L)
 
     g_luaState = L;
     LtkLogInit();
+    log_thread_test();
     LtkInitialize();
     ApiBindingInit(L);
     Window::RegisterWndClass();

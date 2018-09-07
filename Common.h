@@ -50,7 +50,7 @@ EXTERN_C IMAGE_DOS_HEADER __ImageBase;
     ::MessageBoxW(0, msg, 0, 0);__debugbreak();}
 
 
-#define  LTK_LOG(...) LtkLogImpl(__FUNCTION__, __FILE__, __LINE__, __VA_ARGS__)
+#define  LTK_LOG(...) LtkLogImpl(__FILE__, __LINE__, __VA_ARGS__)
 
 void LtkLogInit();
-void LtkLogImpl(const char * func, const char *source, int line, const char *format, ...);
+void LtkLogImpl(const char *source, int line, const char *format, ...);

@@ -245,6 +245,7 @@ static void DeleteOldLog()
         std::sort(vecFiles.begin(), vecFiles.end(), Compare);
         for (size_t i = 0; i < vecFiles.size() && i <= vecFiles.size() - MAX_LOG_NUM; ++i) {
             std::wstring file = LOG_DIR;
+            file += L"\\";
             file += vecFiles.at(i).cFileName;
             ::DeleteFile(file.c_str());
         }
@@ -259,7 +260,7 @@ void LtkLogInit()
     }
 }
 
-void LtkLogImpl(const char * func, const char *source, int line, const char *format, ...)
+void LtkLogImpl(const char *source, int line, const char *format, ...)
 {
     const size_t SIZE = 1024 * 2;
     char buffer[SIZE];
@@ -268,7 +269,7 @@ void LtkLogImpl(const char * func, const char *source, int line, const char *for
     ::StringCbVPrintfA(buffer, SIZE, format, varg);
     va_end(varg);
     char buffer2[SIZE];
-    ::StringCbPrintfA(buffer2, SIZE, "%s() %s |%s(%d)\r\n", func, buffer, source, line);
+    ::StringCbPrintfA(buffer2, SIZE, "%s\t%s(%d)\r\n", buffer, source, line);
 
     if (g_ltk_log_to_ods) {
         ::OutputDebugStringA(buffer2);
