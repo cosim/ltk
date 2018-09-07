@@ -56,23 +56,19 @@ namespace ltk {
 
     static void AdjustRect(D2D1_RECT_F &src, D2D1_RECT_F &dst, float scale)
     {
-        MapCoordByDpi(src.left, src.top);
-        MapCoordByDpi(src.right, src.bottom);
-        src.left = (float)(int)(src.left + 0.5f);
-        src.top = (float)(int)(src.top + 0.5f);
-        src.right = (float)(int)(src.right + 0.5f);
-        src.bottom = (float)(int)(src.bottom + 0.5f);
-        UnmapCoordByDpi(src.left, src.top);
-        UnmapCoordByDpi(src.right, src.bottom);
+        //src.left = (float)(int)(src.left + 0.5f);
+        //src.top = (float)(int)(src.top + 0.5f);
+        //src.right = (float)(int)(src.right + 0.5f);
+        //src.bottom = (float)(int)(src.bottom + 0.5f);
 
-        MapCoordByDpi(dst.left, dst.top);
-        MapCoordByDpi(dst.right, dst.bottom);
-        dst.left = (float)(int)(dst.left + 0.5f);
-        dst.top = (float)(int)(dst.top + 0.5f);
-        dst.right = (float)(int)(dst.right + 0.5f);
-        dst.bottom = (float)(int)(dst.bottom + 0.5f);
-        UnmapCoordByDpi(dst.left, dst.top);
-        UnmapCoordByDpi(dst.right, dst.bottom);
+        //MapCoordByDpi(dst.left, dst.top);
+        //MapCoordByDpi(dst.right, dst.bottom);
+        //dst.left = (float)(int)(dst.left + 2.5f);
+        //dst.top = (float)(int)(dst.top + 2.5f);
+        //dst.right = (float)(int)(dst.right + 2.5f);
+        //dst.bottom = (float)(int)(dst.bottom + 2.5f);
+        //UnmapCoordByDpi(dst.left, dst.top);
+        //UnmapCoordByDpi(dst.right, dst.bottom);
     }
 
     void DrawTextureNineInOne(ID2D1RenderTarget *target, ID2D1Bitmap *bitmap, 
@@ -199,11 +195,21 @@ namespace ltk {
     void DrawRectSnapped(ID2D1RenderTarget *target, const RectF &rc, ID2D1Brush *brush)
     {
         D2D1_RECT_F rc2 = D2D1RectF(rc);
+        MapCoordByDpi(rc2.left, rc2.top);
+        MapCoordByDpi(rc2.right, rc2.bottom);
         rc2.left = Round45(rc2.left) + 0.5f;
         rc2.top = Round45(rc2.top) + 0.5f;
         rc2.right = Round45(rc2.right) + 0.5f;
         rc2.bottom = Round45(rc2.bottom) + 0.5f;
-        target->DrawRectangle(rc2, brush);
+        UnmapCoordByDpi(rc2.left, rc2.top);
+        UnmapCoordByDpi(rc2.right, rc2.bottom);
+
+        static float dpi_x = 0.0f;
+        static float dpi_y = 0.0f;
+        if (dpi_x == 0.0f) {
+            g_d2d_factory->GetDesktopDpi(&dpi_x, &dpi_y); // wtf? non-square pixel?
+        }
+        target->DrawRectangle(rc2, brush, 96.0f / dpi_x);
     }
 
     void TranslateTransform(ID2D1RenderTarget *target, float dx, float dy)
