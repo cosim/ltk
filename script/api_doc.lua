@@ -158,3 +158,11 @@ function ImageSprite:new() end
 ---@param scale number
 ---@param idx number
 function ImageSprite:SetTexture(atlas, margin, scale, idx) end
+
+---@class Ltk.ScrollBar
+local ScrollBar = {}
+
+---@param mode string @horizontal|vertical
+function ScrollBar:new(mode) end
+
+function ScrollBar:Update(size, pos) end

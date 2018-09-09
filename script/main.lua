@@ -149,6 +149,10 @@ hbox3:AddSpaceItem(0, 1);
 
 vbox:AddLayoutItem(hbox3, 50);
 
+local sb = Ltk.ScrollBar:new('horizontal');
+sb:Update(1000, 200);
+vbox:AddLayoutItem(sb, 20, 0);
+
 vbox:AddSpaceItem(0, 1);
 
 ---@type Ltk.Button

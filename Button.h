@@ -33,6 +33,8 @@ public:
 
     void Update();
 
+    virtual bool OnEvent(Event *ev) override;
+
     virtual bool OnMouseEnter(MouseEvent *ev) override;
     virtual bool OnMouseLeave(MouseEvent *ev) override;
     virtual bool OnLBtnDown(MouseEvent *ev) override;
@@ -42,6 +44,7 @@ public:
     virtual void RecreateResouce(ID2D1RenderTarget *target) override;
 
     Delegate<void()> Clicked;
+    Delegate<void(MouseEvent *, bool &)> MouseEventDelegate;
 
 #ifndef LTK_DISABLE_LUA
     static int LuaConstructor(lua_State *L);

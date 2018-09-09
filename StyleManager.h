@@ -36,9 +36,11 @@ public:
     };
     D2D1_COLOR_F GetColor(Colors clr);
 
-    ID2D1Bitmap *GetBitmap(ID2D1RenderTarget *target, UINT idx = 0);
+    ID2D1Bitmap *GetBitmap(UINT idx = 0);
 
-    void RecreateResource();
+    ID2D1SolidColorBrush *GetStockBrush();
+
+    void RecreateResource(ID2D1RenderTarget *target);
 
     static D2D1_COLOR_F ColorFromString(const char *psz);
 
@@ -56,6 +58,7 @@ private:
 
     std::vector<D2D1_COLOR_F> m_colors;
     ID2D1Bitmap *m_bitmap = nullptr;
+    ID2D1SolidColorBrush *m_brush = nullptr;
 };
 
 }

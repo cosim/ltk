@@ -17,6 +17,7 @@
 #include "ShadowFrame.h"
 #include "StyleManager.h"
 #include "ImageSprite.h"
+#include "ScrollBar.h"
 
 static ID2D1Factory *g_d2d_factory = NULL;
 static IWICImagingFactory  *g_wic_factory = NULL;
@@ -398,6 +399,7 @@ int luaopen_ltk(lua_State *L)
     LuaRegisterClass<Serializer>(L, "Serializer");
     LuaRegisterClass<StyleManager>(L, "StyleManager");
     LuaRegisterClass<ImageSprite>(L, "ImageSprite");
+    LuaRegisterClass<ScrollBar>(L, "ScrollBar");
 
     ShadowFrame::Init();
 

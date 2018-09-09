@@ -77,6 +77,20 @@ void Button::Update()
     }
 }
 
+bool Button::OnEvent(Event *ev)
+{
+    bool bHandled = false;
+    if (ev->id > eMouseFirst && ev->id < eMouseLast) {
+        this->MouseEventDelegate.Invoke((MouseEvent *)ev, std::ref(bHandled));
+    }
+    if (!bHandled) {
+        return Sprite::OnEvent(ev);
+    }
+    else {
+        return true;
+    }
+}
+
 bool Button::OnMouseEnter(MouseEvent *ev)
 {
     m_bMouseIn = true;

@@ -18,6 +18,11 @@ StyleManager::~StyleManager()
         m_bitmap->Release();
     }
     m_bitmap = INVALID_POINTER(ID2D1Bitmap);
+
+    if (m_brush) {
+        m_brush->Release();
+    }
+    m_brush = INVALID_POINTER(ID2D1SolidColorBrush);
 }
 
 StyleManager * StyleManager::Instance()
@@ -38,19 +43,26 @@ D2D1_COLOR_F StyleManager::GetColor(Colors clr)
     return m_colors.at((size_t)clr);
 }
 
-ID2D1Bitmap *StyleManager::GetBitmap(ID2D1RenderTarget *target, UINT idx)
+ID2D1Bitmap *StyleManager::GetBitmap(UINT idx)
 {
-    if (!m_bitmap) {
-        LTK_LOG("creating atlas bitmap");
-        HRESULT hr = LoadBitmapFromFile(target, L"E:\\myworks\\ltk\\res\\atlas.png", &m_bitmap);
-        LTK_ASSERT(SUCCEEDED(hr));
-    }
     return m_bitmap;
 }
 
-void StyleManager::RecreateResource()
+ID2D1SolidColorBrush * StyleManager::GetStockBrush()
+{
+    return m_brush;
+}
+
+void StyleManager::RecreateResource(ID2D1RenderTarget *target)
 {
     SAFE_RELEASE(m_bitmap);
+    LTK_LOG("creating atlas bitmap");
+    HRESULT hr = LoadBitmapFromFile(target, L"E:\\myworks\\ltk\\res\\atlas.png", &m_bitmap);
+    LTK_ASSERT(SUCCEEDED(hr));
+
+    SAFE_RELEASE(m_brush);
+    hr = target->CreateSolidColorBrush(D2D1::ColorF(0, 0, 0), &m_brush);
+    LTK_ASSERT(SUCCEEDED(hr));
 }
 
 D2D1_COLOR_F StyleManager::ColorFromString(const char *psz)

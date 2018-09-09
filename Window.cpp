@@ -494,7 +494,7 @@ void Window::OnPaint(HWND hwnd )
             hwnd, D2D1::SizeU(rc.right, rc.bottom)), &m_target);
         assert(SUCCEEDED(hr));
 
-        StyleManager::Instance()->RecreateResource();
+        StyleManager::Instance()->RecreateResource(m_target);
         if (m_sprite)
         {
             m_sprite->HandleRecreateResouce(m_target);

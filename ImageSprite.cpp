@@ -23,13 +23,19 @@ bool ImageSprite::OnPaint(PaintEvent *ev)
         rc3.Y = (rc.Height - m_icon->atlas.Height * m_icon->scale) / 2.0f;
         rc3.Width = m_icon->atlas.Width * m_icon->scale;
         rc3.Height = m_icon->atlas.Height * m_icon->scale;
-        auto bitmap = StyleManager::Instance()->GetBitmap(ev->target);
+        auto bitmap = StyleManager::Instance()->GetBitmap();
         ev->target->DrawBitmap(bitmap, D2D1RectF(rc3), 1.0f, D2D1_BITMAP_INTERPOLATION_MODE_LINEAR,
             D2D1RectF(m_icon->atlas));
     }
     if (m_texture) {
-        DrawTextureNineInOne(ev->target, StyleManager::Instance()->GetBitmap(ev->target, m_texture->idx), m_texture->atlas,
-            m_texture->margin, rc, 1.0f, m_texture->scale);
+        DrawTextureNineInOne(
+            ev->target, 
+            StyleManager::Instance()->GetBitmap(m_texture->idx), 
+            m_texture->atlas,
+            m_texture->margin, 
+            rc, 
+            1.0f, 
+            m_texture->scale);
     }
     return true;
 }
