@@ -42,6 +42,8 @@ void LuaPushRectF(lua_State *L, const RectF &rc);
 #define INVALID_POINTER(type) reinterpret_cast<type *>(0xDEADBEEF)
 #endif
 
+#define SAFE_RELEASE(p) if (p) { (p)->Release(); (p) = NULL; }
+
 EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 #define HINST_THISCOMPONENT ((HINSTANCE)&__ImageBase)
 

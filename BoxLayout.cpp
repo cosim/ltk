@@ -13,7 +13,7 @@ BoxLayout::~BoxLayout()
 {
     for (size_t i = 0; i < m_params.size(); i++) {
         if (m_params[i].item) {
-            m_params[i].item->Unref();
+            m_params[i].item->Release();
         }
     }
     m_sprite = INVALID_POINTER(Sprite);
@@ -22,7 +22,7 @@ BoxLayout::~BoxLayout()
 void BoxLayout::AddLayoutItem(Sprite *item, float preferedSize, float growFactor)
 {
     Sprite::AddChild(item);
-    item->Ref();
+    item->AddRef();
     BoxLayoutParam param;
     param.item = item;
     param.size = preferedSize;
@@ -32,7 +32,7 @@ void BoxLayout::AddLayoutItem(Sprite *item, float preferedSize, float growFactor
 void BoxLayout::InsertLayoutItem(UINT before, Sprite *item, float preferedSize, float growFactor)
 {
     Sprite::AddChild(item);
-    item->Ref();
+    item->AddRef();
     BoxLayoutParam param;
     param.item = item;
     param.size = preferedSize;
@@ -136,7 +136,7 @@ int BoxLayout::LuaConstructor(lua_State *L)
     auto m = (Mode)luaL_checkoption(L, 2, nullptr, options);
     BoxLayout *box = new BoxLayout(m);
     box->PushToLua(L, "BoxLayout");
-    box->Unref();
+    box->Release();
     return 1;
 }
 

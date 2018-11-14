@@ -54,5 +54,3 @@ using Gdiplus::Color;
 
 #include <vld.h>
 
-#define SAFE_RELEASE(p) if (p) { (p)->Release(); (p) = NULL; }
-

@@ -113,7 +113,7 @@ int Label::LuaConstructor(lua_State *L)
     auto thiz = new Label();
     thiz->SetText(text);
     thiz->PushToLua(L, "Label");
-    thiz->Unref();
+    thiz->Release();
     return 1;
 }
 

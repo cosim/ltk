@@ -12,7 +12,7 @@ namespace ltk {
 void LuaObject::PushToLua( lua_State *L, const char* clsName )
 {
 	LuaStackCheck check(L);
-	this->Ref();
+	this->AddRef();
 	LuaObject ** ppThis = (LuaObject **)lua_newuserdata(L, sizeof(LuaObject *));
 	*ppThis = this;
 	int udata = lua_gettop(L);
@@ -52,7 +52,7 @@ int LuaObject::GCMethod( lua_State *L )
             lua_pop(L, 1);
 		}
 	}
-	thiz->Unref();
+	thiz->Release();
 
 	return 0;
 }
@@ -160,7 +160,7 @@ int LuaObject::ReleaseReference(lua_State *L)
             if (obj->Is(LuaObject::TypeIdClass()))
             {
                 LuaObject *lobj = obj->As<LuaObject>();
-                lobj->Unref();
+                lobj->Release();
                 *ppObj = nullptr;
                 return 0;
             }

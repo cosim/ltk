@@ -148,7 +148,7 @@ int Serializer::LuaConstructor(lua_State *L)
 {
     Serializer *thiz = new Serializer;
     thiz->PushToLua(L, "Serializer");
-    thiz->Unref();
+    thiz->Release();
     return 1;
 }
 

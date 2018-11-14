@@ -15,7 +15,7 @@ int ScrollBar::LuaConstructor(lua_State *L)
     auto m = (Mode)luaL_checkoption(L, 2, nullptr, options);
     ScrollBar *thiz = new ScrollBar(m);
     thiz->PushToLua(L, "ScrollBar");
-    thiz->Unref();
+    thiz->Release();
     return 1;
 }
 
@@ -28,7 +28,7 @@ ScrollBar::ScrollBar(Mode mode) : m_mode(mode)
 ScrollBar::~ScrollBar()
 {
     if (m_slider) {
-        m_slider->Unref();
+        m_slider->Release();
     }
     m_slider = INVALID_POINTER(Button);
 }
@@ -72,12 +72,12 @@ void ScrollBar::Update(float size, float pos)
     RectF rc2;
     if (m_mode == Horizontal) {
         rc2.X = slider_pos;
-        rc2.Y = 0;
+        rc2.Y = 1;
         rc2.Width = slider_size;
         rc2.Height = rc.Height;
     }
     else {
-        rc2.X = 0;
+        rc2.X = 1;
         rc2.Y = slider_size;
         rc2.Width = rc.Width;
         rc2.Height = slider_size;
@@ -105,7 +105,12 @@ bool ScrollBar::OnPaint(PaintEvent *ev)
 
 void ScrollBar::OnSilderEvent(MouseEvent *ev, bool &bHandled)
 {
-
+    switch (ev->id) {
+    case eLBtnDown:
+        break;
+    case eLBtnUp:
+        break;
+    }
 }
 
 }

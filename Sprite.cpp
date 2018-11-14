@@ -39,7 +39,7 @@ Sprite::~Sprite(void)
 	while(sp)
 	{
 		Sprite *tmp = sp->m_nextSibling;
-		sp->Unref(); // FIXME 有没有想过这里其实如果数量太多 会不会爆栈呢? 事实上是一个递归调用.
+        sp->Release(); // FIXME 有没有想过这里其实如果数量太多 会不会爆栈呢? 事实上是一个递归调用.
 		sp = tmp;
 	}
 	m_firstChild = INVALID_POINTER(Sprite);
@@ -190,7 +190,7 @@ void Sprite::AddChild( Sprite *sp )
 	}
 	sp->SetWindow(m_window); // 递归去设置 防止任意顺序插入导致问题 FIXME 可能有性能问题
 	sp->m_parent = this;
-    sp->Ref();
+    sp->AddRef();
 }
 
 // TODO refactor this method
@@ -490,7 +490,7 @@ void Sprite::RemoveChild( Sprite *sp )
 	{
 		sp->m_nextSibling->m_prevSibling = sp->m_prevSibling;
 	}
-	sp->Unref();
+    sp->Release();
 }
 
 Sprite * Sprite::GetNextSprite()
@@ -631,7 +631,7 @@ int Sprite::LuaConstructor(lua_State *L)
 {
     Sprite *sp = new Sprite();
     sp->PushToLua(L, "Sprite");
-    sp->Unref();
+    sp->Release();
     return 1;
 }
 

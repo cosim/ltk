@@ -17,13 +17,13 @@ Button::Button() : BoxLayout(BoxLayout::Horizontal)
 
 Button::~Button()
 {
-    if (m_label) m_label->Unref();
+    if (m_label) m_label->Release();
     m_label = INVALID_POINTER(Label);
 
     if (m_brush) m_brush->Release();
     m_brush = INVALID_POINTER(ID2D1SolidColorBrush);
 
-    if (m_image) m_image->Unref();
+    if (m_image) m_image->Release();
     m_image = INVALID_POINTER(ImageSprite);
 
     this->EndAnimation();
@@ -208,7 +208,7 @@ int Button::LuaConstructor(lua_State *L)
 {
     Button *thiz = new Button;
     thiz->PushToLua(L, "Button");
-    thiz->Unref();
+    thiz->Release();
     return 1;
 }
 

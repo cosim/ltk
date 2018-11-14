@@ -44,11 +44,11 @@ Window::Window(void)
 Window::~Window(void)
 {
     if (m_sprite) {
-        m_sprite->Unref();
+        m_sprite->Release();
     }
     m_sprite = INVALID_POINTER(BoxLayout);
     if (m_hboxCaption) {
-        m_hboxCaption->Unref();
+        m_hboxCaption->Release();
     }
     m_hboxCaption = INVALID_POINTER(BoxLayout);
 
@@ -70,22 +70,22 @@ Window::~Window(void)
     m_brush = INVALID_POINTER(ID2D1SolidColorBrush);
 
     if (m_btnClose) {
-        m_btnClose->Unref();
+        m_btnClose->Release();
     }
     m_btnClose = INVALID_POINTER(Button);
 
     if (m_btnMinimize) {
-        m_btnMinimize->Unref();
+        m_btnMinimize->Release();
     }
     m_btnMinimize = INVALID_POINTER(Button);
 
     if (m_btnMaximize) {
-        m_btnMaximize->Unref();
+        m_btnMaximize->Release();
     }
     m_btnMaximize = INVALID_POINTER(Button);
 
     if (m_labelTitle) {
-        m_labelTitle->Unref();
+        m_labelTitle->Release();
     }
     m_labelTitle = INVALID_POINTER(Label);
 }
@@ -751,7 +751,7 @@ int Window::LuaConstructor(lua_State *L)
 {
     Window *wnd = new Window();
     wnd->PushToLua(L, "Window");
-    wnd->Unref();
+    wnd->Release();
     return 1;
 }
 

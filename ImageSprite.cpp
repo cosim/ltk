@@ -73,7 +73,7 @@ int ImageSprite::LuaConstructor(lua_State *L)
 {
     ImageSprite *thiz = new ImageSprite;
     thiz->PushToLua(L, "ImageSprite");
-    thiz->Unref();
+    thiz->Release();
     return 1;
 }
 
