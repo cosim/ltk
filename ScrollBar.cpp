@@ -23,6 +23,9 @@ ScrollBar::ScrollBar(Mode mode) : m_mode(mode)
 {
     m_slider = new Button;
     this->AddChild(m_slider);
+
+    using namespace std::placeholders;
+    m_slider->MouseEventDelegate.Attach(std::bind(&ScrollBar::OnSilderEvent, this, _1, _2));
 }
 
 ScrollBar::~ScrollBar()
@@ -74,12 +77,12 @@ void ScrollBar::Update(float size, float pos)
         rc2.X = slider_pos;
         rc2.Y = 1;
         rc2.Width = slider_size;
-        rc2.Height = rc.Height;
+        rc2.Height = rc.Height - 2;
     }
     else {
         rc2.X = 1;
         rc2.Y = slider_size;
-        rc2.Width = rc.Width;
+        rc2.Width = rc.Width - 2;
         rc2.Height = slider_size;
     }
     m_slider->SetRect(rc2);
@@ -107,8 +110,10 @@ void ScrollBar::OnSilderEvent(MouseEvent *ev, bool &bHandled)
 {
     switch (ev->id) {
     case eLBtnDown:
+        LTK_LOG("eLBtnDown %f %f", ev->x, ev->y);
         break;
     case eLBtnUp:
+        LTK_LOG("eLBtnUp %f %f", ev->x, ev->y);
         break;
     }
 }
