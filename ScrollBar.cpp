@@ -123,6 +123,15 @@ bool ScrollBar::OnMouseMove(MouseEvent *ev)
     return true;
 }
 
+bool ScrollBar::OnLBtnUp(MouseEvent *ev)
+{
+    LTK_LOG("OnLBtnUp");
+    m_bDrag = false;
+    this->ReleaseCapture();
+    m_slider->OnLBtnUp(ev);
+    return true;
+}
+
 void ScrollBar::OnSilderEvent(MouseEvent *ev, bool &bHandled)
 {
     switch (ev->id) {
@@ -131,12 +140,10 @@ void ScrollBar::OnSilderEvent(MouseEvent *ev, bool &bHandled)
         m_bDrag = true;
         m_deltaX = ev->x;
         m_deltaY = ev->y;
-        //this->SetCapture();
+        this->SetCapture();
         break;
     case eLBtnUp:
-        LTK_LOG("eLBtnUp %f %f", ev->x, ev->y);
-        m_bDrag = false;
-        //this->ReleaseCapture();
+
         break;
     case eMouseMove:
         //LTK_LOG("eMouseMove %f %f", ev->x, ev->y);

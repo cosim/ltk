@@ -39,6 +39,9 @@ public:
     virtual bool OnPaint(PaintEvent *ev) override;
     virtual bool OnMouseMove(MouseEvent *ev) override;
 
+
+    virtual bool OnLBtnUp(MouseEvent *ev);
+
 private:
     Mode m_mode;
     Button *m_slider = nullptr;

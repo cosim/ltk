@@ -44,6 +44,7 @@ bool Button::OnPaint(PaintEvent *ev)
     //rc.Height -= 1; // TODO FIXME
     //rc.Width -= 1;
     auto rc2 = D2D1RectF(rc);
+    rc2.bottom++;
     //auto rrc = D2D1::RoundedRect(rc2, 4, 4);
     ev->target->FillRectangle(rc2, m_brush);
 
