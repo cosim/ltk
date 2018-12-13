@@ -85,9 +85,8 @@ void Sprite::SetRect( RectF rect )
 	{
 		RectF rcOld = m_rect;
 		// TODO OnMove
-		Invalidate(); // 旧矩形
 		m_rect = rect;
-		Invalidate(); // 新矩形
+		this->Invalidate(); // 刷新整个窗口
 		// 原先回掉的顺序错了 导致在OnSize里面GetRect和OnSize的参数不一样 诡异错误
 		if (rect.Width != rcOld.Width || rect.Height != rcOld.Height)
 		{
@@ -95,7 +94,7 @@ void Sprite::SetRect( RectF rect )
             ev.id = eSizeChanged;
             ev.width = rect.Width;
             ev.height = rect.Height;
-            OnEvent(&ev);
+            this->OnEvent(&ev);
 		}
 	}
 }
@@ -104,15 +103,10 @@ void Sprite::Invalidate()
 {
 	// 0指针访问 不挂是因为x64系统一个bug 记得打开调试中的Win32异常断点
 	Window *wnd = GetWindow();
-	if (wnd)
+    if (wnd && ::IsWindow(wnd->Handle()))
 	{
-		RECT rc;
-		RectF rf = GetAbsRect();
-		rc.left = (LONG)(rf.GetLeft() - 0.5f);
-		rc.top = (LONG)(rf.GetTop() - 0.5f);  // TODO FIXME 这个值是试出来的 不知其所以然
-		rc.right = (LONG)(rf.GetRight() + 1.5f); // 缩小窗口TabCtrl会有拖影 这里改成2 就可以消除拖影现象
-		rc.bottom = (LONG)(rf.GetBottom() + 1.5f); // 很诡异 可能是因为GdiPlus认为x取大的 width也取大的
-		::InvalidateRect(wnd->Handle(), &rc, FALSE);
+		BOOL ret = ::InvalidateRect(wnd->Handle(), NULL, FALSE);
+        LTK_ASSERT(ret);
 	}
 }
 

@@ -99,10 +99,27 @@ int ScrollBar::Update(lua_State *L)
 
 bool ScrollBar::OnPaint(PaintEvent *ev)
 {
-    Update(m_contentSize, m_position);
+    if (!m_bDrag) {
+        Update(m_contentSize, m_position);
+    }
     auto brush = StyleManager::Instance()->GetStockBrush();
     brush->SetColor(D2D1::ColorF(D2D1::ColorF::DarkGray));
     DrawRectSnapped(ev->target, this->GetClientRect(), brush);
+    return true;
+}
+
+bool ScrollBar::OnMouseMove(MouseEvent *ev)
+{
+    //LTK_LOG("OnMouseMove %f %f", ev->x, ev->y);
+    if (m_bDrag) {
+        float x = ev->x - m_deltaX;
+        float y = ev->y - m_deltaY;
+        x = max(x, 0.0f);
+        y = max(y, 0.0f);
+        auto rc = m_slider->GetRect();
+        LTK_LOG("m_slider->SetRect %f 1.0", x, y);
+        m_slider->SetRect(RectF(x, 1.0f, rc.Width, rc.Height));
+    }
     return true;
 }
 
@@ -111,11 +128,25 @@ void ScrollBar::OnSilderEvent(MouseEvent *ev, bool &bHandled)
     switch (ev->id) {
     case eLBtnDown:
         LTK_LOG("eLBtnDown %f %f", ev->x, ev->y);
+        m_bDrag = true;
+        m_deltaX = ev->x;
+        m_deltaY = ev->y;
+        //this->SetCapture();
         break;
     case eLBtnUp:
         LTK_LOG("eLBtnUp %f %f", ev->x, ev->y);
+        m_bDrag = false;
+        //this->ReleaseCapture();
+        break;
+    case eMouseMove:
+        //LTK_LOG("eMouseMove %f %f", ev->x, ev->y);
+        if (m_bDrag) {
+            int i = 1;
+            i = 1;
+        }
         break;
     }
+    bHandled = false;
 }
 
 }

@@ -113,7 +113,7 @@ bool Button::OnMouseLeave(MouseEvent *ev)
 bool Button::OnLBtnDown(MouseEvent *ev)
 {
     m_bMousePress = true;
-    this->SetCapture();
+    //this->SetCapture();
     this->Invalidate();
     return true;
 }
@@ -121,7 +121,7 @@ bool Button::OnLBtnDown(MouseEvent *ev)
 bool Button::OnLBtnUp(MouseEvent *ev)
 {
     m_bMousePress = false;
-    this->ReleaseCapture();
+    //this->ReleaseCapture();
 
     auto rc = this->GetClientRect();
     if (rc.Contains(Gdiplus::PointF(ev->x, ev->y))) {

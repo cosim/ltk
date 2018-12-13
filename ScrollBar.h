@@ -36,13 +36,17 @@ public:
 #endif // LTK_DISABLE_LUA
 
 
-    virtual bool OnPaint(PaintEvent *ev);
+    virtual bool OnPaint(PaintEvent *ev) override;
+    virtual bool OnMouseMove(MouseEvent *ev) override;
 
 private:
     Mode m_mode;
     Button *m_slider = nullptr;
     float m_contentSize = 100.0f;
     float m_position = 0.0f;
+    bool m_bDrag = false;
+    float m_deltaX = 0.0f;
+    float m_deltaY = 0.0f;
 };
 
 }
