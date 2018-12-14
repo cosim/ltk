@@ -74,6 +74,10 @@ public:
         return m_ptr;
     }
 
+    operator bool() {
+        return m_ptr != nullptr;
+    }
+
     void operator=(const RefPtr &rhs) {
         if (m_ptr) {
             m_ptr->Release();
@@ -99,6 +103,10 @@ public:
             }
             m_ptr = ptr->As<T>();
         }
+    }
+
+    T *Get() {
+        return m_ptr;
     }
 
     void Reset(T *ptr) {

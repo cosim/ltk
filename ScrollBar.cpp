@@ -99,6 +99,7 @@ int ScrollBar::Update(lua_State *L)
 
 bool ScrollBar::OnPaint(PaintEvent *ev)
 {
+    LTK_LOG("m_position %f m_mode: %d", m_position, m_mode);
     if (!m_bDrag) {
         Update(m_contentSize, m_position);
     }
@@ -116,13 +117,23 @@ bool ScrollBar::OnMouseMove(MouseEvent *ev)
         float y = ev->y - m_deltaY;
         auto rcSlider = m_slider->GetRect();
         auto rcRoot = this->GetRect();
-        x = max(x, 0.0f);
-        x = min(x, rcRoot.Width - rcSlider.Width);
-        y = max(y, 0.0f);
-        LTK_LOG("m_slider->SetRect %f 1.0", x, y);
-        m_slider->SetRect(RectF(x, 1.0f, rcSlider.Width, rcSlider.Height));
 
-        m_position = x / (rcRoot.Width - rcSlider.Width) * (m_contentSize - rcRoot.Width);
+        if (m_mode == Horizontal) {
+            x = max(x, 0.0f);
+            x = min(x, rcRoot.Width - rcSlider.Width);
+            y = max(y, 0.0f);
+            LTK_LOG("m_slider->SetRect %f 1.0", x);
+            m_slider->SetRect(RectF(x, 1.0f, rcSlider.Width, rcSlider.Height));
+            m_position = x / (rcRoot.Width - rcSlider.Width) * (m_contentSize - rcRoot.Width);
+        }
+        else {
+            x = max(x, 0.0f);
+            y = max(y, 0.0f);
+            y = min(y, rcRoot.Height - rcSlider.Height);
+            LTK_LOG("m_slider->SetRect 1.0 %f", y);
+            m_slider->SetRect(RectF(1.0f, y, rcSlider.Width, rcSlider.Height));
+            m_position = y / (rcRoot.Height - rcSlider.Height) * (m_contentSize - rcRoot.Height);
+        }
     }
     return true;
 }
@@ -133,6 +144,7 @@ bool ScrollBar::OnLBtnUp(MouseEvent *ev)
     m_bDrag = false;
     this->ReleaseCapture();
     m_slider->OnLBtnUp(ev);
+    this->Invalidate();
     return true;
 }
 

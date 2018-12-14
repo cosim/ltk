@@ -149,11 +149,17 @@ hbox3:AddSpaceItem(0, 1);
 
 vbox:AddLayoutItem(hbox3, 50);
 
+local hbox4 = Ltk.BoxLayout:new("horizontal");
+vbox:AddLayoutItem(hbox4, 0, 1);
+hbox4:AddSpaceItem(0, 1);
+local vsb = Ltk.ScrollBar:new('vertical');
+vsb:Update(1500, 200);
+hbox4:AddLayoutItem(vsb, 7, 0);
+
 local sb = Ltk.ScrollBar:new('horizontal');
-sb:Update(1000, 200);
+sb:Update(1500, 200);
 vbox:AddLayoutItem(sb, 7, 0);
 
-vbox:AddSpaceItem(0, 1);
 
 ---@type Ltk.Button
 --[[local btn_status = Ltk.Button:new();
