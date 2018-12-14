@@ -114,11 +114,15 @@ bool ScrollBar::OnMouseMove(MouseEvent *ev)
     if (m_bDrag) {
         float x = ev->x - m_deltaX;
         float y = ev->y - m_deltaY;
+        auto rcSlider = m_slider->GetRect();
+        auto rcRoot = this->GetRect();
         x = max(x, 0.0f);
+        x = min(x, rcRoot.Width - rcSlider.Width);
         y = max(y, 0.0f);
-        auto rc = m_slider->GetRect();
         LTK_LOG("m_slider->SetRect %f 1.0", x, y);
-        m_slider->SetRect(RectF(x, 1.0f, rc.Width, rc.Height));
+        m_slider->SetRect(RectF(x, 1.0f, rcSlider.Width, rcSlider.Height));
+
+        m_position = x / (rcRoot.Width - rcSlider.Width) * (m_contentSize - rcRoot.Width);
     }
     return true;
 }

@@ -115,7 +115,7 @@ void Window::Create(Window *parent, RectF rc, Mode mode)
 
         m_hboxCaption = new BoxLayout(BoxLayout::Horizontal);
         m_hboxCaption->SetMargin(0.0f);
-        m_hboxCaption->SetSpacing(0.0f);
+        m_hboxCaption->SetSpacing(1.0f);
         m_hboxCaption->AddSpaceItem(7.0f, 0.0f);
 
         m_labelTitle = new Label;

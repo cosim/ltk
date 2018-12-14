@@ -156,9 +156,9 @@ vbox:AddLayoutItem(sb, 7, 0);
 vbox:AddSpaceItem(0, 1);
 
 ---@type Ltk.Button
-local btn_status = Ltk.Button:new();
-btn:SetText("status bar");
-root:AddLayoutItem(btn_status, 20);
+--[[local btn_status = Ltk.Button:new();
+btn_status:SetText("status bar");
+root:AddLayoutItem(btn_status, 20);]]
 
 root:SetSpacing(0);
 root:DoLayout();
