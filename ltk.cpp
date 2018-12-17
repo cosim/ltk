@@ -387,7 +387,7 @@ int luaopen_ltk(lua_State *L)
 
     g_luaState = L;
     LtkLogInit();
-    log_thread_test();
+    // log_thread_test();
     LtkInitialize();
     ApiBindingInit(L);
     Window::RegisterWndClass();

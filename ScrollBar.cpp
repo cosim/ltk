@@ -78,7 +78,7 @@ void ScrollBar::Update()
     }
     else {
         rc2.X = 1;
-        rc2.Y = slider_size;
+        rc2.Y = slider_pos;
         rc2.Width = rc.Width - 2;
         rc2.Height = slider_size;
     }
@@ -110,7 +110,9 @@ int ScrollBar::SetPosition(lua_State *L)
 
 bool ScrollBar::OnPaint(PaintEvent *ev)
 {
-    LTK_LOG("m_position %f m_mode: %d", m_position, m_mode);
+    if (m_mode != Horizontal) {
+        LTK_LOG("m_position %f m_mode: %d", m_position, m_mode);
+    }
     if (!m_bDrag) {
         Update();
     }

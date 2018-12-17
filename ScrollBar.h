@@ -44,7 +44,7 @@ public:
     virtual bool OnMouseMove(MouseEvent *ev) override;
 
 
-    virtual bool OnLBtnUp(MouseEvent *ev);
+    virtual bool OnLBtnUp(MouseEvent *ev) override;
 
 private:
     Mode m_mode;

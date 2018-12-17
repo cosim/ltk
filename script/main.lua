@@ -155,7 +155,7 @@ hbox4:AddSpaceItem(0, 1);
 local vsb = Ltk.ScrollBar:new('vertical');
 vsb:SetContentSize(1500);
 vsb:SetPosition(200);
-vsb:Update(1500, 200);
+vsb:Update();
 hbox4:AddLayoutItem(vsb, 7, 0);
 
 local sb = Ltk.ScrollBar:new('horizontal');
