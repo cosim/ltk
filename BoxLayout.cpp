@@ -50,13 +50,19 @@ void BoxLayout::AddSpaceItem(float preferedSize, float growFactor)
 
 bool BoxLayout::OnSize(SizeEvent *ev)
 {
+    // TODO rename this function
     float sum_size = 0.0f;
     float sum_factor = 0.0f;
     for (size_t i = 0; i < m_params.size(); i++) {
         sum_size += m_params[i].size;
         sum_factor += m_params[i].growFactor;
     }
-    sum_size += m_margin * 2;
+    if (m_mode == Horizontal) {
+        sum_size += m_marginLeft + m_marginRight;
+    }
+    else {
+        sum_size += m_marginTop + m_marginBottom;
+    }
     sum_size += m_spacing * (m_params.size() - 1);
 
     float remain;
@@ -67,8 +73,9 @@ bool BoxLayout::OnSize(SizeEvent *ev)
         remain = ev->height - sum_size;
     }
     remain = max(0.0f, remain);
-    float x = m_margin;
-    float y = m_margin;
+
+    float x = m_marginLeft;
+    float y = m_marginTop;
     for (size_t i = 0; i < m_params.size(); i++) {
         RectF rc2;
         float size;
@@ -82,13 +89,13 @@ bool BoxLayout::OnSize(SizeEvent *ev)
             rc2.X = x;
             rc2.Y = y;
             rc2.Width = size;
-            rc2.Height = ev->height - m_margin - m_margin;
+            rc2.Height = ev->height - m_marginTop - m_marginBottom;
             x += size + m_spacing;
         }
         else {
             rc2.X = x;
             rc2.Y = y;
-            rc2.Width = ev->width - m_margin - m_margin;
+            rc2.Width = ev->width - m_marginLeft - m_marginRight;
             rc2.Height = size;
             y += size + m_spacing;
         }
@@ -106,9 +113,12 @@ bool BoxLayout::OnSize(SizeEvent *ev)
 void BoxLayout::SetMargin(float margin)
 {
     if (margin < 0.0f) {
-        __debugbreak();
+        return;
     }
-    m_margin = margin;
+    m_marginLeft = margin;
+    m_marginRight = margin;
+    m_marginTop = margin;
+    m_marginBottom = margin;
 }
 
 void BoxLayout::SetSpacing(float spacing)

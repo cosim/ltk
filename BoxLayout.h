@@ -57,7 +57,10 @@ private:
     std::vector<BoxLayoutParam> m_params; // item: owner
     Sprite *m_sprite = nullptr; // weak
     Mode m_mode;
-    float m_margin = 0.0f;
+    float m_marginLeft = 0.0f;
+    float m_marginRight = 0.0f;
+    float m_marginTop = 0.0f;
+    float m_marginBottom = 0.0f;
     float m_spacing = 5.0f;
 };
 
