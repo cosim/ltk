@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Sprite.h"
+#include "Delegate.h"
 
 namespace ltk {
 
@@ -45,6 +46,10 @@ public:
 
 
     virtual bool OnLBtnUp(MouseEvent *ev) override;
+
+    virtual bool OnThumbDragging(float pos);
+
+    Delegate<bool(float)> ThumbDragging;
 
 private:
     Mode m_mode;

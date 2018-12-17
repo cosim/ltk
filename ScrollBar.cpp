@@ -147,6 +147,7 @@ bool ScrollBar::OnMouseMove(MouseEvent *ev)
             m_slider->SetRect(RectF(1.0f, y, rcSlider.Width, rcSlider.Height));
             m_position = y / (rcRoot.Height - rcSlider.Height) * (m_contentSize - rcRoot.Height);
         }
+        this->OnThumbDragging(m_position);
     }
     return true;
 }
@@ -159,6 +160,15 @@ bool ScrollBar::OnLBtnUp(MouseEvent *ev)
     m_slider->OnLBtnUp(ev);
     this->Invalidate();
     return true;
+}
+
+bool ScrollBar::OnThumbDragging(float pos)
+{
+    auto L = GetGlobalLuaState();
+    lua_pushnumber(L, pos);
+    this->CallEventHandler(L, "OnThumbDragging", 1, 0);
+    this->ThumbDragging.Invoke(pos);
+    return false;
 }
 
 void ScrollBar::OnSilderEvent(MouseEvent *ev, bool &bHandled)

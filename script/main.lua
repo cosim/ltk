@@ -157,13 +157,22 @@ vsb:SetContentSize(1500);
 vsb:SetPosition(200);
 vsb:Update();
 hbox4:AddLayoutItem(vsb, 7, 0);
+g_vsb_event = vsb:SetEventHandler({
+	OnThumbDragging = function(pos)
+		print("vsb pos:", pos);
+	end
+})
 
-local sb = Ltk.ScrollBar:new('horizontal');
-sb:SetContentSize(1500);
-sb:SetPosition(200);
-sb:Update();
-vbox:AddLayoutItem(sb, 7, 0);
-
+local hsb = Ltk.ScrollBar:new('horizontal');
+hsb:SetContentSize(1500);
+hsb:SetPosition(200);
+hsb:Update();
+vbox:AddLayoutItem(hsb, 7, 0);
+g_hsb_event = vsb:SetEventHandler({
+	OnThumbDragging = function(pos)
+		print("hsb pos:", pos);
+	end
+})
 
 ---@type Ltk.Button
 --[[local btn_status = Ltk.Button:new();

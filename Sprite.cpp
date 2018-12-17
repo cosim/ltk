@@ -293,10 +293,11 @@ Window * Sprite::GetWindow()
 
 void Sprite::SetCapture()
 {
-	assert(GetWindow()); // 这个在lua包装函数里检查 报成lua错误
-	if (GetWindow())
+    auto wnd = GetWindow();
+    assert(wnd); // 这个在lua包装函数里检查 报成lua错误
+	if (wnd)
 	{
-		GetWindow()->SetCapture(this);
+		wnd->SetCapture(this);
 	}
 }
 
