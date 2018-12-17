@@ -22,7 +22,12 @@ public:
 
     virtual bool OnSize(SizeEvent *ev) override;
 
-    void SetMargin(float margin);
+    void SetMargin(float m);
+
+    void SetLeftMargin(float m);
+    void SetTopMargin(float m);
+    void SetRightMargin(float m);
+    void SetBottomMargin(float m);
 
     void SetSpacing(float spacing);
 
@@ -55,7 +60,6 @@ public:
 
 private:
     std::vector<BoxLayoutParam> m_params; // item: owner
-    Sprite *m_sprite = nullptr; // weak
     Mode m_mode;
     float m_marginLeft = 0.0f;
     float m_marginRight = 0.0f;

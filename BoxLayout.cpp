@@ -16,7 +16,6 @@ BoxLayout::~BoxLayout()
             m_params[i].item->Release();
         }
     }
-    m_sprite = INVALID_POINTER(Sprite);
 }
 
 void BoxLayout::AddLayoutItem(Sprite *item, float preferedSize, float growFactor)
@@ -112,13 +111,35 @@ bool BoxLayout::OnSize(SizeEvent *ev)
 
 void BoxLayout::SetMargin(float margin)
 {
-    if (margin < 0.0f) {
-        return;
-    }
+    margin = max(0.0f, margin);
     m_marginLeft = margin;
     m_marginRight = margin;
     m_marginTop = margin;
     m_marginBottom = margin;
+}
+
+void BoxLayout::SetLeftMargin(float m)
+{
+    m = max(0.0f, m);
+    m_marginLeft = m;
+}
+
+void BoxLayout::SetTopMargin(float m)
+{
+    m = max(0.0f, m);
+    m_marginTop = m;
+}
+
+void BoxLayout::SetRightMargin(float m)
+{
+    m = max(0.0f, m);
+    m_marginRight = m;
+}
+
+void BoxLayout::SetBottomMargin(float m)
+{
+    m = max(0.0f, m);
+    m_marginBottom = m;
 }
 
 void BoxLayout::SetSpacing(float spacing)
