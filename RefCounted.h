@@ -51,7 +51,10 @@ template<typename T>
 class RefPtr
 {
 public:
-    RefPtr() : m_ptr(nullptr) {}
+    RefPtr() : m_ptr(nullptr) {
+        static_assert(std::is_convertible<T*, RefCounted*>::value,
+            "RefCounted * required!");
+    }
     explicit RefPtr(T *ptr) : m_ptr(ptr) {}
 
     RefPtr(const RefPtr &rhs) {

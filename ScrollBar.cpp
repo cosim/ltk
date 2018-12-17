@@ -46,11 +46,8 @@ void ScrollBar::SetPosition(float pos)
     m_position = pos;
 }
 
-void ScrollBar::Update(float size, float pos)
+void ScrollBar::Update()
 {
-    m_contentSize = size;
-    m_position = pos;
-
     auto rc = this->GetRect();
 
     float view_size;
@@ -91,9 +88,23 @@ void ScrollBar::Update(float size, float pos)
 int ScrollBar::Update(lua_State *L)
 {
     ScrollBar *thiz = CheckLuaObject<ScrollBar>(L, 1);
+    thiz->Update();
+    return 0;
+}
+
+int ScrollBar::SetContentSize(lua_State *L)
+{
+    ScrollBar *thiz = CheckLuaObject<ScrollBar>(L, 1);
     float size = (float)luaL_checknumber(L, 2);
-    float pos = (float)luaL_checknumber(L, 3);
-    thiz->Update(size, pos);
+    thiz->SetContentSize(size);
+    return 0;
+}
+
+int ScrollBar::SetPosition(lua_State *L)
+{
+    ScrollBar *thiz = CheckLuaObject<ScrollBar>(L, 1);
+    float pos = (float)luaL_checknumber(L, 2);
+    thiz->SetPosition(pos);
     return 0;
 }
 
@@ -101,7 +112,7 @@ bool ScrollBar::OnPaint(PaintEvent *ev)
 {
     LTK_LOG("m_position %f m_mode: %d", m_position, m_mode);
     if (!m_bDrag) {
-        Update(m_contentSize, m_position);
+        Update();
     }
     auto brush = StyleManager::Instance()->GetStockBrush();
     brush->SetColor(D2D1::ColorF(D2D1::ColorF::DarkGray));

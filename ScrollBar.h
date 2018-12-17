@@ -19,7 +19,7 @@ public:
 
     void SetPosition(float pos);
 
-    void Update(float size, float pos);
+    void Update();
 
     void OnSilderEvent(MouseEvent *ev, bool &bHandled);
 
@@ -28,10 +28,14 @@ public:
 #ifndef LTK_DISABLE_LUA
     static int LuaConstructor(lua_State *L);
     static int Update(lua_State *L);
+    static int SetContentSize(lua_State *L);
+    static int SetPosition(lua_State *L);
 
     BEGIN_LUA_METHOD_MAP(ScrollBar)
         LUA_CHAIN_METHOD_MAP(Sprite)
         LUA_METHOD_ENTRY(Update)
+        LUA_METHOD_ENTRY(SetContentSize)
+        LUA_METHOD_ENTRY(SetPosition)
     END_LUA_METHOD_MAP()
 #endif // LTK_DISABLE_LUA
 
