@@ -168,7 +168,7 @@ hsb:SetContentSize(1500);
 hsb:SetPosition(200);
 hsb:Update();
 vbox:AddLayoutItem(hsb, 7, 0);
-g_hsb_event = vsb:SetEventHandler({
+g_hsb_event = hsb:SetEventHandler({  -- TODO FIXME change hsb to vsb, will crash the libary.
 	OnThumbDragging = function(pos)
 		print("hsb pos:", pos);
 	end

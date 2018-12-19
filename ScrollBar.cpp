@@ -30,10 +30,8 @@ ScrollBar::ScrollBar(Mode mode) : m_mode(mode)
 
 ScrollBar::~ScrollBar()
 {
-    if (m_slider) {
-        m_slider->Release();
-    }
-    m_slider = INVALID_POINTER(Button);
+    SAFE_RELEASE_AND_MAKR(Button, m_slider);
+    SAFE_RELEASE_AND_MAKR(ID2D1SolidColorBrush, m_brush);
 }
 
 void ScrollBar::SetContentSize(float size)
@@ -116,9 +114,7 @@ bool ScrollBar::OnPaint(PaintEvent *ev)
     if (!m_bDrag) {
         Update();
     }
-    auto brush = StyleManager::Instance()->GetStockBrush();
-    brush->SetColor(D2D1::ColorF(D2D1::ColorF::DarkGray));
-    DrawRectSnapped(ev->target, this->GetClientRect(), brush);
+    DrawRectSnapped(ev->target, this->GetClientRect(), m_brush);
     return true;
 }
 
@@ -169,6 +165,15 @@ bool ScrollBar::OnThumbDragging(float pos)
     this->CallEventHandler(L, "OnThumbDragging", 1, 0);
     this->ThumbDragging.Invoke(pos);
     return false;
+}
+
+void ScrollBar::RecreateResouce(ID2D1RenderTarget *target)
+{
+    HRESULT hr = E_FAIL;
+    SAFE_RELEASE(m_brush);
+    // TODO get color from StyleManager
+    hr = target->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::DarkGray), &m_brush);
+    assert(SUCCEEDED(hr));
 }
 
 void ScrollBar::OnSilderEvent(MouseEvent *ev, bool &bHandled)

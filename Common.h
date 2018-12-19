@@ -44,6 +44,8 @@ void LuaPushRectF(lua_State *L, const RectF &rc);
 
 #define SAFE_RELEASE(p) if (p) { (p)->Release(); (p) = NULL; }
 
+#define SAFE_RELEASE_AND_MAKR(type, p) if (p) { (p)->Release(); (p) = reinterpret_cast<type *>(0xDEADBEEF); }
+
 EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 #define HINST_THISCOMPONENT ((HINSTANCE)&__ImageBase)
 

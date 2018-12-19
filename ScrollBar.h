@@ -10,6 +10,8 @@ class Button;
 class ScrollBar : public Sprite
 {
 public:
+    RTTI_DECLARATIONS(ScrollBar, Sprite)
+
     enum Mode {
         Horizontal, Vertical
     };
@@ -51,6 +53,9 @@ public:
 
     Delegate<bool(float)> ThumbDragging;
 
+
+    virtual void RecreateResouce(ID2D1RenderTarget *target);
+
 private:
     Mode m_mode;
     Button *m_slider = nullptr;
@@ -59,6 +64,7 @@ private:
     bool m_bDrag = false;
     float m_deltaX = 0.0f;
     float m_deltaY = 0.0f;
+    ID2D1SolidColorBrush *m_brush = nullptr;
 };
 
 }
