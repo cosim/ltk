@@ -43,14 +43,18 @@ void Serializer::RecSerialize(lua_State *L, int idx)
         } while (0);
         break;
     case LUA_TNUMBER:
+#if LUA_VERSION_MINOR >= 3
         if (lua_isinteger(L, idx)) {
             m_buffer.WriteByte('i');
             m_buffer.WriteInt64(lua_tointeger(L, idx));
         }
         else {
+#endif
             m_buffer.WriteByte('d');
             m_buffer.WriteDouble(lua_tonumber(L, idx));
+#if LUA_VERSION_MINOR >= 3
         }
+#endif
         break;
     case LUA_TBOOLEAN:
         if (lua_toboolean(L, idx)) {
@@ -109,7 +113,7 @@ void Serializer::RecSerialize(lua_State *L, int idx)
             // hash part
             lua_pushnil(L);
             while (lua_next(L, idx)) {
-                if (lua_isinteger(L, -2)) {
+                if (lua_isnumber(L, -2)) {
                     int key = (int)lua_tointeger(L, -2);
                     if (key <= arr_size) {
                         lua_pop(L, 1); // pop value
@@ -188,6 +192,7 @@ bool Serializer::RecDeserialize(lua_State *L)
             lua_pushlstring(L, str, len);
         } while (0);
         break;
+#if LUA_VERSION_MINOR >= 3
     case 'i':
         do 
         {
@@ -198,6 +203,7 @@ bool Serializer::RecDeserialize(lua_State *L)
             lua_pushinteger(L, data);
         } while (0);
         break;
+#endif
     case 'd':
         do
         {

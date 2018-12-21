@@ -94,21 +94,19 @@ int StyleManager::SetColorScheme(lua_State *L)
 {
     StyleManager *thiz = Instance();
     luaL_checktype(L, 2, LUA_TTABLE);
-    lua_len(L, 2);
-    size_t size = (size_t)lua_tointeger(L, -1);
+    size_t size = lua_objlen(L, 2);
     if (size < clrLast) {
         luaL_error(L, "not enough colors");
     }
-    lua_pop(L, 1); // for length
     thiz->m_colors.clear();
     int i = 1;
-    lua_geti(L, 2, i);
+    LuaGetI(L, 2, i);
     while (lua_isstring(L, -1)) {
         const char *psz = lua_tostring(L, -1);
         thiz->m_colors.push_back(ColorFromString(psz));
         i++;
         lua_pop(L, 1); // for the color string
-        lua_geti(L, 2, i);
+        LuaGetI(L, 2, i);
     }
     lua_pop(L, 1); // for nil
     return 0;

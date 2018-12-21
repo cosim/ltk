@@ -18,6 +18,7 @@ ltk::Margin LuaCheckMargin(lua_State *L, int idx);
 D2D1_COLOR_F LuaCheckColor(lua_State *L, int index);
 RectF LuaCheckRectF(lua_State *L, int index);
 void LuaPushRectF(lua_State *L, const RectF &rc);
+int LuaGetI(lua_State *L, int index, lua_Integer i);
 
 #define LOG(msg) do\
 {\

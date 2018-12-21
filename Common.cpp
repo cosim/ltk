@@ -190,6 +190,19 @@ void LuaPushRectF(lua_State *L, const RectF &rc)
     lua_setfield(L, tRect, "h");
 }
 
+static int lua_absindex(lua_State *L, int i) {
+    if (i < 0 && i > LUA_REGISTRYINDEX)
+        i += lua_gettop(L) + 1;
+    return i;
+}
+
+int LuaGetI(lua_State *L, int index, lua_Integer i) {
+    index = lua_absindex(L, index);
+    lua_pushinteger(L, i);
+    lua_gettable(L, index);
+    return lua_type(L, -1);
+}
+
 static bool g_ltk_log_to_ods = true;
 static bool g_ltk_log_to_file = true;
 static HANDLE g_ltk_log_file_handle = 0;
