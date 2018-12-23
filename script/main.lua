@@ -1,6 +1,12 @@
 package.cpath = package.cpath..[[;E:\myworks\ltk\x64\Debug\?.dll]]
 package.path = [[E:\myworks\ltk\script\?.lua]]
 
+if jit then
+	jit.off();
+	jit = nil;
+	print("luajit jit.off()")
+end
+
 function SetupPrintWithLineInfo()
 	local old_print = _G.print;
 	local format = string.format;
@@ -168,7 +174,7 @@ hsb:SetContentSize(1500);
 hsb:SetPosition(200);
 hsb:Update();
 vbox:AddLayoutItem(hsb, 7, 0);
-g_hsb_event = hsb:SetEventHandler({  -- TODO FIXME change hsb to vsb, will crash the libary.
+g_hsb_event = vsb:SetEventHandler({  -- TODO FIXME change hsb to vsb, will crash the libary.
 	OnThumbDragging = function(pos)
 		print("hsb pos:", pos);
 	end
@@ -226,3 +232,9 @@ do -- debugger test
 	local i;
 	i = 1;
 end
+
+local vu8 = Ltk.VecU8:new();
+vu8:PushBack(1);
+vu8:PushBack(2);
+vu8:PushBack(3);
+

@@ -221,7 +221,7 @@ static int l_GetOpenFileName(lua_State *L)
 static int l_GetTickCount(lua_State *L)
 {
     auto tick = (long long)::GetTickCount64();
-    lua_pushinteger(L, tick);
+    lua_pushinteger(L, (lua_Integer)tick);
     return 1;
 }
 

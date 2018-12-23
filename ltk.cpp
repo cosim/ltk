@@ -18,6 +18,7 @@
 #include "StyleManager.h"
 #include "ImageSprite.h"
 #include "ScrollBar.h"
+#include "LuaVector.h"
 
 static ID2D1Factory *g_d2d_factory = NULL;
 static IWICImagingFactory  *g_wic_factory = NULL;
@@ -400,6 +401,8 @@ int luaopen_ltk(lua_State *L)
     LuaRegisterClass<StyleManager>(L, "StyleManager");
     LuaRegisterClass<ImageSprite>(L, "ImageSprite");
     LuaRegisterClass<ScrollBar>(L, "ScrollBar");
+
+    LuaRegisterClass<LuaVector<unsigned char>>(L, "VecU8");
 
     ShadowFrame::Init();
 

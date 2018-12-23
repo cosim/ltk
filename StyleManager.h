@@ -58,7 +58,6 @@ private:
 
     std::vector<D2D1_COLOR_F> m_colors;
     ID2D1Bitmap *m_bitmap = nullptr;
-    ID2D1SolidColorBrush *m_brush = nullptr;
 };
 
 }

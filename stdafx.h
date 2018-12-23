@@ -49,7 +49,7 @@ using Gdiplus::Color;
 #include <Wincodec.h>
 #include <Dwrite.h>
 
-#include "lua.hpp"
+#include "luajit\lua.hpp"
 
 #include <vld.h>
 
