@@ -403,6 +403,16 @@ int luaopen_ltk(lua_State *L)
     LuaRegisterClass<ScrollBar>(L, "ScrollBar");
 
     LuaRegisterClass<LuaVector<unsigned char>>(L, LuaVectorScriptName<unsigned char>());
+    LuaRegisterClass<LuaVector<unsigned short>>(L, LuaVectorScriptName<unsigned short>());
+    LuaRegisterClass<LuaVector<unsigned long>>(L, LuaVectorScriptName<unsigned long>());
+
+    LuaRegisterClass<LuaVector<signed char>>(L, LuaVectorScriptName<signed char>());
+    LuaRegisterClass<LuaVector<signed short>>(L, LuaVectorScriptName<signed short>());
+    LuaRegisterClass<LuaVector<signed long>>(L, LuaVectorScriptName<signed long>());
+
+    LuaRegisterClass<LuaVector<float>>(L, LuaVectorScriptName<float>());
+    LuaRegisterClass<LuaVector<double>>(L, LuaVectorScriptName<double>());
+
 
     ShadowFrame::Init();
 

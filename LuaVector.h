@@ -39,9 +39,33 @@ const char *LuaVectorScriptName<unsigned char>()
 }
 
 template <>
+const char *LuaVectorScriptName<signed char>()
+{
+    return "VecInt8";
+}
+
+template <>
 const char *LuaVectorScriptName<unsigned short>()
 {
     return "VecUInt16";
+}
+
+template <>
+const char *LuaVectorScriptName<signed short>()
+{
+    return "VecInt16";
+}
+
+template <>
+const char *LuaVectorScriptName<unsigned long>()
+{
+    return "VecUInt32";
+}
+
+template <>
+const char *LuaVectorScriptName<signed long>()
+{
+    return "VecInt32";
 }
 
 template <>

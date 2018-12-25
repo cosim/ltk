@@ -3,9 +3,13 @@ package.path = [[E:\myworks\ltk\script\?.lua]]
 
 if jit then
 	jit.off();
+	print(jit.version, " jit.off()")
 	jit = nil;
-	print("luajit jit.off()")
+else
+	print(_VERSION, " no jit support");
 end
+
+coroutine = nil; -- coroutine is forbidden
 
 function SetupPrintWithLineInfo()
 	local old_print = _G.print;
@@ -24,8 +28,6 @@ function SetupPrintWithLineInfo()
 end
 
 SetupPrintWithLineInfo();
-
-print("hello world", _VERSION);
 
 require("ltk");
 
@@ -208,15 +210,35 @@ srlz:Serialize(
 local res = srlz:Deserialize();
 pprint(res);
 
-local vu8 = Ltk.VecUInt8:new();
-vu8:PushBack(1);
-vu8:PushBack(2);
-vu8:PushBack(3);
-assert(vu8:Get(1) == 1);
-assert(vu8:Get(2) == 2);
-assert(vu8:Get(3) == 3);
-vu8:Set(3, -1);
-print(vu8:Get(3));
+do
+	local vu8 = Ltk.VecUInt8:new();
+	vu8:PushBack(1);
+	vu8:PushBack(2);
+	vu8:PushBack(3);
+	assert(vu8:Get(1) == 1);
+	assert(vu8:Get(2) == 2);
+	assert(vu8:Get(3) == 3);
+	vu8:Set(3, -1);
+	print("VecUInt8 ", vu8:Get(3));
+
+	local vu16 = Ltk.VecUInt16:new();
+	vu16:PushBack(65536)
+	vu16:PushBack(-1);
+	print("VecUInt16 ", vu16:Get(1), vu16:Get(2));
+
+	local vs8 = Ltk.VecInt8:new();
+	vs8:PushBack(-129);
+	print("VecInt8 ", vs8:Get(1));
+
+	local vs32 = Ltk.VecInt32:new();
+	vs32:PushBack(-19);
+	vs32:PushBack(0.75);
+	print("VecInt32 ", vs32:Get(1), vs32:Get(2));
+
+	local vf32 = Ltk.VecFloat32:new();
+	vf32:PushBack(0.4);
+	print("VecFloat32 ", vf32:Get(1));
+end
 
 io.flush();
 LtkApi.RunMessageLoop();
