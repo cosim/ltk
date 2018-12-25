@@ -1,4 +1,4 @@
-package.cpath = package.cpath..[[;E:\myworks\ltk\x64\Debug\?.dll]]
+package.cpath = package.cpath..[[;E:\myworks\ltk\Debug\?.dll]]
 package.path = [[E:\myworks\ltk\script\?.lua]]
 
 if jit then
@@ -207,10 +207,19 @@ srlz:Serialize(
 		"help me");
 local res = srlz:Deserialize();
 pprint(res);
+
+local vu8 = Ltk.VecUInt8:new();
+vu8:PushBack(1);
+vu8:PushBack(2);
+vu8:PushBack(3);
+assert(vu8:Get(1) == 1);
+assert(vu8:Get(2) == 2);
+assert(vu8:Get(3) == 3);
+vu8:Set(3, -1);
+print(vu8:Get(3));
+
 io.flush();
-
 LtkApi.RunMessageLoop();
-
 
 
 ---@class EmmyTest
@@ -232,9 +241,3 @@ do -- debugger test
 	local i;
 	i = 1;
 end
-
-local vu8 = Ltk.VecU8:new();
-vu8:PushBack(1);
-vu8:PushBack(2);
-vu8:PushBack(3);
-

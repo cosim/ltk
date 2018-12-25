@@ -27,22 +27,40 @@ private:
 };
 
 template <typename T>
-const char *get_vec_typename()
+const char *LuaVectorScriptName()
 {
     throw("never reach here");
 }
 
 template <>
-const char *get_vec_typename<unsigned char>()
+const char *LuaVectorScriptName<unsigned char>()
 {
-    return "VecU8";
+    return "VecUInt8";
+}
+
+template <>
+const char *LuaVectorScriptName<unsigned short>()
+{
+    return "VecUInt16";
+}
+
+template <>
+const char *LuaVectorScriptName<float>()
+{
+    return "VecFloat32";
+}
+
+template <>
+const char *LuaVectorScriptName<double>()
+{
+    return "VecFloat64";
 }
 
 template <typename T>
 int LuaVector<T>::LuaConstructor(lua_State *L)
 {
     LuaVector<T> *thiz = new LuaVector<T>;
-    thiz->PushToLua(L, get_vec_typename<T>());
+    thiz->PushToLua(L, LuaVectorScriptName<T>());
     thiz->Release();
     return 1;
 }
@@ -51,8 +69,8 @@ template <typename T>
 int LuaVector<T>::PushBack(lua_State *L)
 {
     LuaVector<T> *thiz = CheckLuaObject<LuaVector<T>>(L, 1);
-    size_t elem = (size_t)luaL_checkinteger(L, 2);
-    thiz->m_vec.reserve(elem);
+    T elem = (T)luaL_checknumber(L, 2);
+    thiz->m_vec.push_back(elem);
     return 0;
 }
 
@@ -77,6 +95,7 @@ int LuaVector<T>::Get(lua_State *L)
     LuaVector<T> *thiz = CheckLuaObject<LuaVector<T>>(L, 1);
     size_t idx = (size_t)luaL_checkinteger(L, 2);
 
+    idx--;
     if (idx >= thiz->m_vec.size()) {
         luaL_error(L, "out of range");
     }
@@ -88,5 +107,8 @@ int LuaVector<T>::Get(lua_State *L)
 template <typename T>
 int LuaVector<T>::Reserve(lua_State *L)
 {
+    LuaVector<T> *thiz = CheckLuaObject<LuaVector<T>>(L, 1);
+    size_t size = (size_t)luaL_checkinteger(L, 2);
+    thiz->m_vec.reserve(size);
     return 0;
 }

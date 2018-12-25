@@ -402,7 +402,7 @@ int luaopen_ltk(lua_State *L)
     LuaRegisterClass<ImageSprite>(L, "ImageSprite");
     LuaRegisterClass<ScrollBar>(L, "ScrollBar");
 
-    LuaRegisterClass<LuaVector<unsigned char>>(L, "VecU8");
+    LuaRegisterClass<LuaVector<unsigned char>>(L, LuaVectorScriptName<unsigned char>());
 
     ShadowFrame::Init();
 
