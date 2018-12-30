@@ -240,6 +240,37 @@ do
 	print("VecFloat32 ", vf32:Get(1));
 end
 
+do
+	local tinsert = table.insert;
+	local list = {};
+	g_vec_list = list;
+	local values = {};
+	local SIZE = 10;
+	values.pos = Ltk.VecUInt8:new();
+	values.pos:Reserve(SIZE);
+	values.char = Ltk.VecUInt16:new();
+	values.char:Reserve(SIZE);
+	values.x = Ltk.VecFloat32:new();
+	values.x:Reserve(SIZE);
+	values.y = Ltk.VecFloat32:new();
+	values.y:Reserve(SIZE);
+	values.w = Ltk.VecFloat32:new();
+	values.w:Reserve(SIZE);
+	values.h = Ltk.VecFloat32:new();
+	values.h:Reserve(SIZE);
+	for i = 1, SIZE do
+		local item = newproxy(true);
+		local mt = getmetatable(item);
+		mt.__gc = function ()
+				print("newproxy gc")
+		end;
+		tinsert(list, item);
+		for k,v in pairs(values) do
+			v:PushBack(0);
+		end
+	end
+end
+
 io.flush();
 LtkApi.RunMessageLoop();
 

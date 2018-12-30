@@ -2,6 +2,7 @@
 #include "ScrollBar.h"
 #include "Button.h"
 #include "StyleManager.h"
+#include "Window.h"
 
 namespace ltk {
 
@@ -109,7 +110,7 @@ int ScrollBar::SetPosition(lua_State *L)
 bool ScrollBar::OnPaint(PaintEvent *ev)
 {
     if (m_mode != Horizontal) {
-        LTK_LOG("m_position %f m_mode: %d", m_position, m_mode);
+        //LTK_LOG("m_position %f m_mode: %d", m_position, m_mode);
     }
     if (!m_bDrag) {
         Update();
@@ -131,7 +132,7 @@ bool ScrollBar::OnMouseMove(MouseEvent *ev)
             x = max(x, 0.0f);
             x = min(x, rcRoot.Width - rcSlider.Width);
             y = max(y, 0.0f);
-            LTK_LOG("m_slider->SetRect %f 1.0", x);
+            //LTK_LOG("m_slider->SetRect %f 1.0", x);
             m_slider->SetRect(RectF(x, 1.0f, rcSlider.Width, rcSlider.Height));
             m_position = x / (rcRoot.Width - rcSlider.Width) * (m_contentSize - rcRoot.Width);
         }
@@ -184,6 +185,7 @@ void ScrollBar::OnSilderEvent(MouseEvent *ev, bool &bHandled)
         m_bDrag = true;
         m_deltaX = ev->x;
         m_deltaY = ev->y;
+        LTK_ASSERT(::GetForegroundWindow() == this->GetWindow()->Handle());
         this->SetCapture();
         break;
     case eLBtnUp:

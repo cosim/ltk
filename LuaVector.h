@@ -14,12 +14,14 @@ public:
     static int Get(lua_State *L);
     static int Set(lua_State *L);
     static int PushBack(lua_State *L);
+    static int Resize(lua_State *L);
 
     BEGIN_LUA_METHOD_MAP(Button)
         LUA_METHOD_ENTRY(Reserve)
         LUA_METHOD_ENTRY(Get)
         LUA_METHOD_ENTRY(Set)
         LUA_METHOD_ENTRY(PushBack)
+        LUA_METHOD_ENTRY(Resize)
     END_LUA_METHOD_MAP()
 
 private:
@@ -134,5 +136,14 @@ int LuaVector<T>::Reserve(lua_State *L)
     LuaVector<T> *thiz = CheckLuaObject<LuaVector<T>>(L, 1);
     size_t size = (size_t)luaL_checkinteger(L, 2);
     thiz->m_vec.reserve(size);
+    return 0;
+}
+
+template <typename T>
+int LuaVector<T>::Resize(lua_State *L)
+{
+    LuaVector<T> *thiz = CheckLuaObject<LuaVector<T>>(L, 1);
+    size_t size = (size_t)luaL_checkinteger(L, 2);
+    thiz->m_vec.resize(size);
     return 0;
 }

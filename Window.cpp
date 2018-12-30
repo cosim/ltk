@@ -241,6 +241,7 @@ void Window::HandleMouseMessage(UINT message, WPARAM wparam, LPARAM lparam)
 
 	if (m_spCapture)
 	{
+        LTK_LOG("m_spCapture");
 		RectF rc = m_spCapture->GetAbsRect();
 		event.x -= rc.X;
 		event.y -= rc.Y;
@@ -657,13 +658,15 @@ void Window::SetCapture( Sprite *sp )
 {
 	assert(sp->GetWindow() == this);
 	m_spCapture = sp;
-	::SetCapture(m_hwnd);
+	auto hwnd = ::SetCapture(m_hwnd);
+    LTK_LOG("%p", hwnd);
 }
 
 void Window::ReleaseCapture()
 {
 	m_spCapture = NULL;
 	::ReleaseCapture();
+    LTK_LOG("ReleaseCapture");
 }
 
 void Window::ShowCaret()
