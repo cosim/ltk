@@ -90,9 +90,8 @@ Window::~Window(void)
     m_labelTitle = INVALID_POINTER(Label);
 }
 
-void Window::Create(Window *parent, RectF rc, Mode mode)
+void Window::Create(Window *parent, RectF rc)
 {
-    m_mode = mode;
     HWND hParent = NULL;
     if (!parent)
     {
@@ -104,49 +103,41 @@ void Window::Create(Window *parent, RectF rc, Mode mode)
     }
     DWORD style = WS_VISIBLE;
     
-    switch (m_mode)
-    {
-    case ltk::Window::eOverlaped:
-        style |= WS_OVERLAPPEDWINDOW;
-        break;
-    case ltk::Window::eBorderless:
-        style |= WS_POPUP;
-        m_resizable = new ResizeHelper;
+    style |= WS_OVERLAPPEDWINDOW;
 
-        m_hboxCaption = new BoxLayout(BoxLayout::Horizontal);
-        m_hboxCaption->SetMargin(0.0f);
-        m_hboxCaption->SetRightMargin(1.0f);
-        m_hboxCaption->SetSpacing(1.0f);
-        m_hboxCaption->AddSpaceItem(7.0f, 0.0f);
+    m_resizable = new ResizeHelper;
 
-        m_labelTitle = new Label;
-        m_labelTitle->SetTextAlign(DWRITE_TEXT_ALIGNMENT_LEADING);
-        m_hboxCaption->AddLayoutItem(m_labelTitle, 0.0f, 1.0f);
+    m_hboxCaption = new BoxLayout(BoxLayout::Horizontal);
+    m_hboxCaption->SetMargin(0.0f);
+    m_hboxCaption->SetRightMargin(1.0f);
+    m_hboxCaption->SetSpacing(1.0f);
+    m_hboxCaption->AddSpaceItem(7.0f, 0.0f);
 
-        m_btnMinimize = new Button;
-        m_btnMinimize->SetText(L"_");
-        m_btnMinimize->Clicked.Attach(std::bind(&Window::OnBtnMinimizeClicked, this));
-        m_btnMinimize->SetNormalColor(StyleManager::Instance()->GetColor(StyleManager::clrCaption));
-        m_hboxCaption->AddLayoutItem(m_btnMinimize, (float)SYSBTN_WIDTH);
+    m_labelTitle = new Label;
+    m_labelTitle->SetTextAlign(DWRITE_TEXT_ALIGNMENT_LEADING);
+    m_hboxCaption->AddLayoutItem(m_labelTitle, 0.0f, 1.0f);
 
-        m_btnMaximize = new Button;
-        m_btnMaximize->SetText(L"¿Ú");
-        m_btnMaximize->Clicked.Attach(std::bind(&Window::OnBtnMaximizeClicked, this));
-        m_btnMaximize->SetNormalColor(StyleManager::Instance()->GetColor(StyleManager::clrCaption));
-        m_hboxCaption->AddLayoutItem(m_btnMaximize, (float)SYSBTN_WIDTH);
+    m_btnMinimize = new Button;
+    m_btnMinimize->SetText(L"_");
+    m_btnMinimize->Clicked.Attach(std::bind(&Window::OnBtnMinimizeClicked, this));
+    m_btnMinimize->SetNormalColor(StyleManager::Instance()->GetColor(StyleManager::clrCaption));
+    m_hboxCaption->AddLayoutItem(m_btnMinimize, (float)SYSBTN_WIDTH);
 
-        m_btnClose = new Button();
-        m_btnClose->SetText(L"X");
-        m_btnClose->Clicked.Attach(std::bind(&Window::OnBtnCloseClicked, this));
-        m_btnClose->SetNormalColor(StyleManager::Instance()->GetColor(StyleManager::clrCaption));
-        m_btnClose->SetHoverColor(D2D1::ColorF(1.0f, 0.2f, 0.2f));
-        m_hboxCaption->AddLayoutItem(m_btnClose, (float)SYSBTN_WIDTH);
+    m_btnMaximize = new Button;
+    m_btnMaximize->SetText(L"¿Ú");
+    m_btnMaximize->Clicked.Attach(std::bind(&Window::OnBtnMaximizeClicked, this));
+    m_btnMaximize->SetNormalColor(StyleManager::Instance()->GetColor(StyleManager::clrCaption));
+    m_hboxCaption->AddLayoutItem(m_btnMaximize, (float)SYSBTN_WIDTH);
 
-        m_sprite->AddLayoutItem(m_hboxCaption, (float)CAPTION_HEIGHT);
-        break;
-    default:
-        break;
-    }
+    m_btnClose = new Button();
+    m_btnClose->SetText(L"X");
+    m_btnClose->Clicked.Attach(std::bind(&Window::OnBtnCloseClicked, this));
+    m_btnClose->SetNormalColor(StyleManager::Instance()->GetColor(StyleManager::clrCaption));
+    m_btnClose->SetHoverColor(D2D1::ColorF(1.0f, 0.2f, 0.2f));
+    m_hboxCaption->AddLayoutItem(m_btnClose, (float)SYSBTN_WIDTH);
+
+    m_sprite->AddLayoutItem(m_hboxCaption, (float)CAPTION_HEIGHT);
+
     style |=  WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX;
 
     MapCoordByDpi(rc.X, rc.Y);
@@ -331,7 +322,7 @@ LRESULT CALLBACK Window::WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM 
 
     bool bHandled = false;
     
-    if (thiz->m_resizable) {
+    if (!thiz->m_spCapture && thiz->m_resizable) {
         LRESULT ret = thiz->m_resizable->HandleMessage(hwnd, message, wparam, lparam, bHandled);
         if (bHandled) {
             return ret;
@@ -470,10 +461,10 @@ LRESULT CALLBACK Window::WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM 
 void Window::DrawNonClient()
 {
     SizeF size = this->GetClientSize();
-    if (m_mode == Window::eBorderless) {
+
         m_brush->SetColor(StyleManager::Instance()->GetColor(StyleManager::clrCaption));
         m_target->FillRectangle(D2D1::RectF(0.0f, 0.0f, size.Width, (float)CAPTION_HEIGHT), m_brush);
-    }
+
     m_brush->SetColor(StyleManager::Instance()->GetColor(StyleManager::clrBorder));
     DrawRectSnapped(m_target, RectF(0.0f, 0.0f, size.Width - 1.0f, size.Height - 1.0f), m_brush);
     // debug
@@ -543,10 +534,6 @@ void Window::OnPaint(HWND hwnd )
 
 bool Window::OnSize(float cx, float cy, DWORD flag)
 {
-    //if (m_mode == eBorderless) {
-    //    m_btnClose->SetRect(RectF((float)(cx - SYSBTN_WIDTH - 2), (float)(1.0f - CAPTION_HEIGHT),
-    //        (float)SYSBTN_WIDTH, (float)(CAPTION_HEIGHT - 1)));
-    //}
     UnmapCoordByDpi(cx, cy);
     m_sprite->SetRect(RectF(1.0f, 1.0f, (float)(cx - 2.0f), (float)(cy - 1.0f)));
     return false;
@@ -774,20 +761,8 @@ int Window::Create(lua_State *L)
     DtorTest test;
     auto thiz = CheckLuaObject<Window>(L, 1);
     auto rc = LuaCheckRectF(L, 2);
-    auto mode = luaL_checkstring(L, 3);
-    auto m = eOverlaped;
 
-    if (strcmp(mode, "borderless") == 0) {
-        m = eBorderless;
-    }
-    else if (strcmp(mode, "overlapped") == 0){
-        m = eOverlaped;
-    }
-    else {
-        luaL_error(L, "InvalideArgs #3 mode: borderless|overlapped");
-    }
-
-    thiz->Create(nullptr, rc, m);
+    thiz->Create(nullptr, rc);
     return 0;
 }
 
@@ -839,7 +814,6 @@ ResizeHelper::ResizeHelper() :
 
 void ResizeHelper::UpdateShadowFrame(bool bRedraw)
 {
-    //if (m_mode == Mode::eBorderless) {
         HDWP hdwp = ::BeginDeferWindowPos(4);
         m_shadowLeft.Update(m_hwnd, hdwp, bRedraw);
         m_shadowTop.Update(m_hwnd, hdwp, bRedraw);
@@ -847,7 +821,6 @@ void ResizeHelper::UpdateShadowFrame(bool bRedraw)
         m_shadowBottom.Update(m_hwnd, hdwp, bRedraw);
         BOOL ret = ::EndDeferWindowPos(hdwp);
         LTK_ASSERT(ret);
-    //}
 }
 
 void ResizeHelper::SetWindowRect(HWND hwnd, RECT &rc)

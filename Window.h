@@ -26,13 +26,7 @@ public:
 
     Window(void);
 
-    enum Mode
-    {
-        eOverlaped,
-        eBorderless
-    };
-
-    void Create(Window *parent, RectF rc, Mode mode);
+    void Create(Window *parent, RectF rc);
 
     void SetRect(RectF rc);
 
@@ -111,7 +105,6 @@ private:
 
 private:
 	HWND m_hwnd;
-    Mode m_mode = eOverlaped;
 
 	ImeInput m_ime;
 	RECT m_rectComposition;
