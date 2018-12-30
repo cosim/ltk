@@ -76,8 +76,9 @@ bool LuaPCall(lua_State *L, int nargs, int nresults)
             lua_call(L, 1, 0); // msg
         }
         //LuaLog(pszError);
-#ifdef _DEBUG
-        ::PostQuitMessage(1); // 多么的简单粗暴 不用去关程序了 直接挂掉
+#ifndef NDEBUG
+        //::PostQuitMessage(1); // 多么的简单粗暴 不用去关程序了 直接挂掉
+        ::TerminateProcess(::GetCurrentProcess(), 1);
 #else
         // 弹框的给黑盒测试
         // TODO 要弄个开关 防止发布版弹框

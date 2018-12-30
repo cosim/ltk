@@ -211,6 +211,7 @@ void Window::RegisterWndClass()
 
 void Window::HandleMouseMessage(UINT message, WPARAM wparam, LPARAM lparam)
 {
+    LTK_LOG("Mouse Message: %d %08x %d %d", message, wparam, (short)LOWORD(lparam), (short)HIWORD(lparam));
 	MouseEvent event;
 	event.message = message;
 	event.flag = LOWORD(wparam);
@@ -309,6 +310,14 @@ LRESULT CALLBACK Window::WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM 
 		thiz->m_hwnd = hwnd;
 		SetWindowLongPtr(hwnd, GWLP_USERDATA,
 			reinterpret_cast<LPARAM>(thiz));
+
+        LONG lStyle = GetWindowLong(hwnd, GWL_STYLE);
+        lStyle &= ~(WS_CAPTION | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_SYSMENU);
+        SetWindowLong(hwnd, GWL_STYLE, lStyle);
+
+        LONG lExStyle = GetWindowLong(hwnd, GWL_EXSTYLE);
+        lExStyle &= ~(WS_EX_DLGMODALFRAME | WS_EX_CLIENTEDGE | WS_EX_STATICEDGE);
+        SetWindowLong(hwnd, GWL_EXSTYLE, lExStyle);
 	}
 	else if (WM_GETMINMAXINFO == message)
 	{
@@ -656,8 +665,9 @@ void Window::SetCaretHeight( float h)
 
 void Window::SetCapture( Sprite *sp )
 {
-	assert(sp->GetWindow() == this);
+	LTK_ASSERT(sp->GetWindow() == this);
 	m_spCapture = sp;
+    LTK_ASSERT(::IsWindow(m_hwnd));
 	auto hwnd = ::SetCapture(m_hwnd);
     LTK_LOG("%p", hwnd);
 }

@@ -60,7 +60,7 @@ Ltk.StyleManager:SetColorScheme({
 ---@type Ltk.Window
 local wnd = Ltk.Window:new();
 
-wnd:Create({x = 10, y = 10, w = 800, h = 600}, 'borderless');
+wnd:Create({x = 10, y = 10, w = 800, h = 600}, 'overlapped');
 wnd:SetTitle("LTK测试窗口");
 
 ---@type Ltk.RectF
@@ -240,12 +240,16 @@ do
 	print("VecFloat32 ", vf32:Get(1));
 end
 
-do
+if false then
 	local tinsert = table.insert;
 	local list = {};
 	g_vec_list = list;
 	local values = {};
-	local SIZE = 10;
+	g_vec_values = values;
+	local idx_map = {}
+	g_vec_idx = idx_map;
+	local SIZE = 100 * 10000;
+
 	values.pos = Ltk.VecUInt8:new();
 	values.pos:Reserve(SIZE);
 	values.char = Ltk.VecUInt16:new();
@@ -258,17 +262,29 @@ do
 	values.w:Reserve(SIZE);
 	values.h = Ltk.VecFloat32:new();
 	values.h:Reserve(SIZE);
+
+	local mt = {
+		__index = function (t, k)
+			return list[k]:Get(idx_map[t]);
+		end,
+		__newindex = function (t, k, v)
+			list[k]:Set(idx_map[t], v);
+		end,
+		__gc = function()
+			print("gc");
+		end
+	}
 	for i = 1, SIZE do
-		local item = newproxy(true);
-		local mt = getmetatable(item);
-		mt.__gc = function ()
-				print("newproxy gc")
-		end;
+		local item = {}
+		idx_map[item] = i;
+		setmetatable(item, mt);
 		tinsert(list, item);
 		for k,v in pairs(values) do
 			v:PushBack(0);
 		end
 	end
+
+	list[455].char = 33;
 end
 
 io.flush();

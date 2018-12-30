@@ -17,6 +17,7 @@ ShadowFrame::ShadowFrame(Mode m) : m_mode(m)
 
 ShadowFrame::~ShadowFrame()
 {
+    ::DestroyWindow(m_hwnd);
 }
 
 void ShadowFrame::RegisterWndClass()
