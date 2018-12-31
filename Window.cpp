@@ -202,7 +202,7 @@ void Window::RegisterWndClass()
 
 void Window::HandleMouseMessage(UINT message, WPARAM wparam, LPARAM lparam)
 {
-    LTK_LOG("Mouse Message: %d %08x %d %d", message, wparam, (short)LOWORD(lparam), (short)HIWORD(lparam));
+    //LTK_LOG("Mouse Message: %d %08x %d %d", message, wparam, (short)LOWORD(lparam), (short)HIWORD(lparam));
 	MouseEvent event;
 	event.message = message;
 	event.flag = LOWORD(wparam);
@@ -233,7 +233,6 @@ void Window::HandleMouseMessage(UINT message, WPARAM wparam, LPARAM lparam)
 
 	if (m_spCapture)
 	{
-        LTK_LOG("m_spCapture");
 		RectF rc = m_spCapture->GetAbsRect();
 		event.x -= rc.X;
 		event.y -= rc.Y;
@@ -333,13 +332,6 @@ LRESULT CALLBACK Window::WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM 
 	{
 	case WM_PAINT:
 		thiz->OnPaint(hwnd);
-		break;
-	case WM_SYNCPAINT:
-		// 上面有窗口拖动的时候 会有1像素宽度和1像素高度的区域 不停的发 而WM_PAINT又是低优先级的
-		// 导致有的消息被丢弃了 所以才会有白条
-		// 解决在win7 没开毛玻璃 设置窗口拖动时显示内容 窗口上面的窗口被拖动 画面会花
-		::InvalidateRect(hwnd, NULL, TRUE);
-		//LOG("WM_SYNCPAINT");
 		break;
 	case WM_MOUSEMOVE:
 	case WM_LBUTTONDOWN:
@@ -462,8 +454,8 @@ void Window::DrawNonClient()
 {
     SizeF size = this->GetClientSize();
 
-        m_brush->SetColor(StyleManager::Instance()->GetColor(StyleManager::clrCaption));
-        m_target->FillRectangle(D2D1::RectF(0.0f, 0.0f, size.Width, (float)CAPTION_HEIGHT), m_brush);
+    m_brush->SetColor(StyleManager::Instance()->GetColor(StyleManager::clrCaption));
+    m_target->FillRectangle(D2D1::RectF(0.0f, 0.0f, size.Width, (float)CAPTION_HEIGHT), m_brush);
 
     m_brush->SetColor(StyleManager::Instance()->GetColor(StyleManager::clrBorder));
     DrawRectSnapped(m_target, RectF(0.0f, 0.0f, size.Width - 1.0f, size.Height - 1.0f), m_brush);
@@ -861,14 +853,6 @@ LRESULT ResizeHelper::HandleMessage(HWND hwnd, UINT message, WPARAM wparam, LPAR
     // all coords here are in screen space.
     RECT rc;
     POINT pt;
-    BOOL ret;
-    State st;
-    WINDOWPLACEMENT wp = { 0 };
-    wp.length = sizeof(wp);
-    ::GetWindowPlacement(hwnd, &wp);
-    if ((wp.showCmd == SW_MAXIMIZE || m_bMaximized) && message != WM_LBUTTONDBLCLK) {
-        return 0;
-    }
 
     switch (message) {
     case WM_CREATE:
@@ -882,135 +866,16 @@ LRESULT ResizeHelper::HandleMessage(HWND hwnd, UINT message, WPARAM wparam, LPAR
         m_shadowBottom.Destroy();
         bHandled = false;
         break;
-    case WM_MOUSEMOVE:
-    case WM_LBUTTONDOWN:
-    case WM_LBUTTONUP:
-    case WM_LBUTTONDBLCLK:
-        ret = ::GetCursorPos(&pt);
-        assert(ret);
-        ::GetWindowRect(hwnd, &rc);
-
-        switch(message) {
-        case WM_LBUTTONDOWN:
-            m_oldPoint = pt;
-            m_oldRect = rc;
-
-            m_state = StateFromPoint(pt, rc);
-            if (m_state != eNone) {
-                bHandled = true;
-                ::SetCapture(hwnd);
-            }
-            break;
-        case WM_MOUSEMOVE:
-            if (m_state == eNone) {
-                st = StateFromPoint(pt, rc);
-            }
-            else {
-                st = m_state;
-            }
-            switch (st) {
-            case eLeftTop:
-                ::SetCursor(::LoadCursor(NULL, MAKEINTRESOURCE(IDC_SIZENWSE)));
-                break;
-            case eLeft:
-                ::SetCursor(::LoadCursor(NULL, MAKEINTRESOURCE(IDC_SIZEWE)));
-                break;
-            case eLeftBottom:
-                ::SetCursor(::LoadCursor(NULL, MAKEINTRESOURCE(IDC_SIZENESW)));
-                break;
-            case eRightTop:
-                ::SetCursor(::LoadCursor(NULL, MAKEINTRESOURCE(IDC_SIZENESW)));
-                break;
-            case eRight:
-                ::SetCursor(::LoadCursor(NULL, MAKEINTRESOURCE(IDC_SIZEWE)));
-                break;
-            case eRightBottom:
-                ::SetCursor(::LoadCursor(NULL, MAKEINTRESOURCE(IDC_SIZENWSE)));
-                break;
-            case eTop:
-                ::SetCursor(::LoadCursor(NULL, MAKEINTRESOURCE(IDC_SIZENS)));
-                break;
-            case eBottom:
-                ::SetCursor(::LoadCursor(NULL, MAKEINTRESOURCE(IDC_SIZENS)));
-                break;
-            }
-            if (st != eNone && st != eMove) {
-                bHandled = true;
-            }
-            switch (m_state) {
-            case eMove:
-                ::SetWindowPos(hwnd, NULL, 
-                    pt.x - m_oldPoint.x + m_oldRect.left,
-                    pt.y - m_oldPoint.y + m_oldRect.top,
-                    0, 0, SWP_NOSIZE);
-                bHandled = true;
-                return 0;
-            case eLeftTop:
-                rc.left = pt.x - m_oldPoint.x + m_oldRect.left;
-                rc.top = pt.y - m_oldPoint.y + m_oldRect.top;
-                break;
-            case eLeft:
-                rc.left = pt.x - m_oldPoint.x + m_oldRect.left;
-                break;
-            case eLeftBottom:
-                rc.left = pt.x - m_oldPoint.x + m_oldRect.left;
-                rc.bottom = pt.y - m_oldPoint.y + m_oldRect.bottom;
-                break;
-
-            case eRightTop:
-                rc.right = pt.x - m_oldPoint.x + m_oldRect.right;
-                rc.top = pt.y - m_oldPoint.y + m_oldRect.top;
-                break;
-            case eRight:
-                rc.right = pt.x - m_oldPoint.x + m_oldRect.right;
-                break;
-            case eRightBottom:
-                rc.right = pt.x - m_oldPoint.x + m_oldRect.right;
-                rc.bottom = pt.y - m_oldPoint.y + m_oldRect.bottom;
-                break;
-            case eTop:
-                rc.top = pt.y - m_oldPoint.y + m_oldRect.top;
-                break;
-            case eBottom:
-                rc.bottom = pt.y - m_oldPoint.y + m_oldRect.bottom;
-                break;
-            }
-            if (m_state != eNone) {
-                SetWindowRect(hwnd, rc);
-                bHandled = true;
-                return 0;
-            }
-            break;
-        case WM_LBUTTONUP:
-            if (m_state != eNone) {
-                ::ReleaseCapture();
-                bHandled = true;
-                m_state = eNone;
-            }
-            break;
-        case WM_LBUTTONDBLCLK:
-            if (pt.x < rc.right - SYSBTN_WIDTH * 3 - 5 && pt.y < rc.top + CAPTION_HEIGHT) {
-                if (wp.showCmd == SW_MAXIMIZE) {
-                    wp.showCmd = SW_SHOWNORMAL;
-                    ::SetWindowPlacement(hwnd, &wp);
-                }
-                else if (m_bMaximized) {
-                    SetWindowRect(hwnd, m_normalRect);
-                    m_bMaximized = false;
-                }
-                else {
-                    ::GetWindowRect(hwnd, &m_normalRect);
-                    HMONITOR mon = ::MonitorFromPoint(pt, MONITOR_DEFAULTTONEAREST);
-                    MONITORINFO info = { 0 };
-                    info.cbSize = sizeof(info);
-                    ::GetMonitorInfoW(mon, &info);
-                    SetWindowRect(hwnd, info.rcWork);
-                    m_bMaximized = true;
-                }
-            }
-            break;
+    case WM_NCHITTEST:
+        pt.x = (short)LOWORD(lparam);
+        pt.y = (short)HIWORD(lparam);
+        ::ScreenToClient(hwnd, &pt);
+        //LTK_LOG("WM_NCHITTEST %d %d", pt.x, pt.y);
+        if (pt.y < 30) {
+            bHandled = true;
+            return HTCAPTION;
         }
-        break;
+        return HTCLIENT;
     }
     return 0;
 }

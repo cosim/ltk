@@ -176,7 +176,7 @@ hsb:SetContentSize(1500);
 hsb:SetPosition(200);
 hsb:Update();
 vbox:AddLayoutItem(hsb, 7, 0);
-g_hsb_event = vsb:SetEventHandler({  -- TODO FIXME change hsb to vsb, will crash the libary.
+g_hsb_event = hsb:SetEventHandler({
 	OnThumbDragging = function(pos)
 		print("hsb pos:", pos);
 	end
@@ -286,6 +286,9 @@ if false then
 
 	list[455].char = 33;
 end
+
+--[[local error = nil
+error[1] = true;]]
 
 io.flush();
 LtkApi.RunMessageLoop();

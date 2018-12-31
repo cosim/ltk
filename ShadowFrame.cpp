@@ -17,7 +17,9 @@ ShadowFrame::ShadowFrame(Mode m) : m_mode(m)
 
 ShadowFrame::~ShadowFrame()
 {
-    ::DestroyWindow(m_hwnd);
+    if (m_hwnd) {
+        ::DestroyWindow(m_hwnd);
+    }
 }
 
 void ShadowFrame::RegisterWndClass()
@@ -58,6 +60,9 @@ LRESULT CALLBACK ShadowFrame::WndProc(HWND hwnd, UINT message, WPARAM wparam, LP
             ::GetWindowRect(hwnd, &rc);
             thiz->OnDraw(rc);
         } while (0);
+        break;
+    case WM_NCDESTROY:
+        thiz->m_hwnd = 0;
         break;
     }
     return ::DefWindowProc(hwnd, message, wparam, lparam);

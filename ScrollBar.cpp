@@ -140,7 +140,7 @@ bool ScrollBar::OnMouseMove(MouseEvent *ev)
             x = max(x, 0.0f);
             y = max(y, 0.0f);
             y = min(y, rcRoot.Height - rcSlider.Height);
-            LTK_LOG("m_slider->SetRect 1.0 %f", y);
+            //LTK_LOG("m_slider->SetRect 1.0 %f", y);
             m_slider->SetRect(RectF(1.0f, y, rcSlider.Width, rcSlider.Height));
             m_position = y / (rcRoot.Height - rcSlider.Height) * (m_contentSize - rcRoot.Height);
         }
