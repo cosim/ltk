@@ -291,21 +291,42 @@ void Window::HandleMouseLeave()
 LRESULT Window::HandleNcHitTest(const POINT &pt)
 {
     //LTK_LOG("WM_NCHITTEST %d %d", pt.x, pt.y);
-    const long margin = 4;
+    const long margin = 7;
     RECT rcWnd;
     ::GetClientRect(m_hwnd, &rcWnd);
     const long width = rcWnd.right - rcWnd.left;
     const long height = rcWnd.bottom - rcWnd.top;
     auto rcMin = m_btnMinimize->GetAbsRect();
 
-    if (pt.y < 30 && pt.x < 30) {
-        return HTSYSMENU;
+    if (pt.x < margin && pt.y < margin) {
+        return HTTOPLEFT;
     }
-    if (pt.y < 30 && pt.x < rcMin.X) {
-        return HTCAPTION;
+    if (pt.x < margin && pt.y > height - margin) {
+        return HTBOTTOMLEFT;
+    }
+    if (pt.x > width - margin && pt.y < margin) {
+        return HTTOPRIGHT;
     }
     if (pt.x > width - margin && pt.y > height - margin) {
         return HTBOTTOMRIGHT;
+    }
+    if (pt.x < margin) {
+        return HTLEFT;
+    }
+    if (pt.y < margin) {
+        return HTTOP;
+    }
+    if (pt.x > width - margin) {
+        return HTRIGHT;
+    }
+    if (pt.y > height - margin) {
+        return HTBOTTOM;
+    }
+    if (pt.y < rcMin.Height && pt.x < 30) {
+        return HTSYSMENU;
+    }
+    if (pt.y < rcMin.Height && pt.x < rcMin.X) {
+        return HTCAPTION;
     }
     return HTCLIENT;
 }
