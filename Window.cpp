@@ -288,6 +288,28 @@ void Window::HandleMouseLeave()
     m_setTrackMouseLeave.clear();
 }
 
+LRESULT Window::HandleNcHitTest(const POINT &pt)
+{
+    //LTK_LOG("WM_NCHITTEST %d %d", pt.x, pt.y);
+    const long margin = 4;
+    RECT rcWnd;
+    ::GetClientRect(m_hwnd, &rcWnd);
+    const long width = rcWnd.right - rcWnd.left;
+    const long height = rcWnd.bottom - rcWnd.top;
+    auto rcMin = m_btnMinimize->GetAbsRect();
+
+    if (pt.y < 30 && pt.x < 30) {
+        return HTSYSMENU;
+    }
+    if (pt.y < 30 && pt.x < rcMin.X) {
+        return HTCAPTION;
+    }
+    if (pt.x > width - margin && pt.y > height - margin) {
+        return HTBOTTOMRIGHT;
+    }
+    return HTCLIENT;
+}
+
 LRESULT CALLBACK Window::WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
 {
 	Window *thiz;
@@ -301,18 +323,33 @@ LRESULT CALLBACK Window::WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM 
 		SetWindowLongPtr(hwnd, GWLP_USERDATA,
 			reinterpret_cast<LPARAM>(thiz));
 
-        LONG lStyle = GetWindowLong(hwnd, GWL_STYLE);
-        lStyle &= ~(WS_CAPTION | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_SYSMENU);
-        SetWindowLong(hwnd, GWL_STYLE, lStyle);
+        //LONG lStyle = GetWindowLong(hwnd, GWL_STYLE);
+        //lStyle &= ~(WS_CAPTION | WS_THICKFRAME);
+        //SetWindowLong(hwnd, GWL_STYLE, lStyle);
 
-        LONG lExStyle = GetWindowLong(hwnd, GWL_EXSTYLE);
-        lExStyle &= ~(WS_EX_DLGMODALFRAME | WS_EX_CLIENTEDGE | WS_EX_STATICEDGE);
-        SetWindowLong(hwnd, GWL_EXSTYLE, lExStyle);
+        //LONG lExStyle = GetWindowLong(hwnd, GWL_EXSTYLE);
+        //lExStyle &= ~(WS_EX_DLGMODALFRAME | WS_EX_CLIENTEDGE | WS_EX_STATICEDGE);
+        //SetWindowLong(hwnd, GWL_EXSTYLE, lExStyle);
 	}
 	else if (WM_GETMINMAXINFO == message)
 	{
         // TODO FIXME this cause nc hit test not working.
-        return ::DefWindowProc(hwnd, message, wparam, lparam);
+        MINMAXINFO* mmi = (MINMAXINFO*)lparam;
+        auto ret = ::DefWindowProc(hwnd, message, wparam, lparam);
+        LTK_LOG("WM_GETMINMAXINFO min %d %d max %d %d",
+            mmi->ptMinTrackSize.x,
+            mmi->ptMinTrackSize.y,
+            mmi->ptMaxTrackSize.x,
+            mmi->ptMaxTrackSize.y);
+        POINT pt;
+        ::GetCursorPos(&pt);
+        HMONITOR mon = ::MonitorFromPoint(pt, MONITOR_DEFAULTTONEAREST);
+        MONITORINFO info = { 0 };
+        info.cbSize = sizeof(info);
+        ::GetMonitorInfoW(mon, &info);
+        mmi->ptMaxTrackSize.x = info.rcWork.right - info.rcWork.left;
+        mmi->ptMaxTrackSize.y = info.rcWork.bottom - info.rcWork.top;
+        return ret;
 	} else {
         thiz = reinterpret_cast<Window *>
             (GetWindowLongPtr(hwnd, GWLP_USERDATA));
@@ -328,11 +365,22 @@ LRESULT CALLBACK Window::WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM 
         }
     }
 
-	switch(message)
+    POINT pt;
+    switch (message)
 	{
 	case WM_PAINT:
 		thiz->OnPaint(hwnd);
 		break;
+    case WM_NCHITTEST:
+        pt.x = (short)LOWORD(lparam);
+        pt.y = (short)HIWORD(lparam);
+        ::ScreenToClient(hwnd, &pt);
+        return thiz->HandleNcHitTest(pt);
+    case WM_NCCALCSIZE:
+        if (wparam) {
+            return 0;
+        }
+        break;
 	case WM_MOUSEMOVE:
 	case WM_LBUTTONDOWN:
 	case WM_LBUTTONUP:
@@ -423,6 +471,8 @@ LRESULT CALLBACK Window::WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM 
         KillTimer(hwnd, TIMER_ANIMATION);
 		return 0;
 	case WM_CREATE:
+        // Force WM_NCCALCSIZE
+        SetWindowPos(hwnd, nullptr, 0, 0, 0, 0, SWP_NOZORDER | SWP_NOOWNERZORDER | SWP_NOMOVE | SWP_NOSIZE | SWP_FRAMECHANGED);
         LTK_LOG("window created: 0x%08X", hwnd);
 		//do 
 		//{
@@ -727,9 +777,7 @@ void Window::OnBtnMinimizeClicked()
 
 void Window::OnBtnMaximizeClicked()
 {
-    if (m_resizable) {
-        m_resizable->Maximize();
-    }
+    // TODO
 }
 
 #ifndef LTK_DISABLE_LUA
@@ -815,44 +863,9 @@ void ResizeHelper::UpdateShadowFrame(bool bRedraw)
         LTK_ASSERT(ret);
 }
 
-void ResizeHelper::SetWindowRect(HWND hwnd, RECT &rc)
-{
-    if (rc.right - rc.left < m_minWidth) {
-        switch (m_state) {
-        case eLeftTop:
-        case eLeft:
-        case eLeftBottom:
-            rc.left = rc.right - m_minWidth;
-            break;
-        case eRightTop:
-        case eRight:
-        case eRightBottom:
-            rc.right = rc.left + m_minWidth;
-            break;
-        }
-    }
-    if (rc.bottom - rc.top < m_minHeight) {
-        switch (m_state) {
-        case eLeftTop:
-        case eTop:
-        case eRightTop:
-            rc.top = rc.bottom - m_minHeight;
-            break;
-        case eLeftBottom:
-        case eBottom:
-        case eRightBottom:
-            rc.bottom = rc.top + m_minHeight;
-            break;
-        }
-    }
-    ::MoveWindow(hwnd, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top, TRUE);
-}
-
 LRESULT ResizeHelper::HandleMessage(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam, bool &bHandled)
 {
     // all coords here are in screen space.
-    RECT rc;
-    POINT pt;
 
     switch (message) {
     case WM_CREATE:
@@ -866,74 +879,8 @@ LRESULT ResizeHelper::HandleMessage(HWND hwnd, UINT message, WPARAM wparam, LPAR
         m_shadowBottom.Destroy();
         bHandled = false;
         break;
-    case WM_NCHITTEST:
-        pt.x = (short)LOWORD(lparam);
-        pt.y = (short)HIWORD(lparam);
-        ::ScreenToClient(hwnd, &pt);
-        //LTK_LOG("WM_NCHITTEST %d %d", pt.x, pt.y);
-        if (pt.y < 30) {
-            bHandled = true;
-            return HTCAPTION;
-        }
-        return HTCLIENT;
     }
     return 0;
-}
-
-ResizeHelper::State ResizeHelper::StateFromPoint(POINT pt, const RECT &rc)
-{
-    if (pt.x < rc.left + WINDOW_BORDER) {
-        if (pt.y < rc.top + WINDOW_BORDER) {
-            return eLeftTop;
-        } 
-        else if (pt.y > rc.bottom - WINDOW_BORDER) {
-            return eLeftBottom;
-        }
-        else {
-            return eLeft;
-        }
-    }
-    else if (pt.x > rc.right - WINDOW_BORDER) {
-        if (pt.y < rc.top + WINDOW_BORDER) {
-            return eRightTop;
-        } 
-        else if (pt.y > rc.bottom - WINDOW_BORDER) {
-            return eRightBottom;
-        } 
-        else {
-            return eRight;
-        }
-    }
-    else if (pt.y < rc.top + WINDOW_BORDER) {
-        return eTop;
-    }
-    else if (pt.y > rc.bottom - WINDOW_BORDER) {
-        return eBottom;
-    }
-    else if (pt.x < rc.right - SYSBTN_WIDTH * 3 - 5 && pt.y < rc.top + CAPTION_HEIGHT) {
-        return eMove;
-    }
-    return eNone;
-}
-
-void ResizeHelper::Maximize()
-{
-    if (m_bMaximized) {
-        SetWindowRect(m_hwnd, m_normalRect);
-        m_bMaximized = false;
-    }
-    else {
-        POINT pt;
-        ::GetCursorPos(&pt);
-        LTK_ASSERT(::IsWindow(m_hwnd));
-        ::GetWindowRect(m_hwnd, &m_normalRect);
-        HMONITOR mon = ::MonitorFromPoint(pt, MONITOR_DEFAULTTONEAREST);
-        MONITORINFO info = { 0 };
-        info.cbSize = sizeof(info);
-        ::GetMonitorInfoW(mon, &info);
-        SetWindowRect(m_hwnd, info.rcWork);
-        m_bMaximized = true;
-    }
 }
 
 } // namespace ltk

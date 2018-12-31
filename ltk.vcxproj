@@ -144,6 +144,7 @@
       <DisableSpecificWarnings>4996;4250;4100;4189</DisableSpecificWarnings>
       <TreatWarningAsError>false</TreatWarningAsError>
       <ExceptionHandling>SyncCThrow</ExceptionHandling>
+      <BasicRuntimeChecks>StackFrameRuntimeCheck</BasicRuntimeChecks>
     </ClCompile>
     <Link>
       <AdditionalDependencies>D2d1.lib;Windowscodecs.lib;Dwrite.lib;lua51.lib;gdiplus.lib;%(AdditionalDependencies)</AdditionalDependencies>

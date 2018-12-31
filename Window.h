@@ -100,6 +100,7 @@ private:
     void UpdateShadowFrame(bool bRedraw);
 
     LRESULT OnImeEvent(UINT message, WPARAM wparam, LPARAM lparam);
+    LRESULT HandleNcHitTest(const POINT &pt);
     enum { TIMER_ANIMATION = 100 };
     static const wchar_t * ClsName;
 
@@ -135,7 +136,6 @@ public:
     ResizeHelper();
     void UpdateShadowFrame(bool bRedraw);
     LRESULT HandleMessage(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam, bool &bHandled);
-    void Maximize();
 
 private:
     POINT m_oldPoint;
@@ -161,8 +161,6 @@ private:
         eTop,
         eBottom
     };
-    State StateFromPoint(POINT pt, const RECT &rc);
-    void SetWindowRect(HWND hwnd, RECT &rc);
     State m_state = eNone;
     HWND m_hwnd = 0;
 };
