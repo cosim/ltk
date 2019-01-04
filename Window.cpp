@@ -343,18 +343,9 @@ LRESULT CALLBACK Window::WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM 
 		thiz->m_hwnd = hwnd;
 		SetWindowLongPtr(hwnd, GWLP_USERDATA,
 			reinterpret_cast<LPARAM>(thiz));
-
-        //LONG lStyle = GetWindowLong(hwnd, GWL_STYLE);
-        //lStyle &= ~(WS_CAPTION | WS_THICKFRAME);
-        //SetWindowLong(hwnd, GWL_STYLE, lStyle);
-
-        //LONG lExStyle = GetWindowLong(hwnd, GWL_EXSTYLE);
-        //lExStyle &= ~(WS_EX_DLGMODALFRAME | WS_EX_CLIENTEDGE | WS_EX_STATICEDGE);
-        //SetWindowLong(hwnd, GWL_EXSTYLE, lExStyle);
 	}
 	else if (WM_GETMINMAXINFO == message)
 	{
-        // TODO FIXME this cause nc hit test not working.
         MINMAXINFO* mmi = (MINMAXINFO*)lparam;
         auto ret = ::DefWindowProc(hwnd, message, wparam, lparam);
         LTK_LOG("WM_GETMINMAXINFO min %d %d max %d %d",
@@ -491,6 +482,16 @@ LRESULT CALLBACK Window::WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM 
         }
         KillTimer(hwnd, TIMER_ANIMATION);
 		return 0;
+    case WM_SYSCOMMAND:
+        //LTK_LOG("WM_SYSCOMMAND %08X", wparam);
+        if (GET_SC_WPARAM(wparam) == SC_MAXIMIZE) {
+            const float margin = 5.0f;
+            thiz->m_sprite->SetMargin(margin);
+        }
+        else {
+            thiz->m_sprite->SetMargin(0.0f);
+        }
+        break;
 	case WM_CREATE:
         // Force WM_NCCALCSIZE
         SetWindowPos(hwnd, nullptr, 0, 0, 0, 0, SWP_NOZORDER | SWP_NOOWNERZORDER | SWP_NOMOVE | SWP_NOSIZE | SWP_FRAMECHANGED);
