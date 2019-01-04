@@ -118,8 +118,6 @@ private:
 	std::unordered_set<Sprite *> m_setTrackMouseLeave;
     std::unordered_set<Sprite *> m_setAnimation;
 
-    ResizeHelper *m_resizable = nullptr; // owner
-
     BoxLayout *m_hboxCaption = nullptr;
     Button *m_btnClose = nullptr;
     Button *m_btnMaximize = nullptr;
@@ -128,6 +126,11 @@ private:
 
     ID2D1HwndRenderTarget *m_target = nullptr; // owner
     ID2D1SolidColorBrush *m_brush = nullptr; // owner
+
+    ShadowFrame m_shadowLeft;
+    ShadowFrame m_shadowTop;
+    ShadowFrame m_shadowRight;
+    ShadowFrame m_shadowBottom;
 };
 
 class ResizeHelper
@@ -138,10 +141,7 @@ public:
     LRESULT HandleMessage(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam, bool &bHandled);
 
 private:
-    ShadowFrame m_shadowLeft;
-    ShadowFrame m_shadowTop;
-    ShadowFrame m_shadowRight;
-    ShadowFrame m_shadowBottom;
+
 
     HWND m_hwnd = 0;
 };
