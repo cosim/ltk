@@ -8,10 +8,6 @@ const UINT ShadowFrame::WM_RENDER_LATER = WM_USER + 1;
 
 ShadowFrame::ShadowFrame(Mode m) : m_mode(m)
 {
-    m_sizeLeft = 12;
-    m_sizeTop = 8;
-    m_sizeRight = 15;
-    m_sizeBottom = 22;
 }
 
 

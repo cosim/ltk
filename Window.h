@@ -138,30 +138,11 @@ public:
     LRESULT HandleMessage(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam, bool &bHandled);
 
 private:
-    POINT m_oldPoint;
-    RECT m_oldRect;
-    RECT m_normalRect;
-    bool m_bMaximized = false;
-    long m_minWidth = 400;
-    long m_minHeight = 300;
     ShadowFrame m_shadowLeft;
     ShadowFrame m_shadowTop;
     ShadowFrame m_shadowRight;
     ShadowFrame m_shadowBottom;
 
-    enum State {
-        eNone,
-        eMove,
-        eLeftTop,
-        eLeft,
-        eLeftBottom,
-        eRightTop,
-        eRight,
-        eRightBottom,
-        eTop,
-        eBottom
-    };
-    State m_state = eNone;
     HWND m_hwnd = 0;
 };
 
