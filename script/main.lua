@@ -115,7 +115,7 @@ vbox:AddLayoutItem(hbox2, 30, 0.4);
 btn = Ltk.Button:new();
 btn:SetText("Label Color Test");
 g_btn_set_label_color = btn:SetEventHandler({
-	OnClick = function() label:SetTextColor(0, 0, 1) end,
+	OnClick = function() label:SetTextColor(1, 0, 0) end,
 	Sprite = btn
 })
 hbox2:AddLayoutItem(btn, 100, 1);

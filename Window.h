@@ -133,17 +133,4 @@ private:
     ShadowFrame m_shadowBottom;
 };
 
-class ResizeHelper
-{
-public:
-    ResizeHelper();
-    void UpdateShadowFrame(bool bRedraw);
-    LRESULT HandleMessage(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam, bool &bHandled);
-
-private:
-
-
-    HWND m_hwnd = 0;
-};
-
 } // namespace ltk

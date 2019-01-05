@@ -352,11 +352,11 @@ LRESULT CALLBACK Window::WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM 
 	{
         MINMAXINFO* mmi = (MINMAXINFO*)lparam;
         auto ret = ::DefWindowProc(hwnd, message, wparam, lparam);
-        LTK_LOG("WM_GETMINMAXINFO min %d %d max %d %d",
-            mmi->ptMinTrackSize.x,
-            mmi->ptMinTrackSize.y,
-            mmi->ptMaxTrackSize.x,
-            mmi->ptMaxTrackSize.y);
+        //LTK_LOG("WM_GETMINMAXINFO min %d %d max %d %d",
+        //    mmi->ptMinTrackSize.x,
+        //    mmi->ptMinTrackSize.y,
+        //    mmi->ptMaxTrackSize.x,
+        //    mmi->ptMaxTrackSize.y);
         POINT pt;
         ::GetCursorPos(&pt);
         HMONITOR mon = ::MonitorFromPoint(pt, MONITOR_DEFAULTTONEAREST);
@@ -795,6 +795,17 @@ void Window::OnBtnMaximizeClicked()
     // TODO
 }
 
+void Window::UpdateShadowFrame(bool bRedraw)
+{
+    HDWP hdwp = ::BeginDeferWindowPos(4);
+    m_shadowLeft.Update(m_hwnd, hdwp, bRedraw);
+    m_shadowTop.Update(m_hwnd, hdwp, bRedraw);
+    m_shadowRight.Update(m_hwnd, hdwp, bRedraw);
+    m_shadowBottom.Update(m_hwnd, hdwp, bRedraw);
+    BOOL ret = ::EndDeferWindowPos(hdwp);
+    LTK_ASSERT(ret);
+}
+
 #ifndef LTK_DISABLE_LUA
 
 class DtorTest
@@ -854,38 +865,5 @@ int Window::GetRootSprite(lua_State *L)
 }
 
 #endif
-
-ResizeHelper::ResizeHelper() 
-{
-
-}
-
-void Window::UpdateShadowFrame(bool bRedraw)
-{
-    HDWP hdwp = ::BeginDeferWindowPos(4);
-    m_shadowLeft.Update(m_hwnd, hdwp, bRedraw);
-    m_shadowTop.Update(m_hwnd, hdwp, bRedraw);
-    m_shadowRight.Update(m_hwnd, hdwp, bRedraw);
-    m_shadowBottom.Update(m_hwnd, hdwp, bRedraw);
-    BOOL ret = ::EndDeferWindowPos(hdwp);
-    LTK_ASSERT(ret);
-}
-
-LRESULT ResizeHelper::HandleMessage(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam, bool &bHandled)
-{
-    // all coords here are in screen space.
-
-    switch (message) {
-    case WM_CREATE:
-        m_hwnd = hwnd;
-        bHandled = false;
-        break;
-    case WM_DESTROY:
-
-        bHandled = false;
-        break;
-    }
-    return 0;
-}
 
 } // namespace ltk
