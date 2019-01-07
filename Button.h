@@ -23,6 +23,7 @@ public:
 
     void SetText(LPCWSTR text);
     Label *GetLabel();
+    void EnableCapture(bool);
 
     void SetNormalColor(D2D1_COLOR_F clr);
     void SetHoverColor(D2D1_COLOR_F clr);
@@ -80,6 +81,8 @@ private:
 
     Label *m_label = nullptr;
     ImageSprite *m_image = nullptr;
+
+    bool m_bCaptureMouse = true;
 };
 
 } // namespace

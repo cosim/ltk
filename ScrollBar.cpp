@@ -23,6 +23,7 @@ int ScrollBar::LuaConstructor(lua_State *L)
 ScrollBar::ScrollBar(Mode mode) : m_mode(mode)
 {
     m_slider = new Button;
+    m_slider->EnableCapture(false);
     this->AddChild(m_slider);
 
     using namespace std::placeholders;
