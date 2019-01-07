@@ -351,7 +351,7 @@ LRESULT CALLBACK Window::WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM 
 	else if (WM_GETMINMAXINFO == message)
 	{
         MINMAXINFO* mmi = (MINMAXINFO*)lparam;
-        auto ret = ::DefWindowProc(hwnd, message, wparam, lparam);
+        //auto ret = ::DefWindowProc(hwnd, message, wparam, lparam);
         //LTK_LOG("WM_GETMINMAXINFO min %d %d max %d %d",
         //    mmi->ptMinTrackSize.x,
         //    mmi->ptMinTrackSize.y,
@@ -365,7 +365,9 @@ LRESULT CALLBACK Window::WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM 
         ::GetMonitorInfoW(mon, &info);
         mmi->ptMaxTrackSize.x = info.rcWork.right - info.rcWork.left;
         mmi->ptMaxTrackSize.y = info.rcWork.bottom - info.rcWork.top;
-        return ret;
+        mmi->ptMaxPosition.x = 0;
+        mmi->ptMaxPosition.y = 0;
+        return 0;
 	} else {
         thiz = reinterpret_cast<Window *>
             (GetWindowLongPtr(hwnd, GWLP_USERDATA));
@@ -421,6 +423,16 @@ LRESULT CALLBACK Window::WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM 
             }
             thiz->OnSize((float)cx, (float)cy, (DWORD)wparam);
             thiz->UpdateShadowFrame(true);
+
+            LTK_LOG("WM_SIZE %d", wparam);
+            if (wparam == SIZE_MAXIMIZED) {
+                thiz->m_sprite->SetMargin(5.0f);
+                thiz->m_sprite->DoLayout();
+            }
+            else if (wparam == SIZE_RESTORED){
+                thiz->m_sprite->SetMargin(0.0f);
+                thiz->m_sprite->DoLayout();
+            }
         } while (0);
 		return 0;
     case WM_MOVE:
@@ -472,14 +484,14 @@ LRESULT CALLBACK Window::WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM 
         KillTimer(hwnd, TIMER_ANIMATION);
 		return 0;
     case WM_SYSCOMMAND:
-        //LTK_LOG("WM_SYSCOMMAND %08X", wparam);
-        if (GET_SC_WPARAM(wparam) == SC_MAXIMIZE) {
-            const float margin = 5.0f;
-            thiz->m_sprite->SetMargin(margin);
-        }
-        else {
-            thiz->m_sprite->SetMargin(0.0f);
-        }
+        LTK_LOG("WM_SYSCOMMAND %08X %08X", wparam, lparam);
+        break;
+    case WM_WINDOWPOSCHANGING:
+        do 
+        {
+            WINDOWPOS *wp = (WINDOWPOS *)lparam;
+            //LTK_LOG("WM_WINDOWPOSCHANGING %08X", wp->flags);
+        } while (0);
         break;
 	case WM_CREATE:
         // Force WM_NCCALCSIZE
@@ -792,7 +804,15 @@ void Window::OnBtnMinimizeClicked()
 
 void Window::OnBtnMaximizeClicked()
 {
-    // TODO
+    WINDOWPLACEMENT wp = {0};
+    wp.length = sizeof(wp);
+    ::GetWindowPlacement(m_hwnd, &wp);
+    if (wp.showCmd == SW_MAXIMIZE) {
+        ::ShowWindow(m_hwnd, SW_RESTORE);
+    }
+    else {
+        ::ShowWindow(m_hwnd, SW_MAXIMIZE);
+    }
 }
 
 void Window::UpdateShadowFrame(bool bRedraw)
