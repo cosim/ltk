@@ -24,6 +24,7 @@ function SetupPrintWithLineInfo()
 			path = info.source;
 		end
 		old_print(format("\t%s:%d:", path, info.currentline));
+		io.flush();
 	end
 end
 
@@ -170,7 +171,8 @@ vsb:Update();
 hbox4:AddLayoutItem(vsb, 7, 0);
 g_vsb_event = vsb:SetEventHandler({
 	OnThumbDragging = function(pos)
-		print("vsb pos:", pos);
+		local x,y,w,h = vsb:GetRect()
+		print("vsb pos:", pos, h);
 	end
 })
 
@@ -181,7 +183,8 @@ hsb:Update();
 vbox:AddLayoutItem(hsb, 7, 0);
 g_hsb_event = hsb:SetEventHandler({
 	OnThumbDragging = function(pos)
-		print("hsb pos:", pos);
+		local x,y,w,h = hsb:GetRect()
+		print("hsb pos:", pos, w);
 	end
 })
 

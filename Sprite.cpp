@@ -647,6 +647,17 @@ int Sprite::SetRect(lua_State *L)
     return 0;
 }
 
+int Sprite::GetRect(lua_State *L)
+{
+    Sprite *thiz = CheckLuaObject<Sprite>(L, 1);
+    RectF rc = thiz->GetRect();
+    lua_pushnumber(L, rc.X);
+    lua_pushnumber(L, rc.Y);
+    lua_pushnumber(L, rc.Width);
+    lua_pushnumber(L, rc.Height);
+    return 4;
+}
+
 #endif // LTK_DISABLE_LUA
 
 } // namespace ltk
