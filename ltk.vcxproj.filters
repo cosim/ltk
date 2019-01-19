@@ -75,6 +75,9 @@
     <ClCompile Include="ScrollBar.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CheckBox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common.h">
@@ -153,6 +156,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="LuaVector.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CheckBox.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

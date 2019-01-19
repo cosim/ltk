@@ -9,7 +9,6 @@ class IConnection
 {
 public:
     virtual void Close() = 0;
-    virtual IConnection *Copy() = 0;
     virtual ~IConnection() {}
 };
 
@@ -36,18 +35,23 @@ private:
 };
 
 template<typename T>
+struct DelegateNode
+{
+    std::function<T> lambda;
+    DelegateNode<T> *next = nullptr;
+};
+
+template<typename T>
 class Connection : public IConnection
 {
 public:
-    Connection(Delegate<T> *d, size_t key) : m_d(d), m_key(key) {}
+    Connection(Delegate<T> *d, DelegateNode<T> *n) : m_d(d), m_n(n) {}
     ~Connection() {}
-    void Close() { m_d->Remove(m_key); }
-    IConnection *Copy() { return new Connection(m_d, m_key); }
-    //void Track(DelegateTracker *tracker) { tracker->Add(this); }
+    void Close() { m_d->Remove(m_n); }
 
 private:
     Delegate<T> *m_d;
-    size_t m_key;
+    DelegateNode<T> *m_n;
 };
 
 template<typename T>
@@ -56,35 +60,54 @@ class Delegate
 public:
     DelegateTracker Attach(const std::function<T> &cb)
     {
-        size_t key = m_nextId;
-        m_nextId++;
-        m_listeners[key] = cb;
-        return std::move(DelegateTracker(new Connection<T>(this, key)));
+        auto node = new DelegateNode<T>;
+        node->lambda = cb;
+        if (m_head == nullptr) {
+            m_head = node;
+        }
+        else {
+            auto p = m_head;
+            auto p2 = m_head;
+            while (p) {
+                p2 = p;
+                p = p->next;
+            }
+            p2->next = node;
+        }
+        return std::move(DelegateTracker(new Connection<T>(this, node)));
+        // TODO FIXME
     }
 
-    bool Remove(size_t key)
+    bool Remove(DelegateNode<T> *node)
     {
-        auto iter = m_listeners.find(key);
-        if (iter != m_listeners.end())
-        {
-            m_listeners.erase(iter);
-            return true;
+        auto p = m_head;
+        auto p2 = m_head;
+        bool found = false;
+        while (p) {
+            if (p == node) {
+                found = true;
+                break;
+            }
+            p2 = p;
+            p = p->next;
         }
-        return false;
+        if (p) {
+            p2->next = p->next;
+            delete p;
+        }
+        return false; // TODO FIXME
     }
 
     template<typename... Params>
     void Invoke(Params... params)
     {
-        for (auto iter = m_listeners.begin(); iter != m_listeners.end(); ++iter)
-        {
-            (iter->second)(std::forward<Params>(params)...);
+        for (auto node = m_head; node; node = node->next) {
+            (node->lambda)(std::forward<Params>(params)...);
         }
     }
 
 private:
-    std::map<size_t, std::function<T>> m_listeners;
-    size_t m_nextId = 0;
+    DelegateNode<T> *m_head = nullptr;
 };
 
 } // namespace ltk
