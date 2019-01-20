@@ -22,10 +22,7 @@ public:
     DelegateTracker(const DelegateTracker &rhs) = delete;
     void operator=(const DelegateTracker &rhs) = delete;
     ~DelegateTracker() {
-        int i = 0;
-        i = 1;
         delete m_conn; 
-        i = 2;
     }
 
     void Close() { m_conn->Close(); }
@@ -37,8 +34,8 @@ private:
 template<typename T>
 struct DelegateNode
 {
-    std::function<T> lambda;
     DelegateNode<T> *next = nullptr;
+    std::function<T> lambda;
 };
 
 template<typename T>
@@ -64,36 +61,40 @@ public:
         node->lambda = cb;
         if (m_head == nullptr) {
             m_head = node;
-        }
+        }   
         else {
             auto p = m_head;
-            auto p2 = m_head;
-            while (p) {
-                p2 = p;
+            while (p->next) {
                 p = p->next;
             }
-            p2->next = node;
+            p->next = node;
         }
         return std::move(DelegateTracker(new Connection<T>(this, node)));
-        // TODO FIXME
+        // TODO use void* instead of DelegateTracker
+        // because it's safer to dereference the event source pointer and ->Remove()
     }
 
     bool Remove(DelegateNode<T> *node)
     {
-        auto p = m_head;
-        auto p2 = m_head;
-        bool found = false;
-        while (p) {
-            if (p == node) {
-                found = true;
-                break;
-            }
-            p2 = p;
-            p = p->next;
+        if (!node) {
+            return false;
         }
-        if (p) {
-            p2->next = p->next;
-            delete p;
+        if (!m_head) {
+            return false;
+        }
+        if (m_head == node) {
+            auto tmp = m_head->next;
+            delete m_head;
+            m_head = tmp;
+        }
+        auto p = m_head;
+        while (p) {
+            if (p->next == node) {
+                p->next = p->next->next;
+                delete node;
+                return true;
+            }
+            p = p->next;
         }
         return false; // TODO FIXME
     }
