@@ -6,8 +6,19 @@ namespace ltk {
 
 StyleManager::StyleManager()
 {
+    const char *colors[] = {
+        "#EEEEF2", //clrBackground1
+        "#EEEEF2", //clrBackground2
+        "#CCCEDB", //clrNormal
+        "#C9DEF5", //clrHover
+        "#1E1E1E", //clrText
+        "#007ACC", //clrHighlight
+        "#007ACC", //clrBorder
+        "#EEEEF2", //clrCaption
+    };
     for (int i = 0; i < clrLast; i ++) {
-        m_colors.push_back(D2D1::ColorF(D2D1::ColorF::Cyan));
+        LTK_ASSERT(i < ARRAYSIZE(colors));
+        m_colors.push_back(ColorFromString(colors[i]));
     }
 }
 

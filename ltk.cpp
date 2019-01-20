@@ -355,7 +355,31 @@ int CALLBACK WinMain(
     _In_ int       nCmdShow
     )
 {
-    //ApiBindInit(ctx);
+    LtkLogInit();
+    LtkInitialize();
+    Window::RegisterWndClass();
+    ShadowFrame::Init();
+
+    Window *wnd = new Window();
+    wnd->Create(nullptr, RectF(0, 0, 800, 600));
+
+    MSG msg;
+    BOOL bRet;
+    while ((bRet = GetMessage(&msg, NULL, 0, 0)) != 0)
+    {
+        if (bRet == -1)
+        {
+            LOG(<< "ERROR");
+        }
+        else
+        {
+            TranslateMessage(&msg);
+            DispatchMessage(&msg);
+        }
+    }
+    LOG(<< "WM_QUIT");
+    ::Sleep(2000);
+    ltk::LtkUninitialize();
 
     return 0;
 }
