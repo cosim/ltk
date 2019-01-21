@@ -608,6 +608,17 @@ bool Window::OnSize(float cx, float cy, DWORD flag)
     return false;
 }
 
+bool Window::OnClose(bool &proceed)
+{
+    proceed = true; return true;
+}
+
+bool Window::OnDestroy()
+{
+    DestroyDelegate.Invoke();
+    return false;
+}
+
 HWND Window::Handle()
 {
 	return m_hwnd;

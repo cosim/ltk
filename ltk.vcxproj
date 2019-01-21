@@ -195,6 +195,10 @@
     <ClCompile Include="Slide.cpp" />
     <ClCompile Include="SpriteEx.cpp" />
     <ClCompile Include="StyleManager.cpp" />
+    <ClCompile Include="tinyxml\tinyxml2.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="Window.cpp" />
     <ClCompile Include="ImeInput.cpp" />
     <ClCompile Include="Sprite.cpp" />
@@ -228,6 +232,7 @@
     <ClInclude Include="Slide.h" />
     <ClInclude Include="SpriteEx.h" />
     <ClInclude Include="StyleManager.h" />
+    <ClInclude Include="tinyxml\tinyxml2.h" />
     <ClInclude Include="Window.h" />
     <ClInclude Include="ImeInput.h" />
     <ClInclude Include="Sprite.h" />

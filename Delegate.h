@@ -55,6 +55,16 @@ template<typename T>
 class Delegate
 {
 public:
+    ~Delegate()
+    {
+        auto node = m_head;
+        while (node) {
+            auto tmp = node->next;
+            delete node;
+            node = tmp;
+        }
+    }
+
     DelegateTracker Attach(const std::function<T> &cb)
     {
         auto node = new DelegateNode<T>;

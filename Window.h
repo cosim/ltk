@@ -68,8 +68,10 @@ public:
     void EndAnimation(Sprite *sp);
 
     virtual bool OnSize(float cx, float cy, DWORD flag);
-    virtual bool OnClose(bool &proceed) { proceed = true; return true; }
-    virtual bool OnDestroy() { return false; }
+    virtual bool OnClose(bool &proceed);
+    virtual bool OnDestroy();
+
+    Delegate<void()> DestroyDelegate;
 
     void OnBtnCloseClicked();
     void OnBtnMinimizeClicked();

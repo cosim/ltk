@@ -20,6 +20,39 @@ StyleManager::StyleManager()
         LTK_ASSERT(i < ARRAYSIZE(colors));
         m_colors.push_back(ColorFromString(colors[i]));
     }
+    tinyxml2::XMLDocument doc;
+    if (doc.LoadFile("res\\style.xml") != tinyxml2::XML_SUCCESS) {
+        LTK_LOG("load style.xml failed");
+        return;
+    }
+    auto elem = doc.FirstChildElement("styles")->FirstChildElement("default")->FirstChildElement("colors");
+    if (!elem) return;
+    auto color = elem->FirstChildElement("color");
+    while (color) {
+        LTK_LOG("color element: %s", color->Attribute("value"));
+        auto value = color->Attribute("value");
+        auto name = color->Attribute("name");
+
+        if (strcmp(name, "background1") == 0) {
+            m_colors.at((size_t)clrBackground1) = ColorFromString(value);
+        } if (strcmp(name, "background2") == 0) {
+            m_colors.at((size_t)clrBackground2) = ColorFromString(value);
+        } if (strcmp(name, "normal") == 0) {
+            m_colors.at((size_t)clrNormal) = ColorFromString(value);
+        } if (strcmp(name, "hover") == 0) {
+            m_colors.at((size_t)clrHover) = ColorFromString(value);
+        } if (strcmp(name, "text") == 0) {
+            m_colors.at((size_t)clrText) = ColorFromString(value);
+        } if (strcmp(name, "highlight") == 0) {
+            m_colors.at((size_t)clrHighlight) = ColorFromString(value);
+        } if (strcmp(name, "border") == 0) {
+            m_colors.at((size_t)clrBorder) = ColorFromString(value);
+        } if (strcmp(name, "caption") == 0) {
+            m_colors.at((size_t)clrCaption) = ColorFromString(value);
+        }
+
+        color = color->NextSiblingElement("color");
+    }
 }
 
 

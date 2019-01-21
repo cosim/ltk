@@ -362,6 +362,10 @@ int CALLBACK WinMain(
 
     Window *wnd = new Window();
     wnd->Create(nullptr, RectF(0, 0, 800, 600));
+    wnd->DestroyDelegate.Attach([](){
+        ::PostQuitMessage(0);
+    });
+    wnd->SetTitle(L"XML Test");
 
     MSG msg;
     BOOL bRet;
@@ -378,6 +382,7 @@ int CALLBACK WinMain(
         }
     }
     LOG(<< "WM_QUIT");
+    wnd->Release();
     ::Sleep(2000);
     ltk::LtkUninitialize();
 

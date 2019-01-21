@@ -51,5 +51,7 @@ using Gdiplus::Color;
 
 #include "luajit\lua.hpp"
 
+#include "tinyxml/tinyxml2.h"
+
 #include <vld.h>
 
