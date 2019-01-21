@@ -1,0 +1,14 @@
+<styles>
+	<default>
+		<colors>
+			<color name="background1" value="#000000" />
+			<color name="background2" value="2" />
+			<color name="normal" value="#000000" />
+			<color name="hover" value="4" />
+			<color name="text" value="#00ff00" />
+			<color name="highlight" value="6" />
+			<color name="border" value="#00ff00" />
+			<color name="caption" value="#000000" />
+		</colors>
+	</default>
+</styles>
