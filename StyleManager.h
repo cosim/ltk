@@ -24,8 +24,7 @@ public:
     static void Free();
 
     enum Colors {
-        clrBackground1,
-        clrBackground2,
+        clrBackground,
         clrNormal,
         clrHover,
         clrText,

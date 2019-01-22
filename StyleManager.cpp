@@ -7,8 +7,7 @@ namespace ltk {
 StyleManager::StyleManager()
 {
     const char *colors[] = {
-        "#EEEEF2", //clrBackground1
-        "#EEEEF2", //clrBackground2
+        "#EEEEF2", //clrBackground
         "#CCCEDB", //clrNormal
         "#C9DEF5", //clrHover
         "#1E1E1E", //clrText
@@ -37,10 +36,8 @@ StyleManager::StyleManager()
         auto value = color->Attribute("value");
         auto name = color->Attribute("name");
 
-        if (strcmp(name, "background1") == 0) {
-            m_colors.at((size_t)clrBackground1) = ColorFromString(value);
-        } if (strcmp(name, "background2") == 0) {
-            m_colors.at((size_t)clrBackground2) = ColorFromString(value);
+        if (strcmp(name, "background") == 0) {
+            m_colors.at((size_t)clrBackground) = ColorFromString(value);
         } if (strcmp(name, "normal") == 0) {
             m_colors.at((size_t)clrNormal) = ColorFromString(value);
         } if (strcmp(name, "hover") == 0) {
@@ -54,7 +51,6 @@ StyleManager::StyleManager()
         } if (strcmp(name, "caption") == 0) {
             m_colors.at((size_t)clrCaption) = ColorFromString(value);
         }
-
         color = color->NextSiblingElement("color");
     }
 }
