@@ -25,7 +25,11 @@ StyleManager::StyleManager()
         LTK_LOG("load style.xml failed");
         return;
     }
-    auto elem = doc.FirstChildElement("styles")->FirstChildElement("default")->FirstChildElement("colors");
+    auto elem = doc.FirstChildElement("styles");
+    if (!elem) return;
+    elem = elem->FirstChildElement("default");
+    if (!elem) return;
+    elem = elem->FirstChildElement("colors");
     if (!elem) return;
     auto color = elem->FirstChildElement("color");
     while (color) {
