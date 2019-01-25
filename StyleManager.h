@@ -4,17 +4,7 @@
 
 namespace ltk {
 
-struct NinePatchInfo {
-    RectF atlas;
-    float left;
-    float top;
-    float right;
-    float bottom;
-    float textLeft;
-    float textTop;
-    float textRight;
-    float textBottom;
-};
+class Window;
 
 class StyleManager : public LuaObject
 {
@@ -57,6 +47,47 @@ private:
 
     std::vector<D2D1_COLOR_F> m_colors;
     ID2D1Bitmap *m_bitmap = nullptr;
+};
+
+class IbackgroundPainter
+{
+public:
+    virtual void Paint(Window *wnd, ID2D1RenderTarget *targe, const RectF &rc, UINT state, float ratio) = 0;
+    virtual bool LoadFromXML(tinyxml2::XMLNode *node) = 0;
+};
+
+class VectorBackgroundPainter : public IbackgroundPainter
+{
+public:
+
+    virtual void Paint(Window *wnd, ID2D1RenderTarget *targe, const RectF &rc, UINT state, float ratio) override;
+    bool LoadFromXML(tinyxml2::XMLNode *node) override;
+
+    D2D1_COLOR_F clrBorderNormal;
+    D2D1_COLOR_F clrBorderHover;
+    D2D1_COLOR_F clrBorderPressed;
+    D2D1_COLOR_F clrBorderDisable;
+
+    D2D1_COLOR_F clrBackgroundNormal;
+    D2D1_COLOR_F clrBackgroundHover;
+    D2D1_COLOR_F clrBackgroundPressed;
+    D2D1_COLOR_F clrBackgroundDisable;
+
+    bool hasBorder = true;
+    float roundCorner = 0.0f;
+};
+
+class BitmapBackgroundPainter : public IbackgroundPainter
+{
+
+public:
+    virtual void Paint(Window *wnd, ID2D1RenderTarget *targe, const RectF &rc, UINT state, float ratio) override;
+    bool LoadFromXML(tinyxml2::XMLNode *node) override;
+
+    std::unique_ptr<TextureInfo> texNormal;
+    std::unique_ptr<TextureInfo> texHover;
+    std::unique_ptr<TextureInfo> texPressed;
+    std::unique_ptr<TextureInfo> texDisable;
 };
 
 }

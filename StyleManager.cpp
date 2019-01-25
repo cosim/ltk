@@ -142,4 +142,22 @@ int StyleManager::SetColorScheme(lua_State *L)
 
 StyleManager * StyleManager::m_instance = nullptr;
 
+void VectorBackgroundPainter::Paint(Window *wnd, ID2D1RenderTarget *targe, const RectF &rc, UINT state, float ratio)
+{
 }
+
+bool VectorBackgroundPainter::LoadFromXML(tinyxml2::XMLNode *node)
+{
+    return false;
+}
+
+void BitmapBackgroundPainter::Paint(Window *wnd, ID2D1RenderTarget *targe, const RectF &rc, UINT state, float ratio)
+{
+}
+
+bool BitmapBackgroundPainter::LoadFromXML(tinyxml2::XMLNode *node)
+{
+    return false;
+}
+
+} //namespace ltk 
