@@ -148,6 +148,9 @@ void VectorBackgroundPainter::Paint(Window *wnd, ID2D1RenderTarget *targe, const
 
 bool VectorBackgroundPainter::LoadFromXML(tinyxml2::XMLNode *node)
 {
+    auto elem = node->ToElement();
+    if (!elem) { return false; }
+
     return false;
 }
 
