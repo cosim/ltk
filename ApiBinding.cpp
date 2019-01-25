@@ -14,14 +14,14 @@ static int l_PostQuitMessage(lua_State *L)
 static int l_RunMessageLoop(lua_State *L)
 {
     lua_gc(L, LUA_GCCOLLECT, 0); // 没有引用的回调表将会被释放 方便检查
-    LOG(<< "...");
+    LTK_LOG("MessageLoop BEGIN");
     MSG msg;
     BOOL bRet;
     while ((bRet = GetMessage(&msg, NULL, 0, 0)) != 0)
     {
         if (bRet == -1)
         {
-            LOG(<< "ERROR");
+            LTK_LOG("MessageLoop ERROR");
         }
         else
         {
@@ -29,7 +29,7 @@ static int l_RunMessageLoop(lua_State *L)
             DispatchMessage(&msg);
         }
     }
-    LOG(<< "WM_QUIT");
+    LTK_LOG("MessageLoop END");
     ::Sleep(2000);
     ltk::LtkUninitialize();
     return 0;

@@ -20,18 +20,11 @@ RectF LuaCheckRectF(lua_State *L, int index);
 void LuaPushRectF(lua_State *L, const RectF &rc);
 int LuaGetI(lua_State *L, int index, lua_Integer i);
 
-#define LOG(msg) do\
-{\
-	std::stringstream ss;\
-	ss << __FUNCTION__ << "() " msg << std::endl;\
-	OutputDebugStringA(ss.str().c_str());\
-} while (0)
-
 #define LOGW(msg) do\
 {\
 	std::wstringstream ss;\
 	ss << __FUNCTIONW__ << L"() " msg << std::endl;\
-	OutputDebugString(ss.str().c_str());\
+	OutputDebugStringW(ss.str().c_str());\
 } while (0)
 
 #define DISALLOW_COPY_AND_ASSIGN(TypeName) \
@@ -45,7 +38,7 @@ int LuaGetI(lua_State *L, int index, lua_Integer i);
 
 #define SAFE_RELEASE(p) if (p) { (p)->Release(); (p) = NULL; }
 
-#define SAFE_RELEASE_AND_MAKR(type, p) if (p) { (p)->Release(); (p) = reinterpret_cast<type *>(0xDEADBEEF); }
+#define RELEASE_AND_INVALIDATE(type, p) if (p) { (p)->Release(); (p) = reinterpret_cast<type *>(0xDEADBEEF); }
 
 EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 #define HINST_THISCOMPONENT ((HINSTANCE)&__ImageBase)

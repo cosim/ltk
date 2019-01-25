@@ -110,18 +110,10 @@ void Sprite::Invalidate()
 	}
 }
 
-// 只在Window::AttachSprite中使用
 void Sprite::SetWindow( Window *wnd )
 {
-	LOG("-->");
+    //LTK_LOG("SetWindow: %08x", wnd);
 	m_window = wnd;
-	Sprite *sp = m_firstChild;
-	while(sp)
-	{
-		sp->SetWindow(wnd);
-		sp = sp->m_nextSibling;
-	}
-	LOG("<--");
 }
 
 void Sprite::HandlePaint( ID2D1RenderTarget *target )
@@ -182,13 +174,12 @@ void Sprite::AddChild( Sprite *sp )
 		sp->m_prevSibling = tmp;
 		tmp->m_nextSibling = sp;
 	}
-	sp->SetWindow(m_window); // 递归去设置 防止任意顺序插入导致问题 FIXME 可能有性能问题
+	sp->SetWindow(m_window);
 	sp->m_parent = this;
     sp->AddRef();
 }
 
-// TODO refactor this method
-void Sprite::HandleMouseEvent( MouseEvent *ev )
+void Sprite::TranslateMouseEvent( MouseEvent *ev )
 {
 	switch(ev->message)
 	{
@@ -368,7 +359,7 @@ bool Sprite::GetClipChildren()
 
 void Sprite::DispatchMouseEvent(MouseEvent *ev)
 {
-    this->HandleMouseEvent(ev);
+    this->TranslateMouseEvent(ev);
     Sprite *sp = m_firstChild;
     while (sp)
     {
@@ -416,7 +407,7 @@ Sprite * Sprite::DispatchMouseEvent2(MouseEvent *event)
 			MouseEvent e2 = *event;
 			e2.x -= rc.X;
 			e2.y -= rc.Y;
-            sp->HandleMouseEvent(&e2);
+            sp->TranslateMouseEvent(&e2);
 		}
 	}
 	return NULL;
@@ -609,8 +600,8 @@ void Sprite::HandleRecreateResouce(ID2D1RenderTarget *target)
 
 void Sprite::BeginAnimation()
 {
-    assert(m_window);
-    m_window->BeginAnimation(this);
+    Window *wnd = GetWindow();
+    wnd->BeginAnimation(this);
 }
 
 void Sprite::EndAnimation()

@@ -14,7 +14,7 @@ StyleManager::StyleManager()
 
 StyleManager::~StyleManager()
 {
-    SAFE_RELEASE_AND_MAKR(ID2D1Bitmap, m_bitmap);
+    RELEASE_AND_INVALIDATE(ID2D1Bitmap, m_bitmap);
 }
 
 StyleManager * StyleManager::Instance()

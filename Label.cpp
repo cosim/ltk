@@ -42,7 +42,7 @@ bool Label::OnPaint(PaintEvent *ev)
             &m_textFormat
             );
         assert(SUCCEEDED(hr));
-        LOG("recreate m_textFormat");
+        LTK_LOG("recreate m_textFormat");
     }
     m_textFormat->SetTextAlignment(m_textAlign);
     m_textFormat->SetParagraphAlignment(m_paragraphAlign);
@@ -53,7 +53,7 @@ bool Label::OnPaint(PaintEvent *ev)
 
 void Label::RecreateResouce(ID2D1RenderTarget *target)
 {
-    LOG(".");
+    LTK_LOG("RecreateResouce");
     HRESULT hr = E_FAIL;
     SAFE_RELEASE(m_brush);
     hr = target->CreateSolidColorBrush(m_textColor, &m_brush);

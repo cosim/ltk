@@ -259,7 +259,7 @@ void Window::HandleMouseMessage(UINT message, WPARAM wparam, LPARAM lparam)
 				{
 					MouseEvent e2 = event;
 					e2.message = WM_MOUSELEAVE;
-					sp->HandleMouseEvent(&e2);
+					sp->TranslateMouseEvent(&e2);
 					defer_remove.push_back(sp);
 					// Fire the event and remove sp from the set;
 				}
@@ -286,7 +286,7 @@ void Window::HandleMouseLeave()
         e2.x = 0;
         e2.y = 0;
         e2.message = WM_MOUSELEAVE;
-        sp->HandleMouseEvent(&e2);
+        sp->TranslateMouseEvent(&e2);
         // Fire the event and remove sp from the set;
     }
     m_setTrackMouseLeave.clear();
@@ -406,7 +406,7 @@ LRESULT CALLBACK Window::WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM 
             static int cnt = 0;
             cnt++;
             if (cnt % 100 == 0){
-                LOG("TIMER_ANIMATION " << cnt);
+                LTK_LOG("TIMER_ANIMATION %d", cnt);
             }
             ::InvalidateRect(hwnd, NULL, FALSE);
         }
@@ -737,13 +737,13 @@ void Window::ReleaseCapture()
 
 void Window::ShowCaret()
 {
-	LOG(" ");
+	LTK_LOG("ShowCaret");
 	::ShowCaret(m_hwnd);
 }
 
 void Window::HideCaret()
 {
-	LOG(" ");
+    LTK_LOG("HideCaret");
 	::HideCaret(m_hwnd);
 }
 
@@ -831,7 +831,7 @@ void Window::UpdateShadowFrame(bool bRedraw)
 class DtorTest
 {
 public:
-    ~DtorTest() { LOG("..."); }
+    ~DtorTest() { LTK_LOG("DtorTest dtor()"); }
 };
 
 int Window::LuaConstructor(lua_State *L)

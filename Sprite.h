@@ -41,7 +41,7 @@ public:
 
     void HandlePaint( ID2D1RenderTarget *target );
 
-    void HandleMouseEvent(MouseEvent *ev);
+    void TranslateMouseEvent(MouseEvent *ev);
 
 	void HandleCapturedMouseEvent( MouseEvent *ev );
 

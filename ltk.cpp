@@ -258,7 +258,7 @@ namespace ltk {
         ::CoInitialize(NULL);
 
         if (g_d2d_factory) {
-            LOG("already initialized.");
+            LTK_LOG("already initialized.");
             return;
         }
 
@@ -317,18 +317,18 @@ void test_gdip_font()
 static void size_test()
 {
     std::map<int, void*> map1;
-    LOG("map1: " << sizeof(map1));
+    LTK_LOG("map1: %d", sizeof(map1));
     Delegate<void(void)> dlgt1;
-    LOG("dlgt1: " << sizeof(dlgt1));
+    LTK_LOG("dlgt1: %d", sizeof(dlgt1));
     std::function<void(void)> fn1;
-    LOG("fn1: " << sizeof(fn1));
+    LTK_LOG("fn1: %d", sizeof(fn1));
     Delegate<void(int, float, std::string)> dlgt2;
-    LOG("dlgt2: " << sizeof(dlgt2));
+    LTK_LOG("dlgt2: %d", sizeof(dlgt2));
     std::function<void(int, float, std::string)> fn2;
-    LOG("fn2: " << sizeof(fn2));
-    LOG("Sprite: " << sizeof(Sprite));
-    LOG("LuaObject: " << sizeof(LuaObject));
-    LOG("RefCounted: " << sizeof(RefCounted));
+    LTK_LOG("fn2: %d", sizeof(fn2));
+    LTK_LOG("Sprite: %d", sizeof(Sprite));
+    LTK_LOG("LuaObject: %d", sizeof(LuaObject));
+    LTK_LOG("RefCounted: %d",sizeof(RefCounted));
 }
 
 static void log_thread_test()

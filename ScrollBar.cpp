@@ -32,8 +32,8 @@ ScrollBar::ScrollBar(Mode mode) : m_mode(mode)
 
 ScrollBar::~ScrollBar()
 {
-    SAFE_RELEASE_AND_MAKR(Button, m_slider);
-    SAFE_RELEASE_AND_MAKR(ID2D1SolidColorBrush, m_brush);
+    RELEASE_AND_INVALIDATE(Button, m_slider);
+    RELEASE_AND_INVALIDATE(ID2D1SolidColorBrush, m_brush);
 }
 
 void ScrollBar::SetContentSize(float size)

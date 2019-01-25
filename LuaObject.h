@@ -85,7 +85,7 @@ void LuaRegisterClass(lua_State *L, const char *className)
 
     lua_getglobal(L, "Ltk");
     if (!lua_istable(L, -1)) {
-        LOG("<FATAL> Ltk is missing.");
+        LTK_LOG("<FATAL> Ltk is missing.");
         __debugbreak();
     }
     else{

@@ -20,7 +20,7 @@ void LuaObject::PushToLua( lua_State *L, const char* clsName )
 	luaL_getmetatable(L, clsName);
 	if(!lua_istable(L, -1))
 	{
-        LOG("NOT REGISTERD!!! " << clsName);
+        LTK_LOG("<%s> IS NOT REGISTERD!!! ", clsName);
         __debugbreak();
 	}
 	lua_setmetatable(L, udata); // udata
