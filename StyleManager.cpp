@@ -35,6 +35,7 @@ D2D1_COLOR_F StyleManager::GetColor(Colors clr)
     return m_colors.at((size_t)clr);
 }
 
+// TODO FIXME get bitmap from Window
 ID2D1Bitmap *StyleManager::GetBitmap(UINT idx)
 {
     return m_bitmap;

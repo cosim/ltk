@@ -24,7 +24,7 @@ Button::~Button()
     m_brush = INVALID_POINTER(ID2D1SolidColorBrush);
 
     if (m_image) m_image->Release();
-    m_image = INVALID_POINTER(ImageSprite);
+    m_image = INVALID_POINTER(IconSprite);
 
     this->EndAnimation();
 }
@@ -204,7 +204,7 @@ void Button::SetHoverColor(D2D1_COLOR_F clr)
 void Button::SetIcon(const RectF &rc, float scale, UINT idx)
 {
     if (!m_image) {
-        m_image = new ImageSprite();
+        m_image = new IconSprite();
         m_image->SetIcon(rc, scale, idx);
         this->InsertLayoutItem(0, m_image, rc.Width * scale, 0.0f);
     }

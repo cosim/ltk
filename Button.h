@@ -6,8 +6,7 @@
 namespace ltk {
 
 class Label;
-class ImageSprite;
-struct IconInfo;
+class IconSprite;
 
 class Button : public BoxLayout
 {
@@ -80,7 +79,7 @@ private:
     D2D1_COLOR_F m_colorPressed;
 
     Label *m_label = nullptr;
-    ImageSprite *m_image = nullptr;
+    IconSprite *m_image = nullptr;
 
     bool m_bCaptureMouse = true;
 };

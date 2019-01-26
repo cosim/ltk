@@ -1,4 +1,4 @@
-
+size
 /*
 ** Copyright (C) 2015-2016 Chen Shi. See Copyright Notice in ltk.h
 */
@@ -329,6 +329,10 @@ static void size_test()
     LTK_LOG("Sprite: %d", sizeof(Sprite));
     LTK_LOG("LuaObject: %d", sizeof(LuaObject));
     LTK_LOG("RefCounted: %d",sizeof(RefCounted));
+    std::forward_list<int> slist;
+    LTK_LOG("forward_list: %d", sizeof(slist));
+    SinglyLinkedList<int> slist2;
+
 }
 
 static void log_thread_test()
@@ -399,6 +403,8 @@ int luaopen_ltk(lua_State *L)
     LuaRegisterClass<Label>(L, "Label");
     LuaRegisterClass<Serializer>(L, "Serializer");
     LuaRegisterClass<StyleManager>(L, "StyleManager");
+    LuaRegisterClass<IconSprite>(L, "IconSprite");
+    LuaRegisterClass<TextureSprite>(L, "TextureSprite");
     LuaRegisterClass<ImageSprite>(L, "ImageSprite");
     LuaRegisterClass<ScrollBar>(L, "ScrollBar");
 

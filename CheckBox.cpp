@@ -7,7 +7,7 @@ namespace ltk {
 
 CheckBox::CheckBox() : BoxLayout(BoxLayout::Horizontal)
 {
-    m_box.Reset(new ImageSprite);
+    m_box.Reset(new IconSprite);
     m_box->SetIcon(RectF(895, 0, 70, 70), 16.0f / 70.0f, 0);
     this->AddLayoutItem(m_box.Get(), 24, 0.0f);
     m_label.Reset(new Label);

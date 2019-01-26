@@ -4,7 +4,7 @@
 
 namespace ltk {
 
-class ImageSprite;
+class IconSprite;
 class Label;
 
 class CheckBox : public BoxLayout
@@ -17,7 +17,7 @@ public:
     void SetText(const wchar_t *t);
 
 private:
-    RefPtr<ImageSprite> m_box;
+    RefPtr<IconSprite> m_box;
     RefPtr<Label> m_label;
 };
 

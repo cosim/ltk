@@ -89,6 +89,8 @@ Window::~Window(void)
         m_labelTitle->Release();
     }
     m_labelTitle = INVALID_POINTER(Label);
+    
+    LTK_LOG("Window dtor()");
 }
 
 void Window::Create(Window *parent, RectF rc)
@@ -424,7 +426,7 @@ LRESULT CALLBACK Window::WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM 
             thiz->OnSize((float)cx, (float)cy, (DWORD)wparam);
             thiz->UpdateShadowFrame(true);
 
-            LTK_LOG("WM_SIZE %d", wparam);
+            //LTK_LOG("WM_SIZE %d", wparam);
             if (wparam == SIZE_MAXIMIZED) {
                 thiz->m_sprite->SetMargin(5.0f);
                 thiz->m_sprite->DoLayout();
