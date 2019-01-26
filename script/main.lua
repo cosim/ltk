@@ -91,9 +91,22 @@ local label = Ltk.Label:new("Label:");
 --label1:SetTextColor(1, 1, 1);
 hbox1:AddLayoutItem(label, 40);
 
+local group = Ltk.RadioGroup:new();
+
 local check = Ltk.CheckBox:new();
 check:SetText("选项1");
-hbox1:AddLayoutItem(check, 100);
+check:SetRadioGroup(group);
+hbox1:AddLayoutItem(check, 80);
+
+check = Ltk.CheckBox:new();
+check:SetText("选项2");
+check:SetRadioGroup(group);
+hbox1:AddLayoutItem(check, 80);
+
+check = Ltk.CheckBox:new();
+check:SetText("选项3");
+check:SetRadioGroup(group);
+hbox1:AddLayoutItem(check, 80);
 
 ---@type Ltk.Button
 local btn = Ltk.Button:new();

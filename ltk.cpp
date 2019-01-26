@@ -409,6 +409,7 @@ int luaopen_ltk(lua_State *L)
     LuaRegisterClass<ImageSprite>(L, "ImageSprite");
     LuaRegisterClass<ScrollBar>(L, "ScrollBar");
     LuaRegisterClass<CheckBox>(L, "CheckBox");
+    LuaRegisterClass<RadioGroup>(L, "RadioGroup");
 
     LuaRegisterClass<LuaVector<unsigned char>>(L, LuaVectorScriptName<unsigned char>());
     LuaRegisterClass<LuaVector<unsigned short>>(L, LuaVectorScriptName<unsigned short>());

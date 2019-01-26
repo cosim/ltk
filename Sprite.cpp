@@ -34,15 +34,16 @@ Sprite::Sprite(void)
 
 Sprite::~Sprite(void)
 {
-	m_window = INVALID_POINTER(Window);
 	Sprite *sp = m_firstChild;
 	while(sp)
 	{
 		Sprite *tmp = sp->m_nextSibling;
+        sp->m_parent = nullptr;
         sp->Release(); // FIXME 有没有想过这里其实如果数量太多 会不会爆栈呢? 事实上是一个递归调用.
 		sp = tmp;
 	}
-	m_firstChild = INVALID_POINTER(Sprite);
+    m_window = INVALID_POINTER(Window);
+    m_firstChild = INVALID_POINTER(Sprite);
     m_lastChild = INVALID_POINTER(Sprite);
     m_prevSibling = INVALID_POINTER(Sprite);
     m_nextSibling = INVALID_POINTER(Sprite);
