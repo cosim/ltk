@@ -433,6 +433,11 @@ LRESULT CALLBACK Window::WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM 
                 thiz->m_sprite->SetMargin(0.0f);
                 thiz->m_sprite->DoLayout();
             }
+            else if (wparam == SIZE_MINIMIZED) {
+                thiz->m_setAnimation.clear();
+                ::ReleaseCapture();
+                ::KillTimer(hwnd, TIMER_ANIMATION);
+            }
         } while (0);
 		return 0;
     case WM_MOVE:
@@ -482,6 +487,8 @@ LRESULT CALLBACK Window::WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM 
             thiz->m_spFocus->OnEvent(&ev);
         }
         KillTimer(hwnd, TIMER_ANIMATION);
+        thiz->m_setAnimation.clear();
+        ::ReleaseCapture();
 		return 0;
     case WM_SYSCOMMAND:
         LTK_LOG("WM_SYSCOMMAND %08X %08X", wparam, lparam);
@@ -764,14 +771,13 @@ void Window::TrackMouseLeave( Sprite *sp )
 
 void Window::BeginAnimation(Sprite *sp)
 {
-    if (!::IsIconic(m_hwnd))
-    {
+    //if (!::IsIconic(m_hwnd)) {
         if (m_setAnimation.size() == 0)
         {
             ::SetTimer(m_hwnd, TIMER_ANIMATION, 0, NULL);
         }
         m_setAnimation.insert(sp);
-    }
+    //}
 }
 
 void Window::EndAnimation(Sprite *sp)
