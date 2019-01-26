@@ -24,6 +24,8 @@ local Margin = {}
 ---@field Serializer Ltk.Serializer
 ---@field StyleManager Ltk.StyleManager
 ---@field ImageSprite Ltk.ImageSprite
+---@field IconSprite Ltk.IconSprite
+---@field TextureSprite Ltk.TextureSprite
 Ltk = {}
 
 ---@class Ltk.Object
@@ -151,13 +153,22 @@ function StyleManager:SetColorScheme(colors) end
 ---@class Ltk.ImageSprite
 local ImageSprite = {}
 
-function ImageSprite:new() end
+---@param path string
+function ImageSprite:SetImage(path) end
+
+---@class Ltk.TextureSprite
+local TextureSprite = {}
 
 ---@param atlas Ltk.RectF
 ---@param margin Ltk.Margin
 ---@param scale number
 ---@param idx number
-function ImageSprite:SetTexture(atlas, margin, scale, idx) end
+function TextureSprite:SetTexture(atlas, margin, scale, idx) end
+
+---@class Ltk.IconSprite
+local IconSprite = {}
+
+function IconSprite:SetIcon() end
 
 ---@class Ltk.ScrollBar
 local ScrollBar = {}

@@ -75,6 +75,8 @@ public:
     void OnBtnMinimizeClicked();
     void OnBtnMaximizeClicked();
 
+    ID2D1Bitmap *GetAtlasBitmap();
+
 #ifndef LTK_DISABLE_LUA
     static int LuaConstructor(lua_State *L);
     static int Create(lua_State *L);
@@ -131,6 +133,8 @@ private:
     ShadowFrame m_shadowTop;
     ShadowFrame m_shadowRight;
     ShadowFrame m_shadowBottom;
+
+    ID2D1Bitmap *m_atlas = nullptr;
 };
 
 } // namespace ltk

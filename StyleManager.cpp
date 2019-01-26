@@ -14,7 +14,6 @@ StyleManager::StyleManager()
 
 StyleManager::~StyleManager()
 {
-    RELEASE_AND_INVALIDATE(ID2D1Bitmap, m_bitmap);
 }
 
 StyleManager * StyleManager::Instance()
@@ -33,21 +32,6 @@ void StyleManager::Free()
 D2D1_COLOR_F StyleManager::GetColor(Colors clr)
 {
     return m_colors.at((size_t)clr);
-}
-
-// TODO FIXME get bitmap from Window
-ID2D1Bitmap *StyleManager::GetBitmap(UINT idx)
-{
-    return m_bitmap;
-}
-
-void StyleManager::RecreateResource(ID2D1RenderTarget *target)
-{
-    // TODO FIXME m_bitmap should be per Window data. because of differnet target
-    SAFE_RELEASE(m_bitmap);
-    LTK_LOG("creating atlas bitmap");
-    HRESULT hr = LoadBitmapFromFile(target, L"E:\\myworks\\ltk\\res\\atlas.png", &m_bitmap);
-    LTK_ASSERT(SUCCEEDED(hr));
 }
 
 D2D1_COLOR_F StyleManager::ColorFromString(const char *psz)

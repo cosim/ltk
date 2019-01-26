@@ -141,7 +141,7 @@ g_btn_set_label_font_size = btn:SetEventHandler({
 })
 hbox2:AddLayoutItem(btn, 100, 1);
 
----@type Ltk.ImageSprite
+---@type Ltk.TextureSprite
 local img = Ltk.TextureSprite:new();
 img:SetTexture({ x = 0, y = 85, w = 600, h = 178},
 		{ left = 100, top = 85, right = 100, bottom = 85}, 0.25, 0);

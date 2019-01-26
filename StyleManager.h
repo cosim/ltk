@@ -36,12 +36,6 @@ public:
     };
     D2D1_COLOR_F GetColor(Colors clr);
 
-    ID2D1Bitmap *GetBitmap(UINT idx = 0);
-
-    ID2D1SolidColorBrush *GetStockBrush();
-
-    void RecreateResource(ID2D1RenderTarget *target);
-
     static D2D1_COLOR_F ColorFromString(const char *psz);
 
     static int LuaConstructor(lua_State *L);
@@ -57,7 +51,6 @@ private:
     static StyleManager *m_instance;
 
     std::vector<D2D1_COLOR_F> m_colors;
-    ID2D1Bitmap *m_bitmap = nullptr;
 };
 
 }

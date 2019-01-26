@@ -2,6 +2,7 @@
 #include "ImageSprite.h"
 #include "StyleManager.h"
 #include "ltk.h"
+#include "Window.h"
 
 namespace ltk {
 
@@ -13,7 +14,7 @@ bool IconSprite::OnPaint(PaintEvent *ev)
     rc3.Y = (rc.Height - m_info.atlas.Height * m_info.scale) / 2.0f;
     rc3.Width = m_info.atlas.Width * m_info.scale;
     rc3.Height = m_info.atlas.Height * m_info.scale;
-    auto bitmap = StyleManager::Instance()->GetBitmap();
+    auto bitmap = this->GetWindow()->GetAtlasBitmap();
     ev->target->DrawBitmap(bitmap, D2D1RectF(rc3), 1.0f, D2D1_BITMAP_INTERPOLATION_MODE_LINEAR,
         D2D1RectF(m_info.atlas));
     return true;
@@ -58,7 +59,7 @@ bool TextureSprite::OnPaint(PaintEvent *ev)
     RectF rc = this->GetClientRect();
     DrawTextureNineInOne(
         ev->target,
-        StyleManager::Instance()->GetBitmap(m_info.idx),
+        this->GetWindow()->GetAtlasBitmap(),
         m_info.atlas,
         m_info.margin,
         rc,

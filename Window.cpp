@@ -89,6 +89,11 @@ Window::~Window(void)
         m_labelTitle->Release();
     }
     m_labelTitle = INVALID_POINTER(Label);
+
+    if (m_atlas) {
+        m_atlas->Release();
+    }
+    m_atlas = INVALID_POINTER(ID2D1Bitmap);
     
     LTK_LOG("Window dtor()");
 }
@@ -554,7 +559,11 @@ void Window::RecreateResouce()
     HRESULT hr = E_FAIL;
     SAFE_RELEASE(m_brush);
     hr = m_target->CreateSolidColorBrush(D2D1::ColorF(0.5f, 0.5f, 0.5f), &m_brush);
-    assert(SUCCEEDED(hr));
+    LTK_ASSERT(SUCCEEDED(hr));
+
+    SAFE_RELEASE(m_atlas);
+    hr = LoadBitmapFromFile(m_target, L"res\\atlas.png", &m_atlas);
+    LTK_ASSERT(SUCCEEDED(hr));
 }
 
 void Window::OnPaint(HWND hwnd )
@@ -574,7 +583,6 @@ void Window::OnPaint(HWND hwnd )
             hwnd, D2D1::SizeU(rc.right, rc.bottom)), &m_target);
         assert(SUCCEEDED(hr));
 
-        StyleManager::Instance()->RecreateResource(m_target);
         if (m_sprite)
         {
             m_sprite->HandleRecreateResouce(m_target);
@@ -821,6 +829,11 @@ void Window::OnBtnMaximizeClicked()
     else {
         ::ShowWindow(m_hwnd, SW_MAXIMIZE);
     }
+}
+
+ID2D1Bitmap *Window::GetAtlasBitmap()
+{
+    return m_atlas;
 }
 
 void Window::UpdateShadowFrame(bool bRedraw)
