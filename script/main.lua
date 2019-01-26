@@ -91,6 +91,10 @@ local label = Ltk.Label:new("Label:");
 --label1:SetTextColor(1, 1, 1);
 hbox1:AddLayoutItem(label, 40);
 
+local check = Ltk.CheckBox:new();
+check:SetText("选项1");
+hbox1:AddLayoutItem(check, 100);
+
 ---@type Ltk.Button
 local btn = Ltk.Button:new();
 hbox1:AddLayoutItem(btn, 100, 0.3);

@@ -19,6 +19,7 @@ size
 #include "ImageSprite.h"
 #include "ScrollBar.h"
 #include "LuaVector.h"
+#include "CheckBox.h"
 
 static ID2D1Factory *g_d2d_factory = NULL;
 static IWICImagingFactory  *g_wic_factory = NULL;
@@ -407,6 +408,7 @@ int luaopen_ltk(lua_State *L)
     LuaRegisterClass<TextureSprite>(L, "TextureSprite");
     LuaRegisterClass<ImageSprite>(L, "ImageSprite");
     LuaRegisterClass<ScrollBar>(L, "ScrollBar");
+    LuaRegisterClass<CheckBox>(L, "CheckBox");
 
     LuaRegisterClass<LuaVector<unsigned char>>(L, LuaVectorScriptName<unsigned char>());
     LuaRegisterClass<LuaVector<unsigned short>>(L, LuaVectorScriptName<unsigned short>());

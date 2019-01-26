@@ -117,7 +117,7 @@ public:
             m_ptr->Release();
         }
         m_ptr = ptr;
-        m_ptr->AddRef();
+        //m_ptr->AddRef();
     }
 
 private:
