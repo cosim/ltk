@@ -77,6 +77,10 @@ void Button::Update()
             this->EndAnimation();
         }
     }
+    else
+    {
+        this->EndAnimation();
+    }
 }
 
 bool Button::OnEvent(Event *ev)

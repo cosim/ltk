@@ -444,6 +444,7 @@ LRESULT CALLBACK Window::WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM 
                 thiz->m_setAnimation.clear();
                 ::ReleaseCapture();
                 ::KillTimer(hwnd, TIMER_ANIMATION);
+                LTK_LOG("WM_SIZE KillTimer");
             }
         } while (0);
 		return 0;
@@ -493,6 +494,7 @@ LRESULT CALLBACK Window::WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM 
             ev.id = eKillFocus;
             thiz->m_spFocus->OnEvent(&ev);
         }
+        LTK_LOG("WM_KILLFOCUS KillTimer");
         KillTimer(hwnd, TIMER_ANIMATION);
         thiz->m_setAnimation.clear();
         ::ReleaseCapture();

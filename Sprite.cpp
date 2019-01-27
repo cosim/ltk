@@ -601,14 +601,17 @@ void Sprite::HandleRecreateResouce(ID2D1RenderTarget *target)
 
 void Sprite::BeginAnimation()
 {
+    //LTK_LOG("BeginAnimation");
     Window *wnd = GetWindow();
     wnd->BeginAnimation(this);
 }
 
 void Sprite::EndAnimation()
 {
-    if (m_window) {
-        m_window->EndAnimation(this);
+    //LTK_LOG("EndAnimation");
+    Window *wnd = GetWindow();
+    if (wnd) {
+        wnd->EndAnimation(this);
     }
 }
 
