@@ -38,7 +38,8 @@ public:
 
 	static void RegisterWndClass();
 
-	static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
+    LRESULT WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
+    static LRESULT CALLBACK WndProcStatic(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 
 	void OnPaint( HWND hwnd );
 

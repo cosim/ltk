@@ -197,7 +197,7 @@ void Window::RegisterWndClass()
 {
 	WNDCLASS wc;
 	wc.style         = CS_VREDRAW | CS_HREDRAW | CS_DBLCLKS;
-	wc.lpfnWndProc   = WndProc;
+	wc.lpfnWndProc   = WndProcStatic;
 	wc.cbClsExtra    = 0;
 	wc.cbWndExtra    = 0;
 	wc.hInstance     = HINST_THISCOMPONENT;
@@ -342,10 +342,174 @@ LRESULT Window::HandleNcHitTest(const POINT &pt)
     return HTCLIENT;
 }
 
-LRESULT CALLBACK Window::WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
+LRESULT Window::WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
 {
-	Window *thiz;
     lua_State *L = GetGlobalLuaState();
+    POINT pt;
+    switch (message)
+    {
+    case WM_PAINT:
+        OnPaint(hwnd);
+        break;
+    case WM_NCHITTEST:
+        pt.x = (short)LOWORD(lparam);
+        pt.y = (short)HIWORD(lparam);
+        ::ScreenToClient(hwnd, &pt);
+        return HandleNcHitTest(pt);
+    case WM_NCCALCSIZE:
+        if (wparam) {
+            return 0;
+        }
+        break;
+    case WM_MOUSEMOVE:
+    case WM_LBUTTONDOWN:
+    case WM_LBUTTONUP:
+    case WM_RBUTTONUP:
+    case WM_LBUTTONDBLCLK:
+    case WM_MOUSEWHEEL:
+        HandleMouseMessage(message, wparam, lparam);
+        break;
+    case WM_ERASEBKGND:
+        return TRUE;
+    case WM_TIMER:
+        if (wparam == TIMER_ANIMATION)
+        {
+            static int cnt = 0;
+            cnt++;
+            if (cnt % 100 == 0){
+                LTK_LOG("TIMER_ANIMATION %d", cnt);
+            }
+            ::InvalidateRect(hwnd, NULL, FALSE);
+        }
+        return 0;
+    case WM_SIZE:
+        do
+        {
+            UINT cx = LOWORD(lparam);
+            UINT cy = HIWORD(lparam);
+
+            if (m_target)
+            {
+                m_target->Resize(D2D1::SizeU(cx, cy));
+            }
+            OnSize((float)cx, (float)cy, (DWORD)wparam);
+            UpdateShadowFrame(true);
+
+            //LTK_LOG("WM_SIZE %d", wparam);
+            if (wparam == SIZE_MAXIMIZED) {
+                m_sprite->SetMargin(5.0f);
+                m_sprite->DoLayout();
+            }
+            else if (wparam == SIZE_RESTORED){
+                m_sprite->SetMargin(0.0f);
+                m_sprite->DoLayout();
+            }
+            else if (wparam == SIZE_MINIMIZED) {
+                m_setAnimation.clear();
+                ::ReleaseCapture();
+                ::KillTimer(hwnd, TIMER_ANIMATION);
+                LTK_LOG("WM_SIZE KillTimer");
+            }
+        } while (0);
+        return 0;
+    case WM_MOVE:
+        UpdateShadowFrame(false);
+        break;
+    case WM_ACTIVATE:
+        if (LOWORD(wparam)) {
+            UpdateShadowFrame(false);
+        }
+        break;
+        // TODO hide shadow when maximized or hide main window.
+    case WM_MOUSELEAVE:
+        HandleMouseLeave();
+        break;
+    case WM_KEYDOWN:
+    case WM_KEYUP:
+    case WM_CHAR:
+        if (m_spFocus)
+        {
+            m_spFocus->HandleKeyEvent(message, (DWORD)wparam, (DWORD)lparam);
+        }
+        break;
+    case WM_IME_SETCONTEXT:
+    case WM_IME_STARTCOMPOSITION:
+    case WM_IME_COMPOSITION:
+    case WM_IME_ENDCOMPOSITION:
+    case WM_INPUTLANGCHANGE:
+        return OnImeEvent(message, wparam, lparam);
+    case WM_SETFOCUS:
+        //LOG("WM_SETFOCUS");
+        ::CreateCaret(hwnd, NULL, 1, m_caretHeight);
+        //::ShowCaret(hwnd);
+        if (m_spFocus)
+        {
+            Event ev;
+            ev.id = eSetFocus;
+            m_spFocus->OnEvent(&ev);
+        }
+        return 0;
+    case WM_KILLFOCUS:
+        //LOG("WM_KILLFOCUS");
+        ::DestroyCaret();
+        if (m_spFocus)
+        {
+            Event ev;
+            ev.id = eKillFocus;
+            m_spFocus->OnEvent(&ev);
+        }
+        LTK_LOG("WM_KILLFOCUS KillTimer");
+        KillTimer(hwnd, TIMER_ANIMATION);
+        m_setAnimation.clear();
+        ::ReleaseCapture();
+        return 0;
+    case WM_SYSCOMMAND:
+        LTK_LOG("WM_SYSCOMMAND %08X %08X", wparam, lparam);
+        break;
+    case WM_WINDOWPOSCHANGING:
+        do
+        {
+            WINDOWPOS *wp = (WINDOWPOS *)lparam;
+            //LTK_LOG("WM_WINDOWPOSCHANGING %08X", wp->flags);
+        } while (0);
+        break;
+    case WM_CREATE:
+        // Force WM_NCCALCSIZE
+        SetWindowPos(hwnd, nullptr, 0, 0, 0, 0, SWP_NOZORDER | SWP_NOOWNERZORDER | SWP_NOMOVE | SWP_NOSIZE | SWP_FRAMECHANGED);
+        LTK_LOG("window created: 0x%08X", hwnd);
+        //do 
+        //{
+        //	RECT rc;
+        //	::GetClientRect(hwnd, &rc);
+        //	::PostMessage(hwnd, WM_SIZE, 0, MAKELPARAM(rc.right, rc.bottom)); // TODO 这里如果创建出来的是全屏的 第2个参数怎么办呢
+        //} while (0);
+        return 0;
+    case WM_CLOSE:
+        do
+        {
+            bool proceed = false;
+            OnClose(proceed);
+            if (proceed)
+            {
+                ::DestroyWindow(hwnd);
+            }
+        } while (0);
+        return 0;
+    case WM_DESTROY:
+        OnDestroy();
+        CallEventHandler(L, "OnDestroy", 0, 0);
+        m_shadowLeft.Destroy();
+        m_shadowTop.Destroy();
+        m_shadowRight.Destroy();
+        m_shadowBottom.Destroy();
+        return 0;
+    }
+    return ::DefWindowProc(hwnd, message, wparam, lparam);
+}
+
+LRESULT CALLBACK Window::WndProcStatic(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
+{
+	Window *thiz = nullptr;
 
 	if (WM_NCCREATE == message)
 	{
@@ -379,168 +543,11 @@ LRESULT CALLBACK Window::WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM 
         thiz = reinterpret_cast<Window *>
             (GetWindowLongPtr(hwnd, GWLP_USERDATA));
 	}
-	assert(NULL != thiz);
-
-    POINT pt;
-    switch (message)
-	{
-	case WM_PAINT:
-		thiz->OnPaint(hwnd);
-		break;
-    case WM_NCHITTEST:
-        pt.x = (short)LOWORD(lparam);
-        pt.y = (short)HIWORD(lparam);
-        ::ScreenToClient(hwnd, &pt);
-        return thiz->HandleNcHitTest(pt);
-    case WM_NCCALCSIZE:
-        if (wparam) {
-            return 0;
-        }
-        break;
-	case WM_MOUSEMOVE:
-	case WM_LBUTTONDOWN:
-	case WM_LBUTTONUP:
-	case WM_RBUTTONUP:
-	case WM_LBUTTONDBLCLK:
-	case WM_MOUSEWHEEL:
-		thiz->HandleMouseMessage(message, wparam, lparam);
-		break;
-	case WM_ERASEBKGND:
-		return TRUE;
-    case WM_TIMER:
-        if (wparam == TIMER_ANIMATION)
-        {
-            static int cnt = 0;
-            cnt++;
-            if (cnt % 100 == 0){
-                LTK_LOG("TIMER_ANIMATION %d", cnt);
-            }
-            ::InvalidateRect(hwnd, NULL, FALSE);
-        }
-        return 0;
-	case WM_SIZE:
-        do
-        {
-            UINT cx = LOWORD(lparam);
-            UINT cy = HIWORD(lparam);
-
-            if (thiz->m_target)
-            {
-                thiz->m_target->Resize(D2D1::SizeU(cx, cy));
-            }
-            thiz->OnSize((float)cx, (float)cy, (DWORD)wparam);
-            thiz->UpdateShadowFrame(true);
-
-            //LTK_LOG("WM_SIZE %d", wparam);
-            if (wparam == SIZE_MAXIMIZED) {
-                thiz->m_sprite->SetMargin(5.0f);
-                thiz->m_sprite->DoLayout();
-            }
-            else if (wparam == SIZE_RESTORED){
-                thiz->m_sprite->SetMargin(0.0f);
-                thiz->m_sprite->DoLayout();
-            }
-            else if (wparam == SIZE_MINIMIZED) {
-                thiz->m_setAnimation.clear();
-                ::ReleaseCapture();
-                ::KillTimer(hwnd, TIMER_ANIMATION);
-                LTK_LOG("WM_SIZE KillTimer");
-            }
-        } while (0);
-		return 0;
-    case WM_MOVE:
-        thiz->UpdateShadowFrame(false);
-        break;
-    case WM_ACTIVATE:
-        if (LOWORD(wparam)) {
-            thiz->UpdateShadowFrame(false);
-        }
-        break;
-        // TODO hide shadow when maximized or hide main window.
-    case WM_MOUSELEAVE:
-        thiz->HandleMouseLeave();
-        break;
-	case WM_KEYDOWN:
-	case WM_KEYUP:
-	case WM_CHAR:
-		if (thiz->m_spFocus)
-		{
-			thiz->m_spFocus->HandleKeyEvent(message, (DWORD)wparam, (DWORD)lparam);
-		}
-		break;
-	case WM_IME_SETCONTEXT:
-	case WM_IME_STARTCOMPOSITION:
-	case WM_IME_COMPOSITION:
-	case WM_IME_ENDCOMPOSITION:
-	case WM_INPUTLANGCHANGE:
-		return thiz->OnImeEvent(message, wparam, lparam);
-	case WM_SETFOCUS:
-		//LOG("WM_SETFOCUS");
-		::CreateCaret(hwnd, NULL, 1, thiz->m_caretHeight);
-		//::ShowCaret(hwnd);
-		if (thiz->m_spFocus)
-		{
-            Event ev;
-            ev.id = eSetFocus;
-            thiz->m_spFocus->OnEvent(&ev);
-		}
-		return 0;
-	case WM_KILLFOCUS:
-		//LOG("WM_KILLFOCUS");
-		::DestroyCaret();
-		if (thiz->m_spFocus)
-		{
-            Event ev;
-            ev.id = eKillFocus;
-            thiz->m_spFocus->OnEvent(&ev);
-        }
-        LTK_LOG("WM_KILLFOCUS KillTimer");
-        KillTimer(hwnd, TIMER_ANIMATION);
-        thiz->m_setAnimation.clear();
-        ::ReleaseCapture();
-		return 0;
-    case WM_SYSCOMMAND:
-        LTK_LOG("WM_SYSCOMMAND %08X %08X", wparam, lparam);
-        break;
-    case WM_WINDOWPOSCHANGING:
-        do 
-        {
-            WINDOWPOS *wp = (WINDOWPOS *)lparam;
-            //LTK_LOG("WM_WINDOWPOSCHANGING %08X", wp->flags);
-        } while (0);
-        break;
-	case WM_CREATE:
-        // Force WM_NCCALCSIZE
-        SetWindowPos(hwnd, nullptr, 0, 0, 0, 0, SWP_NOZORDER | SWP_NOOWNERZORDER | SWP_NOMOVE | SWP_NOSIZE | SWP_FRAMECHANGED);
-        LTK_LOG("window created: 0x%08X", hwnd);
-		//do 
-		//{
-		//	RECT rc;
-		//	::GetClientRect(hwnd, &rc);
-		//	::PostMessage(hwnd, WM_SIZE, 0, MAKELPARAM(rc.right, rc.bottom)); // TODO 这里如果创建出来的是全屏的 第2个参数怎么办呢
-		//} while (0);
-		return 0;
-	case WM_CLOSE:
-        do
-        {
-            bool proceed = false;
-            thiz->OnClose(proceed);
-            if (proceed)
-            {
-                ::DestroyWindow(hwnd);
-            }
-        } while (0);
-        return 0;
-	case WM_DESTROY:
-        thiz->OnDestroy();
-        thiz->CallEventHandler(L, "OnDestroy", 0, 0);
-        thiz->m_shadowLeft.Destroy();
-        thiz->m_shadowTop.Destroy();
-        thiz->m_shadowRight.Destroy();
-        thiz->m_shadowBottom.Destroy();
-		return 0;
+	if (!thiz) {
+        LTK_LOG("WndProc thiz is NULL, message: %d", message);
+        return ::DefWindowProc(hwnd, message, wparam, lparam);
 	}
-    return ::DefWindowProc(hwnd, message, wparam, lparam);
+    return thiz->WndProc(hwnd, message, wparam, lparam);
 }
 
 void Window::DrawNonClient()
