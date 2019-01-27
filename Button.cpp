@@ -59,7 +59,7 @@ bool Button::OnPaint(PaintEvent *ev)
 void Button::Update()
 {
     DWORD timeDiff = ::GetTickCount() - m_lastTick;
-    //LOG("timeDiff: " << timeDiff);
+    //LTK_LOG("timeDiff: %d", timeDiff);
     m_lastTick = ::GetTickCount();
     if (m_state == stNormal2Hover)
     {

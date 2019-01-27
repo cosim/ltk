@@ -593,7 +593,7 @@ void Window::OnPaint(HWND hwnd )
     m_target->BeginDraw();
     m_target->SetTransform(D2D1::Matrix3x2F::Identity());
     //TranslateTransform(m_target, 0.5f, 0.5f);
-    m_target->Clear(StyleManager::Instance()->GetColor(StyleManager::clrBackground1));
+    m_target->Clear(StyleManager::Instance()->GetColor(StyleManager::clrBackground));
     m_target->SetAntialiasMode(D2D1_ANTIALIAS_MODE_ALIASED);
     this->DrawNonClient();
 
@@ -794,6 +794,7 @@ void Window::EndAnimation(Sprite *sp)
 {
     if (m_setAnimation.size() == 0)
     {
+        ::KillTimer(m_hwnd, TIMER_ANIMATION);
         return;
     }
     auto iter = m_setAnimation.find(sp);

@@ -36,8 +36,7 @@ LtkApi.Trace("Hi EmmyLua!");
 
 -- Dark Scheme
 --[[Ltk.StyleManager:SetColorScheme({
-	"#2D2D30", -- clrBackground1
-	"#2D2D30", -- clrBackground2
+	"#2D2D30", -- clrBackground
 	"#2D2D30", -- clrNormal
 	"#3E3E40", -- clrHover
 	"#F1F1F1", -- clrText
@@ -48,8 +47,7 @@ LtkApi.Trace("Hi EmmyLua!");
 
 -- Light Scheme
 Ltk.StyleManager:SetColorScheme({
-	"#EEEEF2", -- clrBackground1
-	"#EEEEF2", -- clrBackground2
+	"#EEEEF2", -- clrBackground
 	"#CCCEDB", -- clrNormal
 	"#C9DEF5", -- clrHover
 	"#1E1E1E", -- clrText
@@ -87,7 +85,7 @@ vbox:AddLayoutItem(hbox1, 50);
 hbox1:AddSpaceItem(0, 1);
 
 ---@type Ltk.Label
-local label = Ltk.Label:new("Label:");
+local label = Ltk.Label:new("单选框:");
 --label1:SetTextColor(1, 1, 1);
 hbox1:AddLayoutItem(label, 40);
 
