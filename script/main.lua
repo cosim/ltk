@@ -82,7 +82,11 @@ Ltk.StyleManager:RegisterNinePathStyle("default_button", {
 local DemoFrame = {}
 
 function DemoFrame:OnEvent(sender, event, ...)
-	print("OnEvent: ", event, " sender: ", sender);
+	local name = '<unknown>'
+	if sender.GetName then
+		name = sender:GetName();
+	end
+	print("OnEvent: ", event, " sender: ", sender, " name: ", name);
 	if event == 'OnClicked' then
 		DemoFrame._label:SetTextColor(1, 0, 0)
 	elseif event == 'OnDestroy' then
@@ -164,6 +168,7 @@ vbox:AddLayoutItem(hbox2, 30, 0.4);
 
 btn = Ltk.Button:new();
 btn:SetText("Label Color Test");
+btn:SetName("SetLabelColorBtn");
 btn:AddEventListener(DemoFrame);
 hbox2:AddLayoutItem(btn, 100, 1);
 

@@ -112,17 +112,23 @@ public:
 
     virtual void RecreateResouce(ID2D1RenderTarget *target){}
 
+    void SetName(const char *name);
+    const char *GetName();
+
 #ifndef LTK_DISABLE_LUA
     static int LuaConstructor(lua_State *L);
     static int AddChild(lua_State *L);
     static int SetRect(lua_State *L);
     static int GetRect(lua_State *L);
-
+    static int SetName(lua_State *L);
+    static int GetName(lua_State *L);
 
     BEGIN_LUA_METHOD_MAP(Sprite)
         LUA_METHOD_ENTRY(AddChild)
         LUA_METHOD_ENTRY(SetRect)
         LUA_METHOD_ENTRY(GetRect)
+        LUA_METHOD_ENTRY(SetName)
+        LUA_METHOD_ENTRY(GetName)
     END_LUA_METHOD_MAP()
 
 #endif // LTK_DISABLE_LUA
@@ -142,6 +148,8 @@ private:
 	Sprite *m_firstChild;  // owner
 	Sprite *m_lastChild;
 	Sprite *m_parent;
+
+    const char *m_name = nullptr;
 
 	DISALLOW_COPY_AND_ASSIGN(Sprite);
 };
