@@ -6,6 +6,7 @@
 #include "stdafx.h"
 #include "Common.h"
 #include "RefCounted.h"
+#include "Container.h"
 
 namespace ltk {
 
@@ -38,6 +39,7 @@ private:
 
 	//int m_refEventTable;
 	int m_refUserData;
+    SinglyLinkedList<int> m_listListener;
 };
 
 #define BEGIN_LUA_METHOD_MAP(x)  static void RegisterMethods(lua_State *L, int metatable) {

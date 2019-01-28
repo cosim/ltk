@@ -1,4 +1,3 @@
-size
 /*
 ** Copyright (C) 2015-2016 Chen Shi. See Copyright Notice in ltk.h
 */
@@ -332,8 +331,8 @@ static void size_test()
     LTK_LOG("RefCounted: %d",sizeof(RefCounted));
     std::forward_list<int> slist;
     LTK_LOG("forward_list: %d", sizeof(slist));
-    SinglyLinkedList<int> slist2;
-
+    std::list<int> dlist;
+    LTK_LOG("std::list: %d", sizeof(dlist));
 }
 
 static void log_thread_test()

@@ -192,8 +192,6 @@
     <ClCompile Include="ScrollBar.cpp" />
     <ClCompile Include="Serializer.cpp" />
     <ClCompile Include="ShadowFrame.cpp" />
-    <ClCompile Include="Slide.cpp" />
-    <ClCompile Include="SpriteEx.cpp" />
     <ClCompile Include="StyleManager.cpp" />
     <ClCompile Include="Window.cpp" />
     <ClCompile Include="ImeInput.cpp" />
@@ -212,6 +210,7 @@
     <ClInclude Include="Button.h" />
     <ClInclude Include="CheckBox.h" />
     <ClInclude Include="Common.h" />
+    <ClInclude Include="Container.h" />
     <ClInclude Include="Delegate.h" />
     <ClInclude Include="Event.h" />
     <ClInclude Include="ImageSprite.h" />
@@ -225,8 +224,6 @@
     <ClInclude Include="ScrollBar.h" />
     <ClInclude Include="Serializer.h" />
     <ClInclude Include="ShadowFrame.h" />
-    <ClInclude Include="Slide.h" />
-    <ClInclude Include="SpriteEx.h" />
     <ClInclude Include="StyleManager.h" />
     <ClInclude Include="Window.h" />
     <ClInclude Include="ImeInput.h" />

@@ -39,12 +39,6 @@
     <ClCompile Include="ltk.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Slide.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SpriteEx.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="LuaObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -113,12 +107,6 @@
     <ClInclude Include="ltk.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Slide.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SpriteEx.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="RefCounted.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -159,6 +147,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CheckBox.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Container.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
