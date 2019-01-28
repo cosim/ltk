@@ -56,6 +56,29 @@ Ltk.StyleManager:SetColorScheme({
 	"#EEEEF2", -- clrCaption
 })
 
+Ltk.StyleManager:RegisterNinePathStyle("default_button", {
+	normal = {
+		atlas = {x = 0, y = 0, w = 26, h = 70},
+		margin = {left = 9, top = 9, right = 10, bottom = 12},
+		scale = 1.0,
+	},
+	hover = {
+		atlas = {x = 34, y = 0, w = 26, h = 70},
+		margin = {left = 9, top = 9, right = 10, bottom = 12},
+		scale = 1.0,
+	},
+	pressed = {
+		atlas = {x = 68, y = 0, w = 26, h = 70},
+		margin = {left = 9, top = 9, right = 10, bottom = 12},
+		scale = 1.0,
+	},
+	disable = {
+		atlas = {x = 102, y = 0, w = 26, h = 70},
+		margin = {left = 9, top = 9, right = 10, bottom = 12},
+		scale = 1.0,
+	},
+})
+
 ---@type Ltk.Window
 local wnd = Ltk.Window:new();
 

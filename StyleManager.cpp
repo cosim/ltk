@@ -1,8 +1,11 @@
 #include "stdafx.h"
 #include "StyleManager.h"
 #include "ltk.h"
+#include "Window.h"
 
 namespace ltk {
+
+StyleManager * StyleManager::m_instance = nullptr;
 
 StyleManager::StyleManager()
 {
@@ -14,6 +17,9 @@ StyleManager::StyleManager()
 
 StyleManager::~StyleManager()
 {
+    for (auto bg : m_mapBackgroundStyle) {
+        bg.second->Release();
+    }
 }
 
 StyleManager * StyleManager::Instance()
@@ -54,8 +60,92 @@ D2D1_COLOR_F StyleManager::ColorFromString(const char *psz)
     return clr;
 }
 
+ltk::AbstractBackground * StyleManager::GetBackgroundStyle(const char *name) const
+{
+    std::string strName(name);
+    auto iter = m_mapBackgroundStyle.find(strName);
+    if (iter != m_mapBackgroundStyle.end()) {
+        iter->second->AddRef();
+        return iter->second;
+    }
+    else {
+        return nullptr;
+    }
+}
+
+bool StyleManager::AddBackgroundStyle(const char *name, AbstractBackground *bg)
+{
+    std::string strName(name);
+    auto iter = m_mapBackgroundStyle.find(strName);
+    if (iter == m_mapBackgroundStyle.end()) {
+        m_mapBackgroundStyle[strName] = bg;
+        bg->AddRef();
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
+TextureInfo StyleManager::CheckTextureInfo(lua_State *L, int idx)
+{
+    TextureInfo info;
+
+    if (!lua_istable(L, idx)) goto Error;
+    lua_getfield(L, -1, "atlas"); // [...][atlas]
+    if (!lua_istable(L, -1)) goto Error;
+    info.atlas = LuaCheckRectF(L, -1);
+    lua_pop(L, 1); // [...]
+
+    lua_getfield(L, -1, "margin"); // [...][margin]
+    if (!lua_istable(L, -1)) goto Error;
+    info.margin = LuaCheckMargin(L, -1);
+    lua_pop(L, 1); // [...]
+
+    LuaGetField(L, idx, "scale", info.scale);
+    return info;
+Error:
+    luaL_error(L, "TextureInfo format error.");
+    return info;
+}
+
+int StyleManager::RegisterNinePathStyle(lua_State *L)
+{
+    //LuaStackCheck chk(L);
+    StyleManager *thiz = Instance();
+    auto name = luaL_checkstring(L, 2);
+    luaL_checktype(L, 3, LUA_TTABLE);
+
+    lua_getfield(L, 3, "normal"); // [][][style][normal]
+    TextureInfo normal = CheckTextureInfo(L, -1);
+    lua_pop(L, 1);
+
+    lua_getfield(L, 3, "hover"); // [][][style][hover]
+    TextureInfo hover = CheckTextureInfo(L, -1);
+    lua_pop(L, 1);
+
+    lua_getfield(L, 3, "pressed"); // [][][style][pressed]
+    TextureInfo pressed = CheckTextureInfo(L, -1);
+    lua_pop(L, 1);
+
+    lua_getfield(L, 3, "disable"); // [][][style][disable]
+    TextureInfo disable = CheckTextureInfo(L, -1);
+    lua_pop(L, 1);
+
+    auto bg = new NinePatchBackground();
+    bg->texNormal = normal;
+    bg->texHover = hover;
+    bg->texPressed = pressed;
+    bg->texDisable = disable;
+    thiz->AddBackgroundStyle(name, bg);
+    bg->Release();
+
+    return 0;
+}
+
 int StyleManager::LuaConstructor(lua_State *L)
 {
+    luaL_error(L, "%s is singleton.", StyleManager::TypeName().c_str());
     return 0;
 }
 
@@ -81,6 +171,10 @@ int StyleManager::SetColorScheme(lua_State *L)
     return 0;
 }
 
-StyleManager * StyleManager::m_instance = nullptr;
+void NinePatchBackground::Draw(Window *wnd, ID2D1RenderTarget *targe, const RectF &rc, State state, float blend)
+{
+    auto bmp = wnd->GetAtlasBitmap();
+    DrawTextureNineInOne(targe, bmp, texNormal.atlas, texNormal.margin, rc, blend, texNormal.scale);
+}
 
 }

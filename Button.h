@@ -2,6 +2,7 @@
 
 #include "Delegate.h"
 #include "BoxLayout.h"
+#include "StyleManager.h"
 
 namespace ltk {
 
@@ -11,21 +12,16 @@ class IconSprite;
 class Button : public BoxLayout
 {
 public:
-    RTTI_DECLARATIONS(Button, BoxLayout)
-
-    enum Mode {
-        Text, Icon, IconLeft, IconTop
-    };
-
+    RTTI_DECLARATIONS(Button, BoxLayout);
     Button();
     virtual ~Button();
 
+    typedef AbstractBackground::State State;
+
+    void SetBackgroundStyle(const char *style);
     void SetText(LPCWSTR text);
     Label *GetLabel();
     void EnableCapture(bool);
-
-    void SetNormalColor(D2D1_COLOR_F clr);
-    void SetHoverColor(D2D1_COLOR_F clr);
 
     void SetIcon(const RectF &rc, float scale, UINT idx = 0);
 
@@ -39,7 +35,6 @@ public:
     virtual bool OnMouseLeave(MouseEvent *ev) override;
     virtual bool OnLBtnDown(MouseEvent *ev) override;
     virtual bool OnLBtnUp(MouseEvent *ev) override;
-    //virtual bool OnSize(SizeEvent *ev) override;
 
     virtual void RecreateResouce(ID2D1RenderTarget *target) override;
 
@@ -61,27 +56,20 @@ public:
 #endif // LTK_DISABLE_LUA
 
 private:
-    D2D1_COLOR_F GetColor();
-
     bool m_bMouseIn = false;
     bool m_bMousePress = false;
-    enum AniState { stStoped, stNormal2Hover, stHover2Normal };
-    AniState m_state = stStoped;
-    int m_aniCounter = 0;
-    static const int AniDuration = 200;
-    DWORD m_lastTick = 0;
+    bool m_bCaptureMouse = true;
+    bool m_bDisable = false;
 
-    ID2D1SolidColorBrush *m_brush = nullptr;
-    bool m_bBorder = false;
-    D2D1_COLOR_F m_colorBorder;
-    D2D1_COLOR_F m_colorNormal;
-    D2D1_COLOR_F m_colorHover;
-    D2D1_COLOR_F m_colorPressed;
+    static const int AniDuration = 200;
+
+    State m_state = State::Normal;
+    int m_aniCounter = 0;
+    DWORD m_lastTick = 0;
 
     Label *m_label = nullptr;
     IconSprite *m_image = nullptr;
-
-    bool m_bCaptureMouse = true;
+    AbstractBackground *m_background = nullptr;
 };
 
 } // namespace

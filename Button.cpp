@@ -9,49 +9,32 @@ namespace ltk {
 
 Button::Button() : BoxLayout(BoxLayout::Horizontal)
 {
-    m_colorBorder = StyleManager::Instance()->GetColor(StyleManager::clrBorder);
-    m_colorNormal = StyleManager::Instance()->GetColor(StyleManager::clrNormal);
-    m_colorHover = StyleManager::Instance()->GetColor(StyleManager::clrHover);
-    m_colorPressed = StyleManager::Instance()->GetColor(StyleManager::clrHighlight);
+    m_background = StyleManager::Instance()->GetBackgroundStyle("default_button");
 }
 
 Button::~Button()
 {
-    if (m_label) m_label->Release();
-    m_label = INVALID_POINTER(Label);
-
-    if (m_brush) m_brush->Release();
-    m_brush = INVALID_POINTER(ID2D1SolidColorBrush);
-
-    if (m_image) m_image->Release();
-    m_image = INVALID_POINTER(IconSprite);
+    RELEASE_AND_INVALIDATE(Label, m_label);
+    RELEASE_AND_INVALIDATE(IconSprite, m_image);
+    RELEASE_AND_INVALIDATE(AbstractBackground, m_background);
 
     this->EndAnimation();
+}
+
+void Button::SetBackgroundStyle(const char *style)
+{
+    SAFE_RELEASE(m_background);
+    m_background = StyleManager::Instance()->GetBackgroundStyle(style);
 }
 
 bool Button::OnPaint(PaintEvent *ev)
 {
     Update();
 
-    m_brush->SetColor(this->GetColor());
-
-    if (m_bMousePress) {
-        m_brush->SetColor(m_colorPressed);
-    }
-    auto rc = this->GetRect();
-    rc.X = 0;
-    rc.Y = 0;
-    //rc.Height -= 1; // TODO FIXME
-    //rc.Width -= 1;
-    auto rc2 = D2D1RectF(rc);
-    rc2.right++;
-    rc2.bottom++;
-    //auto rrc = D2D1::RoundedRect(rc2, 4, 4);
-    ev->target->FillRectangle(rc2, m_brush);
-
-    if (m_bMouseIn) {
-        m_brush->SetColor(m_colorBorder);
-        DrawRectSnapped(ev->target, rc, m_brush);
+    Window *wnd = this->GetWindow();
+    auto rc = this->GetClientRect();
+    if (m_background) {
+        m_background->Draw(wnd, ev->target, rc, m_state, (float)m_aniCounter / AniDuration);
     }
     return true;
 }
@@ -61,7 +44,7 @@ void Button::Update()
     DWORD timeDiff = ::GetTickCount() - m_lastTick;
     //LTK_LOG("timeDiff: %d", timeDiff);
     m_lastTick = ::GetTickCount();
-    if (m_state == stNormal2Hover)
+    if (m_state == State::Normal2Hover)
     {
         m_aniCounter += timeDiff;
         if (m_aniCounter >= AniDuration)
@@ -69,7 +52,7 @@ void Button::Update()
             this->EndAnimation();
         }
     }
-    else if (m_state == stHover2Normal)
+    else if (m_state == State::Hover2Normal)
     {
         m_aniCounter -= timeDiff;
         if (m_aniCounter <= 0)
@@ -102,7 +85,7 @@ bool Button::OnMouseEnter(MouseEvent *ev)
     m_bMouseIn = true;
     this->BeginAnimation();
     this->TrackMouseLeave();
-    m_state = stNormal2Hover;
+    m_state = State::Normal2Hover;
     m_lastTick = ::GetTickCount();
     return true;
 }
@@ -111,7 +94,7 @@ bool Button::OnMouseLeave(MouseEvent *ev)
 {
     m_bMouseIn = false;
     this->BeginAnimation();
-    m_state = stHover2Normal;
+    m_state = State::Hover2Normal;
     m_lastTick = ::GetTickCount();
     return true;
 }
@@ -146,11 +129,6 @@ bool Button::OnLBtnUp(MouseEvent *ev)
 
 void Button::RecreateResouce(ID2D1RenderTarget *target)
 {
-    HRESULT hr;
-    SAFE_RELEASE(m_brush);
-    hr = target->CreateSolidColorBrush(
-        D2D1::ColorF(D2D1::ColorF::White), &m_brush);
-    assert(SUCCEEDED(hr));
 }
 
 void Button::SetText(LPCWSTR text)
@@ -162,27 +140,6 @@ void Button::SetText(LPCWSTR text)
     m_label->SetText(text);
 }
 
-D2D1_COLOR_F Button::GetColor()
-{
-    if (m_aniCounter > AniDuration)
-        m_aniCounter = AniDuration;
-    if (m_aniCounter < 0)
-        m_aniCounter = 0;
-
-    float ratio = (float)m_aniCounter / (float)AniDuration;
-    float dRed = m_colorHover.r - m_colorNormal.r;
-    float dGreen = m_colorHover.g - m_colorNormal.g;
-    float dBlue = m_colorHover.b - m_colorNormal.b;
-
-    D2D1_COLOR_F result;
-    result.a = 1.0f;
-    result.r = dRed * ratio + m_colorNormal.r;
-    result.g = dGreen * ratio + m_colorNormal.g;
-    result.b = dBlue * ratio + m_colorNormal.b;
-
-    return result;
-}
-
 Label *Button::GetLabel()
 {
     return m_label;
@@ -191,18 +148,6 @@ Label *Button::GetLabel()
 void Button::EnableCapture(bool v)
 {
     m_bCaptureMouse = v;
-}
-
-void Button::SetNormalColor(D2D1_COLOR_F clr)
-{
-    m_colorNormal = clr;
-    this->Invalidate();
-}
-
-void Button::SetHoverColor(D2D1_COLOR_F clr)
-{
-    m_colorHover = clr;
-    this->Invalidate();
 }
 
 void Button::SetIcon(const RectF &rc, float scale, UINT idx)

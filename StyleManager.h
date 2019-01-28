@@ -5,7 +5,7 @@
 namespace ltk {
 
 class Window;
-class AbstractBackgroundPainter;
+class AbstractBackground;
 
 class StyleManager : public LuaObject
 {
@@ -28,12 +28,19 @@ public:
 
     static D2D1_COLOR_F ColorFromString(const char *psz);
 
+    AbstractBackground *GetBackgroundStyle(const char *name) const;
+    bool AddBackgroundStyle(const char *name, AbstractBackground *); // bg RefCount +1
+
     static int LuaConstructor(lua_State *L);
     static int SetColorScheme(lua_State *L);
+    static int RegisterNinePathStyle(lua_State *L);
 
     BEGIN_LUA_METHOD_MAP(StyleManager)
         LUA_METHOD_ENTRY(SetColorScheme)
+        LUA_METHOD_ENTRY(RegisterNinePathStyle)
     END_LUA_METHOD_MAP()
+
+    static TextureInfo CheckTextureInfo(lua_State *L, int idx);
 
 private:
     StyleManager();
@@ -41,14 +48,28 @@ private:
     static StyleManager *m_instance;
 
     std::vector<D2D1_COLOR_F> m_colors;
-    std::unordered_map<std::string, AbstractBackgroundPainter *> m_mapBackgroundStyle;
+    std::unordered_map<std::string, AbstractBackground *> m_mapBackgroundStyle;
 };
 
-class AbstractBackgroundPainter : public LuaObject
+class AbstractBackground : public LuaObject
 {
 public:
-    virtual void Paint(Window *wnd, ID2D1RenderTarget *targe, const RectF &rc, UINT state, float blend) = 0;
+    enum State {Normal, Normal2Hover, Hover2Normal, Pressed, Disable};
+    virtual void Draw(Window *wnd, ID2D1RenderTarget *targe, const RectF &rc, State state, float blend) = 0;
 };
+
+class NinePatchBackground : public AbstractBackground
+{
+
+public:
+    virtual void Draw(Window *wnd, ID2D1RenderTarget *targe, const RectF &rc, State state, float blend) override;
+
+    TextureInfo texNormal;
+    TextureInfo texHover;
+    TextureInfo texPressed;
+    TextureInfo texDisable;
+};
+
 
 struct FourStateColor {
     D2D1_COLOR_F clrNormal;
@@ -57,10 +78,10 @@ struct FourStateColor {
     D2D1_COLOR_F clrDisable;
 };
 
-class VectorBackgroundPainter : public AbstractBackgroundPainter
+class VectorBackground : public AbstractBackground
 {
 public:
-    virtual void Paint(Window *wnd, ID2D1RenderTarget *targe, const RectF &rc, UINT state, float blend) override;
+    virtual void Draw(Window *wnd, ID2D1RenderTarget *targe, const RectF &rc, State state, float blend) override;
 
     FourStateColor borderColors;
     FourStateColor backgroundColors;
@@ -68,18 +89,5 @@ public:
     bool hasBorder = true;
     float roundCorner = 0.0f;
 };
-
-class BitmapBackgroundPainter : public AbstractBackgroundPainter
-{
-
-public:
-    virtual void Paint(Window *wnd, ID2D1RenderTarget *targe, const RectF &rc, UINT state, float blend) override;
-
-    TextureInfo texNormal;
-    TextureInfo texHover;
-    TextureInfo texPressed;
-    TextureInfo texDisable;
-};
-
 
 }

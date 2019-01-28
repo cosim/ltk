@@ -13,7 +13,7 @@ void LuaPushWString(lua_State *L, LPCTSTR psz, int len  = -1);
 
 bool LuaPCall(lua_State *L, int nargs, int nresults);
 void LuaShowStack(lua_State *L);
-void LuaGetField(lua_State *L, int idx, const char *name, double &value);
+void LuaGetField(lua_State *L, int idx, const char *name, float &value);
 ltk::Margin LuaCheckMargin(lua_State *L, int idx);
 D2D1_COLOR_F LuaCheckColor(lua_State *L, int index);
 RectF LuaCheckRectF(lua_State *L, int index);
