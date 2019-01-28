@@ -22,7 +22,7 @@ public:
 
 	static int GetEventHandler(lua_State *L);
 
-    static int SetEventHandler(lua_State *L);
+    static int AddEventListener(lua_State *L);
 
     static int ReleaseReference(lua_State *L);
 
@@ -32,10 +32,11 @@ public:
 	// nargs 参数个数 不包括this
 	//void CallLuaMethod(lua_State *L, const char *method, int nargs, int nresult);
 
-	bool CallEventHandler(lua_State *L, const char *name, int nargs, int nresult);
+    bool LuaDispatchEvent(lua_State *L, const char *name, int nargs, int nresult);
 	
 private:
-	static void GetWeakTable( lua_State *L );
+    void CallOnEvent(lua_State *L, int listener, const char *name, int nargs);
+    static void GetWeakTable(lua_State *L);
 
 	//int m_refEventTable;
 	int m_refUserData;
@@ -76,8 +77,8 @@ void LuaRegisterClass(lua_State *L, const char *className)
     lua_pushcfunction(L, T::GetEventHandler);
     lua_setfield(L, methods, "GetEventHandler");
 
-    lua_pushcfunction(L, T::SetEventHandler);
-    lua_setfield(L, methods, "SetEventHandler");
+    lua_pushcfunction(L, T::AddEventListener);
+    lua_setfield(L, methods, "AddEventListener");
 
     lua_pushcfunction(L, T::ReleaseReference);
     lua_setfield(L, methods, "Unref");
@@ -112,7 +113,7 @@ T* CheckLuaObject( lua_State *L, int idx)
                 return (T*)obj;
             }
             else{
-                luaL_error(L, "TypeError: #%d is not a %s", idx, T::TypeName().c_str());
+                luaL_error(L, "TypeError: #%d is not a %s", idx, obj->TypeNameInstance().c_str());
                 return nullptr;
             }
         }

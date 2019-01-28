@@ -164,7 +164,7 @@ bool ScrollBar::OnThumbDragging(float pos)
 {
     auto L = GetGlobalLuaState();
     lua_pushnumber(L, pos);
-    this->CallEventHandler(L, "OnThumbDragging", 1, 0);
+    this->LuaDispatchEvent(L, "OnThumbDragging", 1, 0);
     this->ThumbDragging.Invoke(pos);
     return false;
 }

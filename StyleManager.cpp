@@ -145,7 +145,7 @@ int StyleManager::RegisterNinePathStyle(lua_State *L)
 
 int StyleManager::LuaConstructor(lua_State *L)
 {
-    luaL_error(L, "%s is singleton.", StyleManager::TypeName().c_str());
+    luaL_error(L, "StyleManager is singleton.");
     return 0;
 }
 

@@ -13,6 +13,7 @@
     {
     public:
         virtual const size_t TypeIdInstance() const = 0;
+        virtual std::string TypeNameInstance() const = 0;
         
         virtual RTTI* QueryInterface(const size_t)
         {
@@ -28,10 +29,10 @@
             return false;
         }
 
-        virtual bool Is(const std::string& name) const
-        {
-            return false;
-        }
+        //virtual bool Is(const std::string& name) const
+        //{
+        //    return false;
+        //}
 
         template <typename T>
         T* As() 
@@ -57,7 +58,7 @@
 
 #define RTTI_DECLARATIONS(Type, ParentType)                            \
     public:                                                            \
-        static std::string TypeName() { return std::string(#Type); }   \
+        virtual std::string TypeNameInstance() const { return std::string(#Type); }   \
         virtual const size_t TypeIdInstance() const                    \
         { return Type::TypeIdClass(); }                                \
         static const size_t TypeIdClass()                              \
@@ -82,11 +83,11 @@
                 { return true; }                                       \
             else                                                       \
                 { return ParentType::Is(id); }                         \
-        }                                                              \
-        virtual bool Is(const std::string& name) const                 \
-        {                                                              \
-            if (name == TypeName())                                    \
-                { return true; }                                       \
-            else                                                       \
-                { return ParentType::Is(name); }                       \
         }                                                              
+/*        virtual bool Is(const std::string& name) const                 \
+            {                                                              \
+                if (name == TypeNameInstance())                                    \
+                    { return true; }                                       \
+                else                                                       \
+                    { return ParentType::Is(name); }                       \
+            }   */                                                           

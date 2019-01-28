@@ -12,7 +12,15 @@ private:
     };
 public:
     typedef void* Cookie;
-    ~SinglyLinkedList() {}
+
+    ~SinglyLinkedList() {
+        auto node = m_head;
+        while (node) {
+            auto next = node->next;
+            delete node;
+            node = next;
+        }
+    }
 
     // add item to the end of list, O(n).
     Cookie PushBack(const T& data)
@@ -55,9 +63,18 @@ public:
         return false;
     }
 
-    void ForEach(std::function<bool()> visitor)
+    bool IsEmpty()
     {
+        return m_head == nullptr;
+    }
 
+    void ForEach(std::function<bool(T)> visitor)
+    {
+        auto node = m_head;
+        while (node) {
+            if (!visitor(node->data)) break;
+            node = node->next;
+        }
     }
 
 private:
@@ -75,8 +92,6 @@ private:
         }
         return node;
     }
-
-
 
 private:
     Node *m_head = nullptr;

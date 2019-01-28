@@ -127,7 +127,7 @@ bool Button::OnLBtnUp(MouseEvent *ev)
     auto rc = this->GetClientRect();
     if (rc.Contains(Gdiplus::PointF(ev->x, ev->y))) {
         this->Clicked.Invoke();
-        this->CallEventHandler(GetGlobalLuaState(), "OnClick", 0, 0);
+        this->LuaDispatchEvent(GetGlobalLuaState(), "OnClick", 0, 0);
     }
     else {
         this->OnMouseLeave(ev);

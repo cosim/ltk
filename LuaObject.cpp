@@ -71,58 +71,60 @@ int LuaObject::GetEventHandler( lua_State *L )
 	return 1;
 }
 
-int LuaObject::SetEventHandler(lua_State *L)
+int LuaObject::AddEventListener(lua_State *L)
 {
 	LuaObject *thiz = CheckLuaObject<LuaObject>(L, 1);
 	luaL_checktype(L, 2, LUA_TTABLE); // thiz event
 	GetWeakTable(L); // thiz event weak
 	int ref_table = lua_gettop(L); 
-	if (LUA_NOREF != thiz->m_refUserData)
-	{
-		luaL_unref(L, ref_table, thiz->m_refUserData);
-	}
 	lua_pushvalue(L, 2); // thiz event weak event
-	thiz->m_refUserData = luaL_ref(L, ref_table); // thiz event weak
-	lua_pop(L, 1); // for the weak ref_table
-    lua_pushvalue(L, 2); // thiz event event
-    return 1;
+	int ref = luaL_ref(L, ref_table); // thiz event weak
+	lua_pop(L, 1); // thiz event
+    // TODO skip if has same table in the list
+    thiz->m_listListener.PushBack(ref);
+    return 0;
 }
 
-bool LuaObject::CallEventHandler( lua_State *L, const char *name, int nargs, int nresult )
+void LuaObject::CallOnEvent(lua_State *L, int listener, const char *name, int nargs)
 {
-	if (LUA_NOREF == m_refUserData)
-	{
-		goto failed;
-	}
-	GetWeakTable(L); // ref_table
-	lua_rawgeti(L, -1, m_refUserData);
-	int tblMessage = lua_gettop(L); // ref_table, tblMessage
-	lua_remove(L, -2); // for ref_table
-	if(!lua_istable(L, -1))
-	{
-		goto failed;
-	}
-	lua_getfield(L, -1, name);      // tblMessage, callback
-	if (lua_isfunction(L, -1))
-	{
-		lua_remove(L, -2);              // callback
-		lua_insert(L, lua_gettop(L) - nargs);
-		//lua_call(L, nargs, nresult);
-		LuaPCall(L, nargs, nresult);
-	}
-	else
-	{
-		lua_pop(L, 2); // pop nil, tblMessage
-		goto failed;
-	}
-	return true;
+    LuaStackCheck chk(L);
+    // [nargs...] [week]
+    lua_rawgeti(L, -1, listener); // [nargs...] [week] [listener]
+    if (!lua_istable(L, -1)) {
+        lua_pop(L, 1); // [nargs...] [week]
+        return; // maybe the listener was freed by GC
+    }
+    lua_getfield(L, -1, "OnEvent");  // [nargs...] [week] [listener] [OnEvent]
+    if (lua_isfunction(L, -1))
+    {
+        lua_pushvalue(L, -2); // [nargs...] [week] [listener] [OnEvent] [listener]
+        this->PushToLua(L, this->TypeNameInstance().c_str()); // [nargs...] [week] [listener] [OnEvent] [listener] [sender]
+        lua_pushstring(L, name); // [nargs...] [week] [listener] [OnEvent] [listener] [sender] [name]
+        for (int i = 0; i < nargs; i ++) {
+            lua_pushvalue(L, -6 - nargs + i);
+        } // [nargs...] [week] [listener] [OnEvent] [listener] [sender] [name] [nargs...]
+        LuaPCall(L, nargs + 3, 0); // [nargs...] [week] [listener]
+        lua_pop(L, 1); // [nargs...] [week]
+    }
+    else
+    {
+        lua_pop(L, 2); // [nargs...] [week]
+    }
+}
 
-failed:
-	while (nresult > 0)
-	{
-		lua_pushnil(L);
-		nresult --;
+bool LuaObject::LuaDispatchEvent( lua_State *L, const char *name, int nargs, int nresult )
+{
+    LuaStackCheck chk(L);
+    if (m_listListener.IsEmpty()) {
+        return false;
 	}
+    GetWeakTable(L); // [nargs...] [week]
+    m_listListener.ForEach([=](int ref){
+        CallOnEvent(L, ref, name, nargs);
+        return true;
+    });
+    lua_pop(L, nargs + 1);
+    chk.SetReturn(-nargs);
 	return false;
 }
 

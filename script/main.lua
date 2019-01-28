@@ -79,6 +79,17 @@ Ltk.StyleManager:RegisterNinePathStyle("default_button", {
 	},
 })
 
+local DemoFrame = {}
+
+function DemoFrame:OnEvent(sender, event, ...)
+	print("OnEvent: ", event, " sender: ", sender);
+	if event == 'OnClicked' then
+		DemoFrame._label:SetTextColor(1, 0, 0)
+	elseif event == 'OnDestroy' then
+		LtkApi.PostQuitMessage(0);
+	end
+end
+
 ---@type Ltk.Window
 local wnd = Ltk.Window:new();
 
@@ -108,9 +119,9 @@ vbox:AddLayoutItem(hbox1, 50);
 hbox1:AddSpaceItem(0, 1);
 
 ---@type Ltk.Label
-local label = Ltk.Label:new("单选框:");
+DemoFrame._label = Ltk.Label:new("单选框:");
 --label1:SetTextColor(1, 1, 1);
-hbox1:AddLayoutItem(label, 40);
+hbox1:AddLayoutItem(DemoFrame._label, 40);
 
 local group = Ltk.RadioGroup:new();
 
@@ -153,30 +164,27 @@ vbox:AddLayoutItem(hbox2, 30, 0.4);
 
 btn = Ltk.Button:new();
 btn:SetText("Label Color Test");
-g_btn_set_label_color = btn:SetEventHandler({
-	OnClick = function() label:SetTextColor(1, 0, 0) end,
-	Sprite = btn
-})
+btn:AddEventListener(DemoFrame);
 hbox2:AddLayoutItem(btn, 100, 1);
 
 btn = Ltk.Button:new();
 btn:SetText("System Uptime");
-g_btn_set_label_font_size = btn:SetEventHandler({
-	OnClick = function()
-		local tick = LtkApi.GetTickCount();
-		local second = tick / 1000;
-		local minute = second / 60;
-		second = second % 60;
-		local hour = minute / 60;
-		minute = minute % 60;
-		local day = hour / 24;
-		hour = hour % 24;
-		local floor = math.floor;
-		label:SetText(("System Uptime: %dd%02d:%02d:%02d"):format(
-				floor(day), floor(hour), floor(minute), floor(second)));
-	end,
-	Sprite = btn
-})
+--g_btn_set_label_font_size = btn:SetEventHandler({
+--	OnClick = function()
+--		local tick = LtkApi.GetTickCount();
+--		local second = tick / 1000;
+--		local minute = second / 60;
+--		second = second % 60;
+--		local hour = minute / 60;
+--		minute = minute % 60;
+--		local day = hour / 24;
+--		hour = hour % 24;
+--		local floor = math.floor;
+--		label:SetText(("System Uptime: %dd%02d:%02d:%02d"):format(
+--				floor(day), floor(hour), floor(minute), floor(second)));
+--	end,
+--	Sprite = btn
+--})
 hbox2:AddLayoutItem(btn, 100, 1);
 
 -----@type Ltk.TextureSprite
@@ -208,24 +216,24 @@ vsb:SetContentSize(1500);
 vsb:SetPosition(200);
 vsb:Update();
 hbox4:AddLayoutItem(vsb, 7, 0);
-g_vsb_event = vsb:SetEventHandler({
-	OnThumbDragging = function(pos)
-		local x,y,w,h = vsb:GetRect()
-		print("vsb pos:", pos, h);
-	end
-})
+--g_vsb_event = vsb:SetEventHandler({
+--	OnThumbDragging = function(pos)
+--		local x,y,w,h = vsb:GetRect()
+--		print("vsb pos:", pos, h);
+--	end
+--})
 
 local hsb = Ltk.ScrollBar:new('horizontal');
 hsb:SetContentSize(1500);
 hsb:SetPosition(200);
 hsb:Update();
 vbox:AddLayoutItem(hsb, 7, 0);
-g_hsb_event = hsb:SetEventHandler({
-	OnThumbDragging = function(pos)
-		local x,y,w,h = hsb:GetRect()
-		print("hsb pos:", pos, w);
-	end
-})
+--g_hsb_event = hsb:SetEventHandler({
+--	OnThumbDragging = function(pos)
+--		local x,y,w,h = hsb:GetRect()
+--		print("hsb pos:", pos, w);
+--	end
+--})
 
 ---@type Ltk.Button
 --[[local btn_status = Ltk.Button:new();
@@ -235,12 +243,13 @@ root:AddLayoutItem(btn_status, 20);]]
 root:SetSpacing(0);
 root:DoLayout();
 
-g_wnd_event = wnd:SetEventHandler({
-	OnDestroy = function()
-		print('OnDestroy');
-		LtkApi.PostQuitMessage(0);
-	end
-});
+wnd:AddEventListener(DemoFrame);
+--g_wnd_event = wnd:SetEventHandler({
+--	OnDestroy = function()
+--		print('OnDestroy');
+--		LtkApi.PostQuitMessage(0);
+--	end
+--});
 
 local pprint = require('pprint')
 

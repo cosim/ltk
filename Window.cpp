@@ -497,7 +497,7 @@ LRESULT Window::WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
         return 0;
     case WM_DESTROY:
         OnDestroy();
-        CallEventHandler(L, "OnDestroy", 0, 0);
+        LuaDispatchEvent(L, "OnDestroy", 0, 0);
         m_shadowLeft.Destroy();
         m_shadowTop.Destroy();
         m_shadowRight.Destroy();
