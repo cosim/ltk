@@ -34,7 +34,16 @@ bool Button::OnPaint(PaintEvent *ev)
     Window *wnd = this->GetWindow();
     auto rc = this->GetClientRect();
     if (m_background) {
-        m_background->Draw(wnd, ev->target, rc, m_state, (float)m_aniCounter / AniDuration);
+        float blend;
+        switch (m_state) {
+        case AbstractBackground::Normal2Hover:
+        case AbstractBackground::Hover2Normal:
+            blend = (float)m_aniCounter / AniDuration;
+            break;
+        default:
+            blend = 1.0f;
+        }
+        m_background->Draw(wnd, ev->target, rc, m_state, blend);
     }
     return true;
 }
@@ -49,6 +58,7 @@ void Button::Update()
         m_aniCounter += timeDiff;
         if (m_aniCounter >= AniDuration)
         {
+            m_state = State::Hover;
             this->EndAnimation();
         }
     }
@@ -57,6 +67,7 @@ void Button::Update()
         m_aniCounter -= timeDiff;
         if (m_aniCounter <= 0)
         {
+            m_state = State::Normal;
             this->EndAnimation();
         }
     }
@@ -82,7 +93,6 @@ bool Button::OnEvent(Event *ev)
 
 bool Button::OnMouseEnter(MouseEvent *ev)
 {
-    m_bMouseIn = true;
     this->BeginAnimation();
     this->TrackMouseLeave();
     m_state = State::Normal2Hover;
@@ -92,7 +102,6 @@ bool Button::OnMouseEnter(MouseEvent *ev)
 
 bool Button::OnMouseLeave(MouseEvent *ev)
 {
-    m_bMouseIn = false;
     this->BeginAnimation();
     m_state = State::Hover2Normal;
     m_lastTick = ::GetTickCount();
@@ -101,7 +110,7 @@ bool Button::OnMouseLeave(MouseEvent *ev)
 
 bool Button::OnLBtnDown(MouseEvent *ev)
 {
-    m_bMousePress = true;
+    m_state = State::Pressed;
     if (m_bCaptureMouse) {
         this->SetCapture();
     }
@@ -111,7 +120,7 @@ bool Button::OnLBtnDown(MouseEvent *ev)
 
 bool Button::OnLBtnUp(MouseEvent *ev)
 {
-    m_bMousePress = false;
+    m_state = State::Normal;
     if (m_bCaptureMouse){
         this->ReleaseCapture();
     }

@@ -174,7 +174,26 @@ int StyleManager::SetColorScheme(lua_State *L)
 void NinePatchBackground::Draw(Window *wnd, ID2D1RenderTarget *targe, const RectF &rc, State state, float blend)
 {
     auto bmp = wnd->GetAtlasBitmap();
-    DrawTextureNineInOne(targe, bmp, texNormal.atlas, texNormal.margin, rc, blend, texNormal.scale);
+    TextureInfo *tex = nullptr;
+
+    switch (state) {
+    case Normal:
+        tex = &texNormal;
+        break;;
+    case Hover:
+    case Normal2Hover:
+    case Hover2Normal:
+        DrawTextureNineInOne(targe, bmp, texNormal.atlas, texNormal.margin, rc, 1.0f - blend, texNormal.scale);
+        DrawTextureNineInOne(targe, bmp, texHover.atlas, texHover.margin, rc, blend, texHover.scale);
+        return;
+    case Pressed:
+        tex = &texPressed;
+        break;
+    case Disable:
+        tex = &texDisable;
+        break;
+    }
+    DrawTextureNineInOne(targe, bmp, tex->atlas, tex->margin, rc, blend, tex->scale);
 }
 
 }

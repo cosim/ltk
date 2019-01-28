@@ -25,7 +25,10 @@ public:
     void Release()
     {
         m_refCount--;
-        assert(m_refCount >= 0);
+        if (m_refCount < 0)
+        {
+            __debugbreak();
+        }
         if (m_refCount == 0)
         {
             delete this;

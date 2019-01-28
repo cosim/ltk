@@ -56,10 +56,7 @@ public:
 #endif // LTK_DISABLE_LUA
 
 private:
-    bool m_bMouseIn = false;
-    bool m_bMousePress = false;
     bool m_bCaptureMouse = true;
-    bool m_bDisable = false;
 
     static const int AniDuration = 200;
 

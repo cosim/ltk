@@ -54,7 +54,7 @@ private:
 class AbstractBackground : public LuaObject
 {
 public:
-    enum State {Normal, Normal2Hover, Hover2Normal, Pressed, Disable};
+    enum State {Normal, Hover, Normal2Hover, Hover2Normal, Pressed, Disable};
     virtual void Draw(Window *wnd, ID2D1RenderTarget *targe, const RectF &rc, State state, float blend) = 0;
 };
 
