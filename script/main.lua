@@ -86,10 +86,10 @@ function DemoFrame:OnEvent(sender, event, ...)
 	if sender.GetName then
 		name = sender:GetName();
 	end
-	print("OnEvent: ", event, " sender: ", sender, " name: ", name);
+	-- print("OnEvent: ", event, " sender: ", sender, " name: ", name);
 	if event == 'OnThumbDragging' then
 		local pos = ...;
-		print(name, " : ", pos);
+		--print(name, " : ", pos);
 	elseif event == 'OnClick' then
 		self._label:SetTextColor(0, 0, 1)
 		sender:RemoveListener(self);

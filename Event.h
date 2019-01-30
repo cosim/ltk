@@ -7,11 +7,10 @@ namespace ltk {
 
 enum Events
 {
-    eNotification,
-
     eSpriteFirst,
     ePaint,
 
+    // type: MouseEvent
     eMouseFirst,
     eMouseMove,
     eMouseEnter,
@@ -30,17 +29,31 @@ enum Events
     eSetFocus,
     eKillFocus,
     eSizeChanged,
-    eRecreateResource,
-    eSpriteLast,     // 子类从这里开始
+    eSpriteLast, 
+
+    // type: Notification
+    eClicked,
+    eValueChanged,
+    eDeleted,
+
+    // type: DelegateMouseEvent
+    eDelegateMouseEvent,
 
     eWindowFirst = 1000,
     eButtonFirst = 2000,
+    eScrollBarFirst = 3000,
 };
 
 struct Event : public RTTI
 {
     RTTI_DECLARATIONS(Event, RTTI);
     UINT id;
+};
+
+struct SystemEvent : public Event
+{
+    RTTI_DECLARATIONS(SystemEvent, Event);
+    bool bHandled;
 };
 
 struct Notification : public Event
@@ -51,6 +64,7 @@ struct Notification : public Event
 
 struct MouseEvent : public Event
 {
+    RTTI_DECLARATIONS(MouseEvent, Event);
     UINT message;
     float x;
     float y;
@@ -58,30 +72,36 @@ struct MouseEvent : public Event
     float delta; // wheel
 };
 
-struct ButtonMouseEvent : public Notification
+struct DelegateMouseEvent : public Notification
 {
-    MouseEvent data;
+    RTTI_DECLARATIONS(DelegateMouseEvent, Notification);
+    MouseEvent *data;
+    bool bHandled;
 };
 
 struct KeyEvent : public Event
 {
+    RTTI_DECLARATIONS(KeyEvent, Event);
     DWORD keyCode;
     DWORD flag;
 };
 
 struct PaintEvent : public Event
 {
+    RTTI_DECLARATIONS(PaintEvent, Event);
     ID2D1RenderTarget *target;
 };
 
 struct SizeEvent : public Event
 {
+    RTTI_DECLARATIONS(SizeEvent, Event);
     float width;
     float height;
 };
 
 struct ImeEvent : public Event
 {
+    RTTI_DECLARATIONS(ImeEvent, Event);
     LPCWSTR text;
 };
 
@@ -89,6 +109,7 @@ class Sprite;
 
 struct FocusEvent : public Event
 {
+    RTTI_DECLARATIONS(FocusEvent, Event);
     Sprite *oldFocus;
 };
 

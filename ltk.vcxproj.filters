@@ -101,9 +101,6 @@
     <ClInclude Include="Button.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Delegate.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ltk.h">
       <Filter>Header Files</Filter>
     </ClInclude>

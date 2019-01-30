@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Sprite.h"
-#include "Delegate.h"
 
 namespace ltk {
 
@@ -12,9 +11,12 @@ class ScrollBar : public Sprite
 public:
     RTTI_DECLARATIONS(ScrollBar, Sprite)
 
+    virtual bool OnEvent(Event *ev) override;
+
     enum Mode {
         Horizontal, Vertical
     };
+
     ScrollBar(Mode mode);
     ~ScrollBar();
 
@@ -46,13 +48,9 @@ public:
     virtual bool OnPaint(PaintEvent *ev) override;
     virtual bool OnMouseMove(MouseEvent *ev) override;
 
-
     virtual bool OnLBtnUp(MouseEvent *ev) override;
 
     virtual bool OnThumbDragging(float pos);
-
-    Delegate<bool(float)> ThumbDragging;
-
 
     virtual void RecreateResouce(ID2D1RenderTarget *target);
 

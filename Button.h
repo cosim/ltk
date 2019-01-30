@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Delegate.h"
 #include "BoxLayout.h"
 #include "StyleManager.h"
 
@@ -37,13 +36,6 @@ public:
     virtual bool OnLBtnUp(MouseEvent *ev) override;
 
     virtual void RecreateResouce(ID2D1RenderTarget *target) override;
-
-    enum Events {
-        eClick = eButtonFirst,
-        eDelegateMouseEvent,
-    };
-    Delegate<void()> Clicked;
-    Delegate<void(MouseEvent *, bool &)> MouseEventDelegate;
 
 #ifndef LTK_DISABLE_LUA
     static int LuaConstructor(lua_State *L);

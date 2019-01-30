@@ -81,7 +81,13 @@ bool Button::OnEvent(Event *ev)
 {
     bool bHandled = false;
     if (ev->id > eMouseFirst && ev->id < eMouseLast) {
-        this->MouseEventDelegate.Invoke((MouseEvent *)ev, std::ref(bHandled));
+        DelegateMouseEvent dlgt;
+        dlgt.id = eDelegateMouseEvent;
+        dlgt.sender = this;
+        dlgt.data = (MouseEvent *)ev;
+        dlgt.bHandled = false;
+        this->DispatchEvent(&dlgt);
+        bHandled = dlgt.bHandled;
     }
     if (!bHandled) {
         return Sprite::OnEvent(ev);
@@ -127,7 +133,7 @@ bool Button::OnLBtnUp(MouseEvent *ev)
     auto rc = this->GetClientRect();
     if (rc.Contains(Gdiplus::PointF(ev->x, ev->y))) {
         Notification notify;
-        notify.id = eClick;
+        notify.id = eClicked;
         notify.sender = this;
         this->DispatchEvent(&notify);
         this->LuaDispatchEvent(GetGlobalLuaState(), "OnClick", 0, 0);

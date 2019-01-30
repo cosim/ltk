@@ -24,10 +24,8 @@ ScrollBar::ScrollBar(Mode mode) : m_mode(mode)
 {
     m_slider = new Button;
     m_slider->EnableCapture(false);
+    m_slider->AddEventListener(this);
     this->AddChild(m_slider);
-
-    using namespace std::placeholders;
-    m_slider->MouseEventDelegate.Attach(std::bind(&ScrollBar::OnSilderEvent, this, _1, _2));
 }
 
 ScrollBar::~ScrollBar()
@@ -165,7 +163,10 @@ bool ScrollBar::OnThumbDragging(float pos)
     auto L = GetGlobalLuaState();
     lua_pushnumber(L, pos);
     this->LuaDispatchEvent(L, "OnThumbDragging", 1, 0);
-    this->ThumbDragging.Invoke(pos);
+    Notification nt;
+    nt.id = eValueChanged;
+    nt.sender = this;
+    this->DispatchEvent(&nt);
     return false;
 }
 
@@ -176,6 +177,16 @@ void ScrollBar::RecreateResouce(ID2D1RenderTarget *target)
     // TODO get color from StyleManager
     hr = target->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::DarkGray), &m_brush);
     assert(SUCCEEDED(hr));
+}
+
+bool ScrollBar::OnEvent(Event *ev)
+{
+    if (ev->id == eDelegateMouseEvent) {
+        DelegateMouseEvent *dlgt = static_cast<DelegateMouseEvent *>(ev);
+        this->OnSilderEvent(dlgt->data, dlgt->bHandled);
+        return false;
+    }
+    return __super::OnEvent(ev);
 }
 
 void ScrollBar::OnSilderEvent(MouseEvent *ev, bool &bHandled)

@@ -911,7 +911,7 @@ int Window::GetRootSprite(lua_State *L)
 
 bool Window::OnEvent(Event *ev)
 {
-    if (ev->id == Button::eClick) {
+    if (ev->id == eClicked) {
         Notification *no = ev->As<Notification>();
         if (no->sender == m_btnMinimize) {
             this->OnBtnMinimizeClicked();

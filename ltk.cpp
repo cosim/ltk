@@ -318,12 +318,8 @@ static void size_test()
 {
     std::map<int, void*> map1;
     LTK_LOG("map1: %d", sizeof(map1));
-    Delegate<void(void)> dlgt1;
-    LTK_LOG("dlgt1: %d", sizeof(dlgt1));
     std::function<void(void)> fn1;
     LTK_LOG("fn1: %d", sizeof(fn1));
-    Delegate<void(int, float, std::string)> dlgt2;
-    LTK_LOG("dlgt2: %d", sizeof(dlgt2));
     std::function<void(int, float, std::string)> fn2;
     LTK_LOG("fn2: %d", sizeof(fn2));
     LTK_LOG("Sprite: %d", sizeof(Sprite));

@@ -91,7 +91,6 @@ public:
     void EndAnimation();
 
     virtual bool OnEvent(Event *ev);
-    virtual void OnNotify(Notification *notify) {}
 
     virtual bool OnPaint            (PaintEvent *ev) { return false; }
     virtual bool OnLBtnDown         (MouseEvent *ev) { return false; }
