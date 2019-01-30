@@ -547,14 +547,15 @@ LRESULT CALLBACK Window::WndProcStatic(HWND hwnd, UINT message, WPARAM wparam, L
 void Window::DrawNonClient()
 {
     SizeF size = this->GetClientSize();
-
-    m_brush->SetColor(StyleManager::Instance()->GetColor(StyleManager::clrCaption));
-    m_target->FillRectangle(D2D1::RectF(0.0f, 0.0f, size.Width, (float)CAPTION_HEIGHT), m_brush);
-
-    m_brush->SetColor(StyleManager::Instance()->GetColor(StyleManager::clrBorder));
-    DrawRectSnapped(m_target, RectF(0.0f, 0.0f, size.Width - 1.0f, size.Height - 1.0f), m_brush);
-    // debug
-    //m_target->DrawRectangle(D2D1::RectF(20, 400, 60, 440), m_brush);
+    RectF rc(0, 0, size.Width, size.Height);
+    DrawTextureNineInOne(
+        m_target,
+        this->GetAtlasBitmap(),
+        m_background.atlas,
+        m_background.margin,
+        rc,
+        1.0f,
+        m_background.scale);
 }
 
 void Window::RecreateResouce()
@@ -840,6 +841,11 @@ ID2D1Bitmap *Window::GetAtlasBitmap()
     return m_atlas;
 }
 
+void Window::SetBackground(const TextureInfo &info)
+{
+    m_background = info;
+}
+
 void Window::UpdateShadowFrame(bool bRedraw)
 {
     HDWP hdwp = ::BeginDeferWindowPos(4);
@@ -849,6 +855,22 @@ void Window::UpdateShadowFrame(bool bRedraw)
     m_shadowBottom.Update(m_hwnd, hdwp, bRedraw);
     BOOL ret = ::EndDeferWindowPos(hdwp);
     LTK_ASSERT(ret);
+}
+
+void Window::OnEvent(Event *ev)
+{
+    if (ev->id == eClicked) {
+        Notification *no = ev->As<Notification>();
+        if (no->sender == m_btnMinimize) {
+            this->OnBtnMinimizeClicked();
+        }
+        else if (no->sender == m_btnMaximize) {
+            this->OnBtnMaximizeClicked();
+        }
+        else if (no->sender == m_btnClose) {
+            this->OnBtnCloseClicked();
+        }
+    }
 }
 
 #ifndef LTK_DISABLE_LUA
@@ -909,20 +931,15 @@ int Window::GetRootSprite(lua_State *L)
     return 1;
 }
 
-void Window::OnEvent(Event *ev)
+int Window::SetBackground(lua_State *L)
 {
-    if (ev->id == eClicked) {
-        Notification *no = ev->As<Notification>();
-        if (no->sender == m_btnMinimize) {
-            this->OnBtnMinimizeClicked();
-        }
-        else if (no->sender == m_btnMaximize) {
-            this->OnBtnMaximizeClicked();
-        }
-        else if (no->sender == m_btnClose) {
-            this->OnBtnCloseClicked();
-        }
-    }
+    auto thiz = CheckLuaObject<Window>(L, 1);
+    TextureInfo info;
+    info.atlas = LuaCheckRectF(L, 2);
+    info.margin = LuaCheckMargin(L, 3);
+    info.scale = (float)luaL_checknumber(L, 4);
+    thiz->SetBackground(info);
+    return 0;
 }
 
 #endif

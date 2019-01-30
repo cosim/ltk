@@ -103,6 +103,7 @@ local wnd = Ltk.Window:new();
 
 wnd:Create({x = 10, y = 10, w = 800, h = 600}, 'overlapped');
 wnd:SetTitle("LTK测试窗口");
+wnd:SetBackground({x = 2, y = 95, w = 152, h = 144}, {left = 40, top = 40, right = 40, bottom = 40}, 1.0);
 
 ---@type Ltk.RectF
 local rc = wnd:GetRect();

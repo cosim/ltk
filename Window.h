@@ -78,6 +78,7 @@ public:
     void OnBtnMaximizeClicked();
 
     ID2D1Bitmap *GetAtlasBitmap();
+    void SetBackground(const TextureInfo &info);
 
 #ifndef LTK_DISABLE_LUA
     static int LuaConstructor(lua_State *L);
@@ -86,6 +87,7 @@ public:
     static int GetClientSize(lua_State *L);
     static int SetTitle(lua_State *L);
     static int GetRootSprite(lua_State *L);
+    static int SetBackground(lua_State *L);
 
     BEGIN_LUA_METHOD_MAP(Window)
         LUA_METHOD_ENTRY(Create)
@@ -93,6 +95,7 @@ public:
         LUA_METHOD_ENTRY(GetClientSize)
         LUA_METHOD_ENTRY(SetTitle)
         LUA_METHOD_ENTRY(GetRootSprite)
+        LUA_METHOD_ENTRY(SetBackground)
     END_LUA_METHOD_MAP()
 #endif // LTK_DISABLE_LUA
 
@@ -137,6 +140,7 @@ private:
     ShadowFrame m_shadowBottom;
 
     ID2D1Bitmap *m_atlas = nullptr;
+    TextureInfo m_background;
 };
 
 } // namespace ltk
