@@ -115,10 +115,10 @@ int CheckBox::LuaConstructor(lua_State *L)
 void CheckBox::UpdateIcon()
 {
     if (m_state == Unchecked) {
-        m_box->SetIcon(RectF(890, 2, 68, 62), 16.0f / 70.0f, 0);
+        m_box->SetIcon(RectF(1, 71, 23, 23), 1.0f, 0);
     }
     else if (m_state == Checked) {
-        m_box->SetIcon(RectF(956, 2, 68, 62), 16.0f / 70.0f, 0);
+        m_box->SetIcon(RectF(27, 71, 23, 23), 1.0f, 0);
     }
 }
 
