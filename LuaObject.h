@@ -13,16 +13,12 @@ namespace ltk {
 class LuaObject : public RefCounted
 {
 public:
-	LuaObject(void) : m_refUserData(LUA_NOREF) {}
-	~LuaObject(void){}
+	LuaObject(void){}
+	~LuaObject(void);
 
     RTTI_DECLARATIONS(LuaObject, RefCounted);
 
 	static int GCMethod(lua_State *L);
-
-	static int GetEventHandler(lua_State *L);
-
-    static int AddEventListener(lua_State *L);
 
     static int ReleaseReference(lua_State *L);
 
@@ -32,14 +28,15 @@ public:
 	// nargs 参数个数 不包括this
 	//void CallLuaMethod(lua_State *L, const char *method, int nargs, int nresult);
 
+    static int AddEventListener(lua_State *L);
+    static int RemoveListener(lua_State *L);
+    static int RemoveAllListener(lua_State *L);
     bool LuaDispatchEvent(lua_State *L, const char *name, int nargs, int nresult);
 	
 private:
     void CallOnEvent(lua_State *L, int listener, const char *name, int nargs);
     static void GetWeakTable(lua_State *L);
-
-	//int m_refEventTable;
-	int m_refUserData;
+    
     SinglyLinkedList<int> m_listListener;
 };
 
@@ -74,11 +71,14 @@ void LuaRegisterClass(lua_State *L, const char *className)
     lua_pushcfunction(L, T::LuaConstructor);
     lua_setfield(L, methods, "new");
 
-    lua_pushcfunction(L, T::GetEventHandler);
-    lua_setfield(L, methods, "GetEventHandler");
-
     lua_pushcfunction(L, T::AddEventListener);
     lua_setfield(L, methods, "AddEventListener");
+
+    lua_pushcfunction(L, T::RemoveListener);
+    lua_setfield(L, methods, "RemoveListener");
+
+    lua_pushcfunction(L, T::RemoveAllListener);
+    lua_setfield(L, methods, "RemoveAllListener");
 
     lua_pushcfunction(L, T::ReleaseReference);
     lua_setfield(L, methods, "Unref");

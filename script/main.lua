@@ -72,7 +72,7 @@ Ltk.StyleManager:RegisterNinePathStyle("default_button", {
 		margin = {left = 9, top = 9, right = 10, bottom = 12},
 		scale = 1.0,
 	},
-	disable = {
+	disable2 = {
 		atlas = {x = 102, y = 0, w = 26, h = 70},
 		margin = {left = 9, top = 9, right = 10, bottom = 12},
 		scale = 1.0,
@@ -87,8 +87,12 @@ function DemoFrame:OnEvent(sender, event, ...)
 		name = sender:GetName();
 	end
 	print("OnEvent: ", event, " sender: ", sender, " name: ", name);
-	if event == 'OnClicked' then
-		DemoFrame._label:SetTextColor(1, 0, 0)
+	if event == 'OnThumbDragging' then
+		local pos = ...;
+		print(name, " : ", pos);
+	elseif event == 'OnClick' then
+		self._label:SetTextColor(0, 0, 1)
+		sender:RemoveAllListener();
 	elseif event == 'OnDestroy' then
 		LtkApi.PostQuitMessage(0);
 	end
@@ -221,6 +225,8 @@ vsb:SetContentSize(1500);
 vsb:SetPosition(200);
 vsb:Update();
 hbox4:AddLayoutItem(vsb, 7, 0);
+vsb:AddEventListener(DemoFrame);
+vsb:SetName('vsb');
 --g_vsb_event = vsb:SetEventHandler({
 --	OnThumbDragging = function(pos)
 --		local x,y,w,h = vsb:GetRect()
@@ -233,6 +239,8 @@ hsb:SetContentSize(1500);
 hsb:SetPosition(200);
 hsb:Update();
 vbox:AddLayoutItem(hsb, 7, 0);
+hsb:SetName('hsb');
+hsb:AddEventListener(DemoFrame);
 --g_hsb_event = hsb:SetEventHandler({
 --	OnThumbDragging = function(pos)
 --		local x,y,w,h = hsb:GetRect()

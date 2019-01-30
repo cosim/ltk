@@ -9,6 +9,16 @@
 
 namespace ltk {
 
+LuaObject::~LuaObject(void)
+{
+    lua_State *L = GetGlobalLuaState();
+    GetWeakTable(L); // [week]
+    m_listListener.ForEach([=](int ref){
+        luaL_unref(L, -1, ref);
+    });
+    lua_pop(L, 1);
+}
+
 void LuaObject::PushToLua( lua_State *L, const char* clsName )
 {
 	LuaStackCheck check(L);
@@ -43,32 +53,9 @@ int LuaObject::GCMethod( lua_State *L )
 			return 0;
 		}
 	}
-	if (thiz->RefCount() == 1)
-	{
-		if (LUA_NOREF != thiz->m_refUserData)
-		{
-			thiz->GetWeakTable(L);
-			luaL_unref(L, -1, thiz->m_refUserData);
-            lua_pop(L, 1);
-		}
-	}
 	thiz->Release();
 
 	return 0;
-}
-
-int LuaObject::GetEventHandler( lua_State *L )
-{
-	LuaObject *thiz = CheckLuaObject<LuaObject>(L, 1);
-	if (LUA_NOREF == thiz->m_refUserData)
-	{
-		lua_pushnil(L);
-		return 1;
-	}
-	GetWeakTable(L);
-	int ref_table = lua_gettop(L);
-	lua_rawgeti(L, ref_table, thiz->m_refUserData);
-	return 1;
 }
 
 int LuaObject::AddEventListener(lua_State *L)
@@ -82,6 +69,34 @@ int LuaObject::AddEventListener(lua_State *L)
 	lua_pop(L, 1); // thiz event
     // TODO skip if has same table in the list
     thiz->m_listListener.PushBack(ref);
+    return 0;
+}
+
+int LuaObject::RemoveListener(lua_State *L)
+{
+    // TODO we should not to use Cookie here, instead we could use the lua table as parameter
+    LuaObject *thiz = CheckLuaObject<LuaObject>(L, 1);
+    luaL_checktype(L, 2, LUA_TUSERDATA);
+    auto cookie = lua_touserdata(L, 2);
+    int ref = thiz->m_listListener.GetData(cookie);
+    thiz->GetWeakTable(L);
+    luaL_unref(L, -1, ref);
+    thiz->m_listListener.GetData(cookie) = LUA_NOREF;
+    lua_pop(L, 1);
+    return 0;
+}
+
+int LuaObject::RemoveAllListener(lua_State *L)
+{
+    LuaObject *thiz = CheckLuaObject<LuaObject>(L, 1);
+    GetWeakTable(L); // [week]
+    auto node = thiz->m_listListener.GetHead();
+    while (node) {
+        luaL_unref(L, -1, thiz->m_listListener.GetData(node));
+        thiz->m_listListener.GetData(node) = LUA_NOREF;
+        node = thiz->m_listListener.Next(node);
+    }
+    lua_pop(L, 1);
     return 0;
 }
 
@@ -121,7 +136,6 @@ bool LuaObject::LuaDispatchEvent( lua_State *L, const char *name, int nargs, int
     GetWeakTable(L); // [nargs...] [week]
     m_listListener.ForEach([=](int ref){
         CallOnEvent(L, ref, name, nargs);
-        return true;
     });
     lua_pop(L, nargs + 1);
     chk.SetReturn(-nargs);

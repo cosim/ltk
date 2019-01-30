@@ -380,6 +380,21 @@ BOOL APIENTRY DllMain(HMODULE hModule,
     return TRUE;
 }
 
+static int my_panic_func(lua_State *L)
+{
+    ::TerminateProcess(::GetCurrentProcess(), 1);
+    return 0;
+}
+
+static void vector_test()
+{
+    std::vector<int> vec;
+    for (int i = 0; i < 64; i ++) {
+        vec.push_back(i);
+        LTK_LOG("size: %d capacity: %d", vec.size(), vec.capacity());
+    }
+}
+
 #define LTK_EXPORT_CURRENT_FUNCTION comment(linker, "/EXPORT:" __FUNCTION__ "=" __FUNCDNAME__)
 
 int luaopen_ltk(lua_State *L)
@@ -387,6 +402,10 @@ int luaopen_ltk(lua_State *L)
     #pragma LTK_EXPORT_CURRENT_FUNCTION
     
     size_test();
+    vector_test();
+
+    lua_atpanic(L, my_panic_func);
+
     lua_newtable(L);
     lua_setglobal(L, "Ltk");
 

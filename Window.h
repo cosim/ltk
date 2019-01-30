@@ -12,7 +12,6 @@ namespace ltk {
 
 class Sprite;
 class Button;
-class ResizeHelper;
 class BoxLayout;
 class Label;
 
@@ -108,16 +107,16 @@ private:
     static const wchar_t * ClsName;
 
 private:
-	HWND m_hwnd;
+	HWND m_hwnd = NULL;
 
 	ImeInput m_ime;
 	RECT m_rectComposition;
 	int m_caretHeight;
 
-	BoxLayout *m_sprite; // owner
-	Sprite *m_spFocus;
-	Sprite *m_spCapture;
-	Sprite *m_spHover;
+	BoxLayout *m_sprite = nullptr; // owner
+    Sprite *m_spFocus = nullptr;
+    Sprite *m_spCapture = nullptr;
+    Sprite *m_spHover = nullptr;
 	std::unordered_set<Sprite *> m_setTrackMouseLeave;
     std::unordered_set<Sprite *> m_setAnimation;
 

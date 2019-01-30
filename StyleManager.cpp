@@ -118,19 +118,37 @@ int StyleManager::RegisterNinePathStyle(lua_State *L)
 
     lua_getfield(L, 3, "normal"); // [][][style][normal]
     TextureInfo normal = CheckTextureInfo(L, -1);
-    lua_pop(L, 1);
+    lua_pop(L, 1); // [][][style]
 
+    TextureInfo hover;
     lua_getfield(L, 3, "hover"); // [][][style][hover]
-    TextureInfo hover = CheckTextureInfo(L, -1);
-    lua_pop(L, 1);
+    if (!lua_istable(L, -1)) {
+        hover = normal;
+    }
+    else {
+        hover = CheckTextureInfo(L, -1);
+    }
+    lua_pop(L, 1); // [][][style]
 
+    TextureInfo pressed;
     lua_getfield(L, 3, "pressed"); // [][][style][pressed]
-    TextureInfo pressed = CheckTextureInfo(L, -1);
-    lua_pop(L, 1);
+    if (!lua_istable(L, -1)) {
+        pressed = normal;
+    }
+    else {
+        pressed = CheckTextureInfo(L, -1);
+    }
+    lua_pop(L, 1); // [][][style]
 
+    TextureInfo disable;
     lua_getfield(L, 3, "disable"); // [][][style][disable]
-    TextureInfo disable = CheckTextureInfo(L, -1);
-    lua_pop(L, 1);
+    if (!lua_istable(L, -1)) {
+        disable = normal;
+    }
+    else {
+        disable = CheckTextureInfo(L, -1);
+    }
+    lua_pop(L, 1); // [][][style]
 
     auto bg = new NinePatchBackground();
     bg->texNormal = normal;

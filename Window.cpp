@@ -27,8 +27,6 @@ m_shadowTop(ShadowFrame::eTop),
 m_shadowRight(ShadowFrame::eRight),
 m_shadowBottom(ShadowFrame::eBottom)
 {
-	m_hwnd = NULL;
-
 	m_rectComposition.left = 0;
 	m_rectComposition.top = 0;
 	m_rectComposition.right = 5;
@@ -38,10 +36,6 @@ m_shadowBottom(ShadowFrame::eBottom)
     m_sprite->SetMargin(0.0f);
     m_sprite->SetWindow(this);
     
-	m_spFocus = NULL;
-	m_spCapture = NULL;
-	m_spHover = NULL;
-
 	m_caretHeight = 20;
 }
 
