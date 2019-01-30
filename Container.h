@@ -129,7 +129,10 @@ class ArrayList
 {
 public:
     ArrayList() {}
-    ~ArrayList() {}
+    ~ArrayList() 
+    {
+        free(m_d);
+    }
 
     void PushBack(const T& v)
     {
@@ -148,7 +151,10 @@ public:
 
     void PopBack()
     {
-
+        if (!m_d || m_d->size == 0) {
+            __debugbreak();
+        }
+        m_d->size--;
     }
 
     void Insert(UINT idx, const T &v)

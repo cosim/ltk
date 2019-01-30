@@ -745,14 +745,14 @@ void Window::SetCapture( Sprite *sp )
 	m_spCapture = sp;
     LTK_ASSERT(::IsWindow(m_hwnd));
 	auto hwnd = ::SetCapture(m_hwnd);
-    LTK_LOG("%p", hwnd);
+    //LTK_LOG("old capture %p", hwnd);
 }
 
 void Window::ReleaseCapture()
 {
 	m_spCapture = NULL;
 	::ReleaseCapture();
-    LTK_LOG("ReleaseCapture");
+    //LTK_LOG("ReleaseCapture");
 }
 
 void Window::ShowCaret()

@@ -92,7 +92,7 @@ function DemoFrame:OnEvent(sender, event, ...)
 		print(name, " : ", pos);
 	elseif event == 'OnClick' then
 		self._label:SetTextColor(0, 0, 1)
-		sender:RemoveAllListener();
+		sender:RemoveListener(self);
 	elseif event == 'OnDestroy' then
 		LtkApi.PostQuitMessage(0);
 	end

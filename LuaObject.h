@@ -37,7 +37,7 @@ private:
     void CallOnEvent(lua_State *L, int listener, const char *name, int nargs);
     static void GetWeakTable(lua_State *L);
     
-    SinglyLinkedList<int> m_listListener;
+    ArrayList<int> m_listListener;
 };
 
 #define BEGIN_LUA_METHOD_MAP(x)  static void RegisterMethods(lua_State *L, int metatable) {
