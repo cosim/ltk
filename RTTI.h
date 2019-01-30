@@ -7,14 +7,19 @@
 #pragma once
 
 #include <string>
+#include "Container.h"
 
+namespace ltk {
+    struct Event;
 
     class RTTI
     {
     public:
+        virtual bool OnEvent(Event *ev) { return false; }
+
         virtual const size_t TypeIdInstance() const = 0;
         virtual std::string TypeNameInstance() const = 0;
-        
+
         virtual RTTI* QueryInterface(const size_t)
         {
             return NULL;
@@ -35,7 +40,7 @@
         //}
 
         template <typename T>
-        T* As() 
+        T* As()
         {
             if (Is(T::TypeIdClass()))
             {
@@ -91,3 +96,30 @@
                 else                                                       \
                     { return ParentType::Is(name); }                       \
             }   */                                                           
+
+
+    class EventSource
+    {
+    public:
+        void AddEventListener(RTTI *v)
+        {
+            for (UINT i = 0; i < m_listener.Length(); i++) {
+                if (m_listener[i] == v) {
+                    return;
+                }
+            }
+            m_listener.PushBack(v);
+        }
+
+        void DispatchEvent(Event *e)
+        {
+            for (UINT i = 0; i < m_listener.Length(); i++) {
+                m_listener[i]->OnEvent(e);
+            }
+        }
+
+    private:
+        ArrayList<RTTI *> m_listener;
+    };
+
+} // namespace ltk

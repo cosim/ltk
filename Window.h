@@ -25,6 +25,8 @@ public:
 
     Window(void);
 
+    virtual bool OnEvent(Event *ev);
+
     void Create(Window *parent, RectF rc);
 
     void SetRect(RectF rc);

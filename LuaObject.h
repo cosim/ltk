@@ -28,9 +28,9 @@ public:
 	// nargs 参数个数 不包括this
 	//void CallLuaMethod(lua_State *L, const char *method, int nargs, int nresult);
 
-    static int AddEventListener(lua_State *L);
-    static int RemoveListener(lua_State *L);
-    static int RemoveAllListener(lua_State *L);
+    static int LuaAddEventListener(lua_State *L);
+    static int LuaRemoveListener(lua_State *L);
+    static int LuaRemoveAllListener(lua_State *L);
     bool LuaDispatchEvent(lua_State *L, const char *name, int nargs, int nresult);
 	
 private:
@@ -71,13 +71,13 @@ void LuaRegisterClass(lua_State *L, const char *className)
     lua_pushcfunction(L, T::LuaConstructor);
     lua_setfield(L, methods, "new");
 
-    lua_pushcfunction(L, T::AddEventListener);
+    lua_pushcfunction(L, T::LuaAddEventListener);
     lua_setfield(L, methods, "AddEventListener");
 
-    lua_pushcfunction(L, T::RemoveListener);
+    lua_pushcfunction(L, T::LuaRemoveListener);
     lua_setfield(L, methods, "RemoveListener");
 
-    lua_pushcfunction(L, T::RemoveAllListener);
+    lua_pushcfunction(L, T::LuaRemoveAllListener);
     lua_setfield(L, methods, "RemoveAllListener");
 
     lua_pushcfunction(L, T::ReleaseReference);

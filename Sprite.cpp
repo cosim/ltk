@@ -611,6 +611,9 @@ bool Sprite::OnEvent(Event *ev)
     case eKillFocus:
         bHandled = OnKillFocus(static_cast<FocusEvent*>(ev));
         break;
+    case eNotification:
+        OnNotify(static_cast<Notification*>(ev));
+        break;
     default:
         bHandled = false;
     }

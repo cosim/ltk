@@ -126,7 +126,10 @@ bool Button::OnLBtnUp(MouseEvent *ev)
     }
     auto rc = this->GetClientRect();
     if (rc.Contains(Gdiplus::PointF(ev->x, ev->y))) {
-        this->Clicked.Invoke();
+        Notification notify;
+        notify.id = eClick;
+        notify.sender = this;
+        this->DispatchEvent(&notify);
         this->LuaDispatchEvent(GetGlobalLuaState(), "OnClick", 0, 0);
     }
     else {

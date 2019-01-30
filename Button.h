@@ -38,6 +38,10 @@ public:
 
     virtual void RecreateResouce(ID2D1RenderTarget *target) override;
 
+    enum Events {
+        eClick = eButtonFirst,
+        eDelegateMouseEvent,
+    };
     Delegate<void()> Clicked;
     Delegate<void(MouseEvent *, bool &)> MouseEventDelegate;
 

@@ -58,7 +58,7 @@ int LuaObject::GCMethod( lua_State *L )
 	return 0;
 }
 
-int LuaObject::AddEventListener(lua_State *L)
+int LuaObject::LuaAddEventListener(lua_State *L)
 {
 	LuaObject *thiz = CheckLuaObject<LuaObject>(L, 1);
 	luaL_checktype(L, 2, LUA_TTABLE); // thiz event
@@ -72,7 +72,7 @@ int LuaObject::AddEventListener(lua_State *L)
     return 0;
 }
 
-int LuaObject::RemoveListener(lua_State *L)
+int LuaObject::LuaRemoveListener(lua_State *L)
 {
     // TODO we should not to use Cookie here, instead we could use the lua table as parameter
     LuaStackCheck chk(L);
@@ -91,7 +91,7 @@ int LuaObject::RemoveListener(lua_State *L)
     return 0;
 }
 
-int LuaObject::RemoveAllListener(lua_State *L)
+int LuaObject::LuaRemoveAllListener(lua_State *L)
 {
     LuaObject *thiz = CheckLuaObject<LuaObject>(L, 1);
     GetWeakTable(L); // [week]

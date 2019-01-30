@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "RTTI.h"
 
 #pragma once
 
@@ -6,6 +7,8 @@ namespace ltk {
 
 enum Events
 {
+    eNotification,
+
     eSpriteFirst,
     ePaint,
 
@@ -28,12 +31,22 @@ enum Events
     eKillFocus,
     eSizeChanged,
     eRecreateResource,
-    eSpriteLast     // 子类从这里开始
+    eSpriteLast,     // 子类从这里开始
+
+    eWindowFirst = 1000,
+    eButtonFirst = 2000,
 };
 
-struct Event
+struct Event : public RTTI
 {
+    RTTI_DECLARATIONS(Event, RTTI);
     UINT id;
+};
+
+struct Notification : public Event
+{
+    RTTI_DECLARATIONS(Notification, Event);
+    RTTI *sender;
 };
 
 struct MouseEvent : public Event
@@ -43,6 +56,11 @@ struct MouseEvent : public Event
     float y;
     UINT flag; // ctrl shift atl
     float delta; // wheel
+};
+
+struct ButtonMouseEvent : public Notification
+{
+    MouseEvent data;
 };
 
 struct KeyEvent : public Event
