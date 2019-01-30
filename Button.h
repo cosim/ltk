@@ -28,7 +28,7 @@ public:
 
     void Update();
 
-    virtual bool OnEvent(Event *ev) override;
+    virtual void OnEvent(Event *ev) override;
 
     virtual bool OnMouseEnter(MouseEvent *ev) override;
     virtual bool OnMouseLeave(MouseEvent *ev) override;

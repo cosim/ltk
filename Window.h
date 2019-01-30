@@ -25,7 +25,7 @@ public:
 
     Window(void);
 
-    virtual bool OnEvent(Event *ev);
+    virtual void OnEvent(Event *ev) override;
 
     void Create(Window *parent, RectF rc);
 

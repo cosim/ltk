@@ -90,7 +90,7 @@ public:
     void BeginAnimation();
     void EndAnimation();
 
-    virtual bool OnEvent(Event *ev);
+    virtual void OnEvent(Event *ev) override;
 
     virtual bool OnPaint            (PaintEvent *ev) { return false; }
     virtual bool OnLBtnDown         (MouseEvent *ev) { return false; }

@@ -15,7 +15,7 @@ namespace ltk {
     class RTTI
     {
     public:
-        virtual bool OnEvent(Event *ev) { return false; }
+        virtual void OnEvent(Event *ev)  {}
 
         virtual const size_t TypeIdInstance() const = 0;
         virtual std::string TypeNameInstance() const = 0;

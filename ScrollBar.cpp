@@ -179,12 +179,11 @@ void ScrollBar::RecreateResouce(ID2D1RenderTarget *target)
     assert(SUCCEEDED(hr));
 }
 
-bool ScrollBar::OnEvent(Event *ev)
+void ScrollBar::OnEvent(Event *ev)
 {
     if (ev->id == eDelegateMouseEvent) {
-        DelegateMouseEvent *dlgt = static_cast<DelegateMouseEvent *>(ev);
+        DelegateMouseEvent *dlgt = ev->As<DelegateMouseEvent>();
         this->OnSilderEvent(dlgt->data, dlgt->bHandled);
-        return false;
     }
     return __super::OnEvent(ev);
 }

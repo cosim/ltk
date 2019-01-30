@@ -556,7 +556,7 @@ void Sprite::HideCaret()
     m_bShowCaret = false;
 }
 
-bool Sprite::OnEvent(Event *ev)
+void Sprite::OnEvent(Event *ev)
 {
     bool bHandled = false;
     UINT id = ev->id;
@@ -614,7 +614,6 @@ bool Sprite::OnEvent(Event *ev)
     default:
         bHandled = false;
     }
-    return bHandled;
 }
 
 void Sprite::HandleRecreateResouce(ID2D1RenderTarget *target)

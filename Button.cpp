@@ -77,7 +77,7 @@ void Button::Update()
     }
 }
 
-bool Button::OnEvent(Event *ev)
+void Button::OnEvent(Event *ev)
 {
     bool bHandled = false;
     if (ev->id > eMouseFirst && ev->id < eMouseLast) {
@@ -91,9 +91,6 @@ bool Button::OnEvent(Event *ev)
     }
     if (!bHandled) {
         return Sprite::OnEvent(ev);
-    }
-    else {
-        return true;
     }
 }
 

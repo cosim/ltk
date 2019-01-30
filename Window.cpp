@@ -909,7 +909,7 @@ int Window::GetRootSprite(lua_State *L)
     return 1;
 }
 
-bool Window::OnEvent(Event *ev)
+void Window::OnEvent(Event *ev)
 {
     if (ev->id == eClicked) {
         Notification *no = ev->As<Notification>();
@@ -923,7 +923,6 @@ bool Window::OnEvent(Event *ev)
             this->OnBtnCloseClicked();
         }
     }
-    return false;
 }
 
 #endif

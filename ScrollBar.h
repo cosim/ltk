@@ -11,7 +11,7 @@ class ScrollBar : public Sprite
 public:
     RTTI_DECLARATIONS(ScrollBar, Sprite)
 
-    virtual bool OnEvent(Event *ev) override;
+    virtual void OnEvent(Event *ev) override;
 
     enum Mode {
         Horizontal, Vertical
