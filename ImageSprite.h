@@ -4,13 +4,6 @@
 
 namespace ltk {
 
-struct IconInfo {
-    UINT idx = 0;
-    RectF atlas;
-    bool bIconOnTop = false;
-    float scale = 1.0f;
-};
-
 class IconSprite : public Sprite
 {
 public:
@@ -20,6 +13,7 @@ public:
 
     virtual bool OnPaint(PaintEvent *ev) override;
     void SetIcon(const RectF &atlas, float scale, UINT idx);
+    void SetIcon(const IconInfo &v);
 
 #ifndef LTK_DISABLE_LUA
     static int LuaConstructor(lua_State *L);

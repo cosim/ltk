@@ -36,6 +36,12 @@ void IconSprite::SetIcon(const RectF &atlas, float scale, UINT idx)
     this->Invalidate();
 }
 
+void IconSprite::SetIcon(const IconInfo &v)
+{
+    m_info = v;
+    this->Invalidate();
+}
+
 int IconSprite::SetIcon(lua_State *L)
 {
     IconSprite *thiz = CheckLuaObject<IconSprite>(L, 1);

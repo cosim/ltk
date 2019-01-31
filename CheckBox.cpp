@@ -73,6 +73,14 @@ int CheckBox::SetRadioGroup(lua_State *L)
     return 0;
 }
 
+int CheckBox::SetIconInfo(lua_State *L)
+{
+    m_sUncheckedIcon = LuaCheckIconInfo(L, 2);
+    m_sCheckedIcon = LuaCheckIconInfo(L, 3);
+    m_sIndeterminateIcon = LuaCheckIconInfo(L, 4);
+    return 0;
+}
+
 bool CheckBox::OnLBtnDown(MouseEvent *ev)
 {
     if (m_radioGroup) {
@@ -115,12 +123,18 @@ int CheckBox::LuaConstructor(lua_State *L)
 void CheckBox::UpdateIcon()
 {
     if (m_state == Unchecked) {
-        m_box->SetIcon(RectF(1, 71, 23, 23), 1.0f, 0);
+        m_box->SetIcon(m_sUncheckedIcon);
     }
     else if (m_state == Checked) {
-        m_box->SetIcon(RectF(27, 71, 23, 23), 1.0f, 0);
+        m_box->SetIcon(m_sCheckedIcon);
     }
 }
+
+ltk::IconInfo CheckBox::m_sCheckedIcon;
+
+ltk::IconInfo CheckBox::m_sUncheckedIcon;
+
+ltk::IconInfo CheckBox::m_sIndeterminateIcon;
 
 void RadioGroup::Attach(CheckBox *box)
 {

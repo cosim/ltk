@@ -34,12 +34,14 @@ public:
     static int SetText(lua_State *L);
     static int IsChecked(lua_State *L);
     static int SetRadioGroup(lua_State *L);
+    static int SetIconInfo(lua_State *L);
 
     BEGIN_LUA_METHOD_MAP(CheckBox)
         LUA_CHAIN_METHOD_MAP(BoxLayout)
         LUA_METHOD_ENTRY(SetText)
         LUA_METHOD_ENTRY(IsChecked)
         LUA_METHOD_ENTRY(SetRadioGroup)
+        LUA_METHOD_ENTRY(SetIconInfo)
     END_LUA_METHOD_MAP()
 
 private:
@@ -50,6 +52,10 @@ private:
     Label *m_label = nullptr;
     State m_state = Unchecked;
     RadioGroup *m_radioGroup = nullptr;
+
+    static IconInfo m_sCheckedIcon;
+    static IconInfo m_sUncheckedIcon;
+    static IconInfo m_sIndeterminateIcon;
 };
 
 class RadioGroup : public LuaObject

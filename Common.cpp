@@ -155,6 +155,17 @@ void LuaGetField(lua_State *L, int idx, const char *name, float &value)
     lua_pop(L, 1);
 }
 
+ltk::IconInfo LuaCheckIconInfo(lua_State *L, int idx)
+{
+    ltk::IconInfo info;
+    luaL_checktype(L, idx, LUA_TTABLE);
+    lua_getfield(L, idx, "atlas");
+    info.atlas = LuaCheckRectF(L, -1);
+    lua_pop(L, 1);
+    LuaGetField(L, idx, "scale", info.scale);
+    return info;
+}
+
 ltk::Margin LuaCheckMargin(lua_State *L, int idx)
 {
     ltk::Margin margin;

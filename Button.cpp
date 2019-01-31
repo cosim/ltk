@@ -105,6 +105,7 @@ bool Button::OnMouseEnter(MouseEvent *ev)
 
 bool Button::OnMouseLeave(MouseEvent *ev)
 {
+    LTK_LOG("OnMouseLeave");
     this->BeginAnimation();
     m_state = State::Hover2Normal;
     m_lastTick = ::GetTickCount();

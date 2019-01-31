@@ -65,6 +65,13 @@ namespace ltk {
         float scale = 1.0f;
     };
 
+    struct IconInfo {
+        UINT idx = 0;
+        RectF atlas;
+        bool bIconOnTop = false;
+        float scale = 1.0f;
+    };
+
     inline float Round45(float value) 
     {
         return (float)(int)(value + 0.5f);

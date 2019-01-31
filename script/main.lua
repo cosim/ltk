@@ -79,6 +79,12 @@ Ltk.StyleManager:RegisterNinePathStyle("default_button", {
 	},
 })
 
+Ltk.CheckBox:SetIconInfo(
+		{ atlas = {x = 1, y = 71, w = 23, h = 23}, scale = 1.0 },
+		{ atlas = {x = 27, y = 71, w = 23, h = 23}, scale = 1.0 },
+		{ atlas = {x = 102, y = 0, w = 26, h = 70}, scale = 1.0 }
+)
+
 local DemoFrame = {}
 
 function DemoFrame:OnEvent(sender, event, ...)
