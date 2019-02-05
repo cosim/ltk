@@ -96,6 +96,7 @@ void Button::OnEvent(Event *ev)
 
 bool Button::OnMouseEnter(MouseEvent *ev)
 {
+    LTK_LOG("OnMouseEnter");
     this->BeginAnimation();
     this->TrackMouseLeave();
     m_state = State::Normal2Hover;

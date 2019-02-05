@@ -58,23 +58,23 @@ Ltk.StyleManager:SetColorScheme({
 
 Ltk.StyleManager:RegisterNinePathStyle("default_button", {
 	normal = {
-		atlas = {x = 0, y = 0, w = 26, h = 70},
-		margin = {left = 9, top = 9, right = 10, bottom = 12},
+		atlas = {x = 4, y = 3, w = 21, h = 67},
+		margin = {left = 8, top = 8, right = 8, bottom = 9},
+		scale = 1.0,
+	},
+	disable = {
+		atlas = {x = 29, y = 3, w = 21, h = 67},
+		margin = {left = 8, top = 8, right = 8, bottom = 9},
 		scale = 1.0,
 	},
 	hover = {
-		atlas = {x = 34, y = 0, w = 26, h = 70},
-		margin = {left = 9, top = 9, right = 10, bottom = 12},
+		atlas = {x = 54, y = 3, w = 21, h = 67},
+		margin = {left = 8, top = 8, right = 8, bottom = 9},
 		scale = 1.0,
 	},
 	pressed = {
-		atlas = {x = 68, y = 0, w = 26, h = 70},
-		margin = {left = 9, top = 9, right = 10, bottom = 12},
-		scale = 1.0,
-	},
-	disable2 = {
-		atlas = {x = 102, y = 0, w = 26, h = 70},
-		margin = {left = 9, top = 9, right = 10, bottom = 12},
+		atlas = {x = 79, y = 3, w = 21, h = 67},
+		margin = {left = 8, top = 8, right = 8, bottom = 9},
 		scale = 1.0,
 	},
 })
@@ -97,8 +97,22 @@ function DemoFrame:OnEvent(sender, event, ...)
 		local pos = ...;
 		--print(name, " : ", pos);
 	elseif event == 'OnClick' then
-		self._label:SetTextColor(0, 0, 1)
-		sender:RemoveListener(self);
+		if name == 'SetLabelColorBtn' then
+			self._label:SetTextColor(0, 0, 1)
+			sender:RemoveListener(self);
+		elseif name == 'SystemUptimeBtn' then
+			local tick = LtkApi.GetTickCount();
+			local second = tick / 1000;
+			local minute = second / 60;
+			second = second % 60;
+			local hour = minute / 60;
+			minute = minute % 60;
+			local day = hour / 24;
+			hour = hour % 24;
+			local floor = math.floor;
+			self._label:SetText(("System Uptime: %dd%02d:%02d:%02d"):format(
+					floor(day), floor(hour), floor(minute), floor(second)));
+		end
 	elseif event == 'OnDestroy' then
 		LtkApi.PostQuitMessage(0);
 	end
@@ -134,12 +148,13 @@ vbox:AddLayoutItem(hbox1, 50);
 hbox1:AddSpaceItem(0, 1);
 
 ---@type Ltk.Label
-DemoFrame._label = Ltk.Label:new("单选框:");
+local label = Ltk.Label:new("单选框:");
 --label1:SetTextColor(1, 1, 1);
-hbox1:AddLayoutItem(DemoFrame._label, 40);
+hbox1:AddLayoutItem(label, 40);
 
 local group = Ltk.RadioGroup:new();
 
+---@type Ltk.CheckBox
 local check = Ltk.CheckBox:new();
 check:SetText("选项1");
 check:SetRadioGroup(group);
@@ -184,20 +199,11 @@ btn:AddEventListener(DemoFrame);
 hbox2:AddLayoutItem(btn, 100, 1);
 
 btn = Ltk.Button:new();
+btn:SetName('SystemUptimeBtn')
 btn:SetText("System Uptime");
+btn:AddEventListener(DemoFrame);
 --g_btn_set_label_font_size = btn:SetEventHandler({
 --	OnClick = function()
---		local tick = LtkApi.GetTickCount();
---		local second = tick / 1000;
---		local minute = second / 60;
---		second = second % 60;
---		local hour = minute / 60;
---		minute = minute % 60;
---		local day = hour / 24;
---		hour = hour % 24;
---		local floor = math.floor;
---		label:SetText(("System Uptime: %dd%02d:%02d:%02d"):format(
---				floor(day), floor(hour), floor(minute), floor(second)));
 --	end,
 --	Sprite = btn
 --})
@@ -216,6 +222,7 @@ local hbox3 = Ltk.BoxLayout:new("horizontal");
 label = Ltk.Label:new("Hello World");
 label:SetTextColor(1,0,0);
 label:SetFontSize(20);
+DemoFrame._label = label;
 
 hbox3:AddSpaceItem(0, 1);
 hbox3:AddLayoutItem(label, 300);

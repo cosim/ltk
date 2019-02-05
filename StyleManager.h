@@ -70,6 +70,17 @@ public:
     TextureInfo texDisable;
 };
 
+class OnePatchBackground : public AbstractBackground
+{
+public:
+    virtual void Draw(Window *wnd, ID2D1RenderTarget *targe, const RectF &rc, State state, float blend) override;
+    
+    IconInfo iconNormal;
+    IconInfo iconHover;
+    IconInfo iconPressed;
+    IconInfo iconDisable;
+};
+
 
 struct FourStateColor {
     D2D1_COLOR_F clrNormal;

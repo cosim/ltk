@@ -86,4 +86,9 @@ namespace ltk {
         rc2.bottom = rc.Y + rc.Height;
         return rc2;
     }
+
+    enum Orientation {
+        Horizontal = 1,
+        Vertical = 2
+    };
 }

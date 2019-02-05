@@ -214,4 +214,21 @@ void NinePatchBackground::Draw(Window *wnd, ID2D1RenderTarget *targe, const Rect
     DrawTextureNineInOne(targe, bmp, tex->atlas, tex->margin, rc, blend, tex->scale);
 }
 
+void OnePatchBackground::Draw(Window *wnd, ID2D1RenderTarget *targe, const RectF &rc, State state, float blend)
+{
+    auto bmp = wnd->GetAtlasBitmap();
+    switch (state) {
+    case Normal:
+        break;;
+    case Hover:
+    case Normal2Hover:
+    case Hover2Normal:
+        return;
+    case Pressed:
+        break;
+    case Disable:
+        break;
+    }
+}
+
 }

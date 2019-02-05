@@ -1,5 +1,5 @@
 #pragma once
-#include "LuaObject.h"
+
 #include "Sprite.h"
 
 namespace ltk {

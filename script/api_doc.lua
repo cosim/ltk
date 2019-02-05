@@ -32,12 +32,11 @@ Ltk = {}
 local Object = {}
 
 ---@param handler table
-function Object:SetEventHandler(handler) end
+function Object:AddEventListener(handler) end
 
----@
 function Object:Unref() end
 
----@class Ltk.Window
+---@class Ltk.Window : Ltk.Object
 local Window = {}
 
 ---@return Ltk.Window
@@ -68,7 +67,10 @@ function Sprite:AddChild(sp) end
 ---@param rc Ltk.RectF
 function Sprite:SetRect(rc) end
 
----@class Ltk.Button:Ltk.Sprite
+---@param name string
+function Sprite:SetName(name) end
+
+---@class Ltk.Button : Ltk.BoxLayout
 local Button = {}
 
 function Button:new() end
@@ -105,6 +107,9 @@ function BoxLayout:AddLayoutItem(item, size, grow) end
 function BoxLayout:AddSpaceItem(size, grow) end
 
 function BoxLayout:DoLayout() end
+
+---@class Ltk.CheckBox : Ltk.BoxLayout
+local CheckBox = {}
 
 ---@class Ltk.Label : Ltk.Sprite
 local Label = {}
