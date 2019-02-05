@@ -42,6 +42,7 @@ m_shadowBottom(ShadowFrame::eBottom)
 Window::~Window(void)
 {
     if (m_sprite) {
+        m_sprite->SetWindowRecursive(nullptr);
         m_sprite->Release();
     }
     m_sprite = INVALID_POINTER(BoxLayout);

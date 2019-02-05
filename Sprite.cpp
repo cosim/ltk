@@ -146,6 +146,16 @@ void Sprite::SetWindow( Window *wnd )
 	m_window = wnd;
 }
 
+void Sprite::SetWindowRecursive(Window *wnd)
+{
+    auto sp = m_firstChild;
+    while (sp) {
+        sp->SetWindowRecursive(wnd);
+        sp->m_window = wnd;
+        sp = sp->m_nextSibling;
+    }
+}
+
 void Sprite::HandlePaint( ID2D1RenderTarget *target )
 {
 	if (!m_bVisible)
