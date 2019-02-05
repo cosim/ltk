@@ -109,7 +109,7 @@ Error:
     return info;
 }
 
-int StyleManager::RegisterNinePathStyle(lua_State *L)
+int StyleManager::RegisterNinePatchStyle(lua_State *L)
 {
     //LuaStackCheck chk(L);
     StyleManager *thiz = Instance();
@@ -161,6 +161,59 @@ int StyleManager::RegisterNinePathStyle(lua_State *L)
     return 0;
 }
 
+int StyleManager::RegisterOnePatchStyle(lua_State *L)
+{
+    StyleManager *thiz = Instance();
+    const char *name = luaL_checkstring(L, 2);
+    luaL_checktype(L, 3, LUA_TTABLE);
+
+    IconInfo normal;
+    IconInfo hover;
+    IconInfo pressed;
+    IconInfo disable;
+
+    lua_getfield(L, 3, "normal"); // [][][style][normal]
+    normal.atlas = LuaCheckRectF(L, -1);
+    lua_pop(L, 1); // [][][style]
+
+    lua_getfield(L, 3, "hover"); // [][][style][hover]
+    if (!lua_istable(L, -1)) {
+        hover = normal;
+    }
+    else {
+        hover.atlas = LuaCheckRectF(L, -1);
+    }
+    lua_pop(L, 1); // [][][style]
+
+    lua_getfield(L, 3, "pressed"); // [][][style][pressed]
+    if (!lua_istable(L, -1)) {
+        pressed = normal;
+    }
+    else {
+        pressed.atlas = LuaCheckRectF(L, -1);
+    }
+    lua_pop(L, 1); // [][][style]
+
+    lua_getfield(L, 3, "disable"); // [][][style][disable]
+    if (!lua_istable(L, -1)) {
+        disable = normal;
+    }
+    else {
+        disable.atlas = LuaCheckRectF(L, -1);
+    }
+    lua_pop(L, 1); // [][][style]
+
+    auto bg = new OnePatchBackground();
+    bg->iconNormal = normal;
+    bg->iconHover = hover;
+    bg->iconPressed = pressed;
+    bg->iconDisable = disable;
+    thiz->AddBackgroundStyle(name, bg);
+    bg->Release();
+
+    return 0;
+}
+
 int StyleManager::LuaConstructor(lua_State *L)
 {
     luaL_error(L, "StyleManager is singleton.");
@@ -199,6 +252,8 @@ void NinePatchBackground::Draw(Window *wnd, ID2D1RenderTarget *targe, const Rect
         tex = &texNormal;
         break;;
     case Hover:
+        tex = &texHover;
+        break;
     case Normal2Hover:
     case Hover2Normal:
         DrawTextureNineInOne(targe, bmp, texNormal.atlas, texNormal.margin, rc, 1.0f - blend, texNormal.scale);
@@ -217,18 +272,34 @@ void NinePatchBackground::Draw(Window *wnd, ID2D1RenderTarget *targe, const Rect
 void OnePatchBackground::Draw(Window *wnd, ID2D1RenderTarget *targe, const RectF &rc, State state, float blend)
 {
     auto bmp = wnd->GetAtlasBitmap();
+    IconInfo *icon = nullptr;
+
     switch (state) {
     case Normal:
-        break;;
+        icon = &iconNormal;
+        break;
     case Hover:
+        icon = &iconHover;
+        break;
     case Normal2Hover:
     case Hover2Normal:
+        targe->DrawBitmap(bmp, D2D1RectF(rc), 1.0f - blend,
+            D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR,
+            D2D1RectF(iconNormal.atlas));
+        targe->DrawBitmap(bmp, D2D1RectF(rc), blend,
+            D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR,
+            D2D1RectF(iconHover.atlas));
         return;
     case Pressed:
+        icon = &iconPressed;
         break;
     case Disable:
+        icon = &iconDisable;
         break;
     }
+    targe->DrawBitmap(bmp, D2D1RectF(rc), 1.0f,
+        D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR,
+        D2D1RectF(icon->atlas));
 }
 
 }

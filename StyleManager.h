@@ -33,11 +33,12 @@ public:
 
     static int LuaConstructor(lua_State *L);
     static int SetColorScheme(lua_State *L);
-    static int RegisterNinePathStyle(lua_State *L);
+    static int RegisterNinePatchStyle(lua_State *L);
+    static int RegisterOnePatchStyle(lua_State *L);
 
     BEGIN_LUA_METHOD_MAP(StyleManager)
         LUA_METHOD_ENTRY(SetColorScheme)
-        LUA_METHOD_ENTRY(RegisterNinePathStyle)
+        LUA_METHOD_ENTRY(RegisterNinePatchStyle)
     END_LUA_METHOD_MAP()
 
     static TextureInfo CheckTextureInfo(lua_State *L, int idx);

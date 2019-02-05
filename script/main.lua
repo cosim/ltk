@@ -56,7 +56,7 @@ Ltk.StyleManager:SetColorScheme({
 	"#EEEEF2", -- clrCaption
 })
 
-Ltk.StyleManager:RegisterNinePathStyle("default_button", {
+Ltk.StyleManager:RegisterNinePatchStyle("default_button", {
 	normal = {
 		atlas = {x = 4, y = 3, w = 21, h = 67},
 		margin = {left = 8, top = 8, right = 8, bottom = 9},
