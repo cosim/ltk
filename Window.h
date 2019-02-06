@@ -5,7 +5,6 @@
 #include "stdafx.h"
 #include "ImeInput.h"
 #include "LuaObject.h"
-#include "Button.h"
 #include "ShadowFrame.h"
 
 namespace ltk {

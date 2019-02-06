@@ -6,6 +6,7 @@
 #include "Window.h"
 #include "Common.h"
 #include "Sprite.h"
+#include "Button.h"
 #include "ltk.h"
 #include "ApiBind.h"
 #include "BoxLayout.h"
@@ -120,19 +121,19 @@ void Window::Create(Window *parent, RectF rc)
 
     m_btnMinimize = new Button;
     m_btnMinimize->SetText(L"_");
-    m_btnMinimize->AddEventListener(this);
+    m_btnMinimize->SetDelegate(this);
     //m_btnMinimize->SetNormalColor(StyleManager::Instance()->GetColor(StyleManager::clrCaption));
     m_hboxCaption->AddLayoutItem(m_btnMinimize, (float)SYSBTN_WIDTH);
 
     m_btnMaximize = new Button;
     m_btnMaximize->SetText(L"¿Ú");
-    m_btnMaximize->AddEventListener(this);
+    m_btnMaximize->SetDelegate(this);
     //m_btnMaximize->SetNormalColor(StyleManager::Instance()->GetColor(StyleManager::clrCaption));
     m_hboxCaption->AddLayoutItem(m_btnMaximize, (float)SYSBTN_WIDTH);
 
     m_btnClose = new Button();
     m_btnClose->SetText(L"X");
-    m_btnClose->AddEventListener(this);
+    m_btnClose->SetDelegate(this);
     //m_btnClose->SetNormalColor(StyleManager::Instance()->GetColor(StyleManager::clrCaption));
     //m_btnClose->SetHoverColor(D2D1::ColorF(1.0f, 0.2f, 0.2f));
     m_hboxCaption->AddLayoutItem(m_btnClose, (float)SYSBTN_WIDTH);

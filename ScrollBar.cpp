@@ -24,7 +24,7 @@ ScrollBar::ScrollBar(Mode mode) : m_mode(mode)
 {
     m_slider = new Button;
     m_slider->EnableCapture(false);
-    m_slider->AddEventListener(this);
+    m_slider->SetDelegate(this);
     this->AddChild(m_slider);
 }
 
@@ -166,7 +166,7 @@ bool ScrollBar::OnThumbDragging(float pos)
     Notification nt;
     nt.id = eValueChanged;
     nt.sender = this;
-    this->DispatchEvent(&nt);
+    this->DelegateEvent(&nt);
     return false;
 }
 

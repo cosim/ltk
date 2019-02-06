@@ -8,6 +8,7 @@
 #include "MainWindow.h"
 #include "Common.h"
 #include "Sprite.h"
+#include "Button.h"
 #include "BoxLayout.h"
 #include "ApiBinding.h"
 #include "LuaObject.h"

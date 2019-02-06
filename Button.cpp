@@ -87,7 +87,7 @@ void Button::OnEvent(Event *ev)
         dlgt.sender = this;
         dlgt.data = (MouseEvent *)ev;
         dlgt.bHandled = false;
-        this->DispatchEvent(&dlgt);
+        this->DelegateEvent(&dlgt);
         bHandled = dlgt.bHandled;
     }
     if (!bHandled) {
@@ -135,7 +135,7 @@ bool Button::OnLBtnUp(MouseEvent *ev)
         Notification notify;
         notify.id = eClicked;
         notify.sender = this;
-        this->DispatchEvent(&notify);
+        this->DelegateEvent(&notify);
         this->CallEventHandler(GetGlobalLuaState(), "OnClick", 0, 0);
     }
     else {

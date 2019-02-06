@@ -10,7 +10,7 @@ namespace ltk {
 
 class Window;
 
-class Sprite : public LuaObject, public EventSource
+class Sprite : public LuaObject
 {
 protected:
     virtual ~Sprite(void);
@@ -111,6 +111,9 @@ public:
     virtual bool OnSetFocus         (FocusEvent *ev) { return false; }
     virtual bool OnKillFocus        (FocusEvent *ev) { return false; }
 
+    void SetDelegate(RTTI *dlgt);
+    void DelegateEvent(Event *ev);
+
     virtual void RecreateResouce(ID2D1RenderTarget *target){}
 
     void SetName(const char *name);
@@ -142,15 +145,16 @@ private:
     bool m_bShowCaret;
 
     RectF m_rect;
-    Window *m_window;
+    Window *m_window; // weak
 
 	Sprite *m_prevSibling; // 控件树结构 要高大上一点 zorder隐含在树结构中 避免排序
 	Sprite *m_nextSibling; // owner 平级的的关系用双链表
 	Sprite *m_firstChild;  // owner
 	Sprite *m_lastChild;
-	Sprite *m_parent;
+	Sprite *m_parent; // weak
 
     const char *m_name = nullptr;
+    RTTI *m_delegate = nullptr;
 
 	DISALLOW_COPY_AND_ASSIGN(Sprite);
 };
