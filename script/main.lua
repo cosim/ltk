@@ -92,7 +92,7 @@ function DemoFrame:OnEvent(sender, event, ...)
 	if sender.GetName then
 		name = sender:GetName();
 	end
-	-- print("OnEvent: ", event, " sender: ", sender, " name: ", name);
+	print("OnEvent: ", event, " sender: ", sender:GetHandle(), " name: ", name);
 	if event == 'OnThumbDragging' then
 		local pos = ...;
 		--print(name, " : ", pos);

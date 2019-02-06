@@ -58,6 +58,13 @@ int LuaObject::GCMethod( lua_State *L )
 	return 0;
 }
 
+int LuaObject::GetHandle(lua_State *L)
+{
+    LuaObject *thiz = CheckLuaObject<LuaObject>(L, 1);
+    lua_pushlightuserdata(L, thiz);
+    return 1;
+}
+
 int LuaObject::LuaAddEventListener(lua_State *L)
 {
 	LuaObject *thiz = CheckLuaObject<LuaObject>(L, 1);

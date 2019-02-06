@@ -19,7 +19,7 @@ public:
     RTTI_DECLARATIONS(LuaObject, RefCounted);
 
 	static int GCMethod(lua_State *L);
-
+    static int GetHandle(lua_State *L);
     static int ReleaseReference(lua_State *L);
 
 	// 把这个对象放入lua中 创建一个新的userdata包裹之 引用计数+1 lua栈+1
@@ -79,6 +79,9 @@ void LuaRegisterClass(lua_State *L, const char *className)
 
     lua_pushcfunction(L, T::LuaRemoveAllListener);
     lua_setfield(L, methods, "RemoveAllListener");
+
+    lua_pushcfunction(L, T::GetHandle);
+    lua_setfield(L, methods, "GetHandle");
 
     lua_pushcfunction(L, T::ReleaseReference);
     lua_setfield(L, methods, "Unref");
