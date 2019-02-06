@@ -85,38 +85,6 @@ Ltk.CheckBox:SetIconInfo(
 		{ atlas = {x = 102, y = 0, w = 26, h = 70}, scale = 1.0 }
 )
 
-local DemoFrame = {}
-
-function DemoFrame:OnEvent(sender, event, ...)
-	local name = '<unknown>'
-	if sender.GetName then
-		name = sender:GetName();
-	end
-	print("OnEvent: ", event, " sender: ", sender:GetHandle(), " name: ", name);
-	if event == 'OnThumbDragging' then
-		local pos = ...;
-		--print(name, " : ", pos);
-	elseif event == 'OnClick' then
-		if name == 'SetLabelColorBtn' then
-			self._label:SetTextColor(0, 0, 1)
-			sender:RemoveListener(self);
-		elseif name == 'SystemUptimeBtn' then
-			local tick = LtkApi.GetTickCount();
-			local second = tick / 1000;
-			local minute = second / 60;
-			second = second % 60;
-			local hour = minute / 60;
-			minute = minute % 60;
-			local day = hour / 24;
-			hour = hour % 24;
-			local floor = math.floor;
-			self._label:SetText(("System Uptime: %dd%02d:%02d:%02d"):format(
-					floor(day), floor(hour), floor(minute), floor(second)));
-		end
-	elseif event == 'OnDestroy' then
-		LtkApi.PostQuitMessage(0);
-	end
-end
 
 ---@type Ltk.Window
 local wnd = Ltk.Window:new();
@@ -154,7 +122,6 @@ hbox1:AddLayoutItem(label, 40);
 
 local group = Ltk.RadioGroup:new();
 
----@type Ltk.CheckBox
 local check = Ltk.CheckBox:new();
 check:SetText("选项1");
 check:SetRadioGroup(group);
@@ -194,19 +161,30 @@ vbox:AddLayoutItem(hbox2, 30, 0.4);
 
 btn = Ltk.Button:new();
 btn:SetText("Label Color Test");
-btn:SetName("SetLabelColorBtn");
-btn:AddEventListener(DemoFrame);
+g_btn_set_label_color = btn:SetEventHandler({
+	OnClick = function() label:SetTextColor(1, 0, 0) end,
+	Sprite = btn
+})
 hbox2:AddLayoutItem(btn, 100, 1);
 
 btn = Ltk.Button:new();
-btn:SetName('SystemUptimeBtn')
 btn:SetText("System Uptime");
-btn:AddEventListener(DemoFrame);
---g_btn_set_label_font_size = btn:SetEventHandler({
---	OnClick = function()
---	end,
---	Sprite = btn
---})
+g_btn_set_label_font_size = btn:SetEventHandler({
+	OnClick = function()
+		local tick = LtkApi.GetTickCount();
+		local second = tick / 1000;
+		local minute = second / 60;
+		second = second % 60;
+		local hour = minute / 60;
+		minute = minute % 60;
+		local day = hour / 24;
+		hour = hour % 24;
+		local floor = math.floor;
+		label:SetText(("System Uptime: %dd%02d:%02d:%02d"):format(
+				floor(day), floor(hour), floor(minute), floor(second)));
+	end,
+	Sprite = btn
+})
 hbox2:AddLayoutItem(btn, 100, 1);
 
 -----@type Ltk.TextureSprite
@@ -222,7 +200,6 @@ local hbox3 = Ltk.BoxLayout:new("horizontal");
 label = Ltk.Label:new("Hello World");
 label:SetTextColor(1,0,0);
 label:SetFontSize(20);
-DemoFrame._label = label;
 
 hbox3:AddSpaceItem(0, 1);
 hbox3:AddLayoutItem(label, 300);
@@ -239,28 +216,24 @@ vsb:SetContentSize(1500);
 vsb:SetPosition(200);
 vsb:Update();
 hbox4:AddLayoutItem(vsb, 7, 0);
-vsb:AddEventListener(DemoFrame);
-vsb:SetName('vsb');
---g_vsb_event = vsb:SetEventHandler({
---	OnThumbDragging = function(pos)
---		local x,y,w,h = vsb:GetRect()
---		print("vsb pos:", pos, h);
---	end
---})
+g_vsb_event = vsb:SetEventHandler({
+	OnThumbDragging = function(pos)
+		local x,y,w,h = vsb:GetRect()
+		print("vsb pos:", pos, h);
+	end
+})
 
 local hsb = Ltk.ScrollBar:new('horizontal');
 hsb:SetContentSize(1500);
 hsb:SetPosition(200);
 hsb:Update();
 vbox:AddLayoutItem(hsb, 7, 0);
-hsb:SetName('hsb');
-hsb:AddEventListener(DemoFrame);
---g_hsb_event = hsb:SetEventHandler({
---	OnThumbDragging = function(pos)
---		local x,y,w,h = hsb:GetRect()
---		print("hsb pos:", pos, w);
---	end
---})
+g_hsb_event = hsb:SetEventHandler({
+	OnThumbDragging = function(pos)
+		local x,y,w,h = hsb:GetRect()
+		print("hsb pos:", pos, w);
+	end
+})
 
 ---@type Ltk.Button
 --[[local btn_status = Ltk.Button:new();
@@ -270,13 +243,12 @@ root:AddLayoutItem(btn_status, 20);]]
 root:SetSpacing(0);
 root:DoLayout();
 
-wnd:AddEventListener(DemoFrame);
---g_wnd_event = wnd:SetEventHandler({
---	OnDestroy = function()
---		print('OnDestroy');
---		LtkApi.PostQuitMessage(0);
---	end
---});
+g_wnd_event = wnd:SetEventHandler({
+	OnDestroy = function()
+		print('OnDestroy');
+		LtkApi.PostQuitMessage(0);
+	end
+});
 
 local pprint = require('pprint')
 

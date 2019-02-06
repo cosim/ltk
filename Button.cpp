@@ -30,6 +30,7 @@ void Button::SetBackgroundStyle(const char *style)
 bool Button::OnPaint(PaintEvent *ev)
 {
     Update();
+    //LTK_LOG("OnPaint target: 0x%08x", ev->target);
 
     Window *wnd = this->GetWindow();
     auto rc = this->GetClientRect();
@@ -135,7 +136,7 @@ bool Button::OnLBtnUp(MouseEvent *ev)
         notify.id = eClicked;
         notify.sender = this;
         this->DispatchEvent(&notify);
-        this->LuaDispatchEvent(GetGlobalLuaState(), "OnClick", 0, 0);
+        this->CallEventHandler(GetGlobalLuaState(), "OnClick", 0, 0);
     }
     else {
         this->OnMouseLeave(ev);

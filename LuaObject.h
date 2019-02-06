@@ -22,22 +22,21 @@ public:
     static int GetHandle(lua_State *L);
     static int ReleaseReference(lua_State *L);
 
-	// 把这个对象放入lua中 创建一个新的userdata包裹之 引用计数+1 lua栈+1
+    static int GetEventHandler(lua_State *L);
+    static int SetEventHandler(lua_State *L);
+
+    bool CallEventHandler(lua_State *L, const char *name, int nargs, int nresult);
+    // 把这个对象放入lua中 创建一个新的userdata包裹之 引用计数+1 lua栈+1
     void PushToLua(lua_State *L, const char* clsName);
 
 	// nargs 参数个数 不包括this
 	//void CallLuaMethod(lua_State *L, const char *method, int nargs, int nresult);
 
-    static int LuaAddEventListener(lua_State *L);
-    static int LuaRemoveListener(lua_State *L);
-    static int LuaRemoveAllListener(lua_State *L);
-    bool LuaDispatchEvent(lua_State *L, const char *name, int nargs, int nresult);
 	
 private:
-    void CallOnEvent(lua_State *L, int listener, const char *name, int nargs);
     static void GetWeakTable(lua_State *L);
     
-    ArrayList<int> m_listListener;
+    int m_refUserData;
 };
 
 #define BEGIN_LUA_METHOD_MAP(x)  static void RegisterMethods(lua_State *L, int metatable) {
@@ -71,14 +70,11 @@ void LuaRegisterClass(lua_State *L, const char *className)
     lua_pushcfunction(L, T::LuaConstructor);
     lua_setfield(L, methods, "new");
 
-    lua_pushcfunction(L, T::LuaAddEventListener);
-    lua_setfield(L, methods, "AddEventListener");
+    lua_pushcfunction(L, T::GetEventHandler);
+    lua_setfield(L, methods, "GetEventHandler");
 
-    lua_pushcfunction(L, T::LuaRemoveListener);
-    lua_setfield(L, methods, "RemoveListener");
-
-    lua_pushcfunction(L, T::LuaRemoveAllListener);
-    lua_setfield(L, methods, "RemoveAllListener");
+    lua_pushcfunction(L, T::SetEventHandler);
+    lua_setfield(L, methods, "SetEventHandler");
 
     lua_pushcfunction(L, T::GetHandle);
     lua_setfield(L, methods, "GetHandle");
