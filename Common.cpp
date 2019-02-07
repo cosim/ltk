@@ -34,6 +34,19 @@ CStringA Utf16ToUtf8(LPCTSTR strW, int len)
 	return strA;
 }
 
+CStringA Utf16ToGbk(LPCTSTR strW, int len)
+{
+    if (len < 0) {
+        len = (int)wcslen(strW);
+    }
+    int lenA = ::WideCharToMultiByte(936, 0, strW, len, NULL, 0, NULL, NULL);
+    CStringA strA;
+    char *pbuff = strA.GetBuffer(lenA);
+    ::WideCharToMultiByte(936, 0, strW, len, pbuff, lenA, NULL, NULL);
+    strA.ReleaseBuffer(lenA);
+    return strA;
+}
+
 // http://stackoverflow.com/questions/12256455/print-stacktrace-from-c-code-with-embedded-lua
 int LuaTraceBack(lua_State *L) {
     if (!lua_isstring(L, 1))  /* 'message' not a string? */
@@ -95,6 +108,7 @@ bool LuaPCall(lua_State *L, int nargs, int nresults)
 CString LuaCheckWString(lua_State *L, int index)
 {
     size_t len;
+    // TODO avoid lua longjmp()
     const char *pText = luaL_checklstring(L, index, &len);
     char ivc;
     if (GetInvalidUtf8SymbolPosition(pText, ivc) == -1)

@@ -8,6 +8,8 @@
 
 CStringW Utf8ToUtf16(LPCSTR strA, int len = -1);
 CStringA Utf16ToUtf8(LPCTSTR strW, int len);
+CStringA Utf16ToGbk(LPCTSTR strW, int len);
+
 CString LuaCheckWString(lua_State *L, int index);
 void LuaPushWString(lua_State *L, LPCTSTR psz, int len  = -1);
 

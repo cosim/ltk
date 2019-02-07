@@ -250,8 +250,9 @@ static int l_PrintEx(lua_State *L)
         lua_getinfo(L, "Sl", &ar);
         log.AppendFormat(L"\r\n\t%S:%d:", ar.source, ar.currentline);
     }
-    //log.Append(L"\r\n");
-    _putws(log);
+    log.Append(L"\r\n");
+    CStringA logA = Utf16ToGbk(log, log.GetLength());
+    fwrite((LPCSTR)logA, 1, logA.GetLength(), stdout);
     fflush(stdout);
     return 0;
 }
