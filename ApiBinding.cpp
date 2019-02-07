@@ -242,7 +242,7 @@ static int l_PrintEx(lua_State *L)
             log.Append("(nil) ");
             break;
         default:
-            log.AppendFormat("(%S:%p) ", lua_typename(L, lua_type(L, i)), lua_topointer(L, i));
+            log.AppendFormat("(%s:%p) ", lua_typename(L, lua_type(L, i)), lua_topointer(L, i));
         }
     }
     lua_Debug ar;
