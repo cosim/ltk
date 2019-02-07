@@ -111,7 +111,7 @@ Error:
 
 int StyleManager::RegisterNinePatchStyle(lua_State *L)
 {
-    //LuaStackCheck chk(L);
+    LuaStackCheck chk(L);
     StyleManager *thiz = Instance();
     auto name = luaL_checkstring(L, 2);
     luaL_checktype(L, 3, LUA_TTABLE);
@@ -163,6 +163,7 @@ int StyleManager::RegisterNinePatchStyle(lua_State *L)
 
 int StyleManager::RegisterOnePatchStyle(lua_State *L)
 {
+    LuaStackCheck chk(L);
     StyleManager *thiz = Instance();
     const char *name = luaL_checkstring(L, 2);
     luaL_checktype(L, 3, LUA_TTABLE);

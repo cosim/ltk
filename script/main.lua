@@ -79,6 +79,24 @@ Ltk.StyleManager:RegisterNinePatchStyle("default_button", {
 	},
 })
 
+Ltk.StyleManager:RegisterOnePatchStyle("min_button", {
+	normal = { x = 103, y = 3, w = 22, h = 20 },
+	hover = { x = 103, y = 23, w = 22, h = 20 },
+	pressed = { x = 103, y = 43, w = 22, h = 20 },
+})
+
+Ltk.StyleManager:RegisterOnePatchStyle("max_button", {
+	normal = { x = 125, y = 3, w = 22, h = 20 },
+	hover = { x = 125, y = 23, w = 22, h = 20 },
+	pressed = { x = 125, y = 43, w = 22, h = 20 },
+})
+
+Ltk.StyleManager:RegisterOnePatchStyle("close_button", {
+	normal = { x = 147, y = 3, w = 22, h = 20 },
+	hover = { x = 147, y = 23, w = 22, h = 20 },
+	pressed = { x = 147, y = 43, w = 22, h = 20 },
+})
+
 Ltk.CheckBox:SetIconInfo(
 		{ atlas = {x = 1, y = 71, w = 23, h = 23}, scale = 1.0 },
 		{ atlas = {x = 27, y = 71, w = 23, h = 23}, scale = 1.0 },

@@ -39,6 +39,7 @@ public:
     BEGIN_LUA_METHOD_MAP(StyleManager)
         LUA_METHOD_ENTRY(SetColorScheme)
         LUA_METHOD_ENTRY(RegisterNinePatchStyle)
+        LUA_METHOD_ENTRY(RegisterOnePatchStyle)
     END_LUA_METHOD_MAP()
 
     static TextureInfo CheckTextureInfo(lua_State *L, int idx);

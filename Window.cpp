@@ -16,9 +16,8 @@
 namespace ltk {
 
 const wchar_t * Window::ClsName = L"ltk_cls";
-static const long SYSBTN_WIDTH = 35;
-static const long SYSBTN_HEIGHT = 25;
-static const long CAPTION_HEIGHT = 25;
+static const long SYSBTN_WIDTH = 22;
+static const long CAPTION_HEIGHT = 20 + 3;
 static const long SYSICON_SIZE = 24;
 static const long WINDOW_BORDER = 6;
 
@@ -111,6 +110,7 @@ void Window::Create(Window *parent, RectF rc)
 
     m_hboxCaption = new BoxLayout(BoxLayout::Horizontal);
     m_hboxCaption->SetMargin(0.0f);
+    m_hboxCaption->SetTopMargin(3.0f);
     m_hboxCaption->SetRightMargin(1.0f);
     m_hboxCaption->SetSpacing(1.0f);
     m_hboxCaption->AddSpaceItem(7.0f, 0.0f);
@@ -120,22 +120,18 @@ void Window::Create(Window *parent, RectF rc)
     m_hboxCaption->AddLayoutItem(m_labelTitle, 0.0f, 1.0f);
 
     m_btnMinimize = new Button;
-    m_btnMinimize->SetText(L"_");
     m_btnMinimize->SetDelegate(this);
-    //m_btnMinimize->SetNormalColor(StyleManager::Instance()->GetColor(StyleManager::clrCaption));
+    m_btnMinimize->SetBackgroundStyle("min_button");
     m_hboxCaption->AddLayoutItem(m_btnMinimize, (float)SYSBTN_WIDTH);
 
     m_btnMaximize = new Button;
-    m_btnMaximize->SetText(L"¿Ú");
     m_btnMaximize->SetDelegate(this);
-    //m_btnMaximize->SetNormalColor(StyleManager::Instance()->GetColor(StyleManager::clrCaption));
+    m_btnMaximize->SetBackgroundStyle("max_button");
     m_hboxCaption->AddLayoutItem(m_btnMaximize, (float)SYSBTN_WIDTH);
 
     m_btnClose = new Button();
-    m_btnClose->SetText(L"X");
     m_btnClose->SetDelegate(this);
-    //m_btnClose->SetNormalColor(StyleManager::Instance()->GetColor(StyleManager::clrCaption));
-    //m_btnClose->SetHoverColor(D2D1::ColorF(1.0f, 0.2f, 0.2f));
+    m_btnClose->SetBackgroundStyle("close_button");
     m_hboxCaption->AddLayoutItem(m_btnClose, (float)SYSBTN_WIDTH);
 
     m_sprite->AddLayoutItem(m_hboxCaption, (float)CAPTION_HEIGHT);

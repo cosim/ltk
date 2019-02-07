@@ -118,17 +118,17 @@ private:
 	int m_caretHeight;
 
 	BoxLayout *m_sprite = nullptr; // owner
-    Sprite *m_spFocus = nullptr;
-    Sprite *m_spCapture = nullptr;
+    Sprite *m_spFocus = nullptr; // TODO change to strong ref
+    Sprite *m_spCapture = nullptr; // TODO change to strong ref
     Sprite *m_spHover = nullptr;
 	std::unordered_set<Sprite *> m_setTrackMouseLeave;
     std::unordered_set<Sprite *> m_setAnimation;
 
-    BoxLayout *m_hboxCaption = nullptr;
-    Button *m_btnClose = nullptr;
-    Button *m_btnMaximize = nullptr;
-    Button *m_btnMinimize = nullptr;
-    Label *m_labelTitle = nullptr;
+    BoxLayout *m_hboxCaption = nullptr; // owner
+    Button *m_btnClose = nullptr; // owner
+    Button *m_btnMaximize = nullptr; // owner
+    Button *m_btnMinimize = nullptr; // owner
+    Label *m_labelTitle = nullptr; // owner
 
     ID2D1HwndRenderTarget *m_target = nullptr; // owner
     ID2D1SolidColorBrush *m_brush = nullptr; // owner
@@ -138,7 +138,7 @@ private:
     ShadowFrame m_shadowRight;
     ShadowFrame m_shadowBottom;
 
-    ID2D1Bitmap *m_atlas = nullptr;
+    ID2D1Bitmap *m_atlas = nullptr; // owner TODO share across multiple Window
     TextureInfo m_background;
 };
 
