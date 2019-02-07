@@ -140,6 +140,7 @@ void LuaShowStack(lua_State *L)
             msg.AppendFormat("(%s:%p) ", lua_typename(L, lua_type(L, i)), lua_topointer(L, i));
         }
     }
+    msg.Append("\r\n");
     OutputDebugStringA(msg);
 }
 

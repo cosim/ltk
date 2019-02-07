@@ -162,14 +162,17 @@ vbox:AddLayoutItem(hbox2, 30, 0.4);
 btn = Ltk.Button:new();
 btn:SetText("Label Color Test");
 g_btn_set_label_color = btn:SetEventHandler({
-	OnClick = function() label:SetTextColor(1, 0, 0) end,
+	OnClick = function()
+		--label:SetTextColor(1, 0, 0)
+		print('GetWindow: ', btn:GetWindow());
+	end,
 	Sprite = btn
 })
 hbox2:AddLayoutItem(btn, 100, 1);
 
 btn = Ltk.Button:new();
 btn:SetText("System Uptime");
-g_btn_set_label_font_size = btn:SetEventHandler({
+g_btn_show_system_uptime = btn:SetEventHandler({
 	OnClick = function()
 		local tick = LtkApi.GetTickCount();
 		local second = tick / 1000;

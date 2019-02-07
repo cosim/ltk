@@ -9,6 +9,8 @@
 
 namespace ltk {
 
+std::unordered_map<LuaObject *, int> LuaObject::m_mapUserdata;
+
 LuaObject::~LuaObject(void)
 {
 }
@@ -16,18 +18,33 @@ LuaObject::~LuaObject(void)
 void LuaObject::PushToLua( lua_State *L, const char* clsName )
 {
 	LuaStackCheck check(L);
-	this->AddRef();
-	LuaObject ** ppThis = (LuaObject **)lua_newuserdata(L, sizeof(LuaObject *));
-	*ppThis = this;
-	int udata = lua_gettop(L);
+    auto iter = m_mapUserdata.find(this);
+    if (iter == m_mapUserdata.end()) {
+        LuaObject ** ppThis = (LuaObject **)lua_newuserdata(L, sizeof(LuaObject *));
+        *ppThis = this; // [udata]
+        this->AddRef();
+        int udata = lua_gettop(L);
 
-	luaL_getmetatable(L, clsName);
-	if(!lua_istable(L, -1))
-	{
-        LTK_LOG("<%s> IS NOT REGISTERD!!! ", clsName);
-        __debugbreak();
-	}
-	lua_setmetatable(L, udata); // udata
+        luaL_getmetatable(L, clsName); // [udata] [meta]
+        if (!lua_istable(L, -1))
+        {
+            LTK_LOG("<%s> IS NOT REGISTERD!!! ", clsName);
+            __debugbreak();
+        }
+        lua_setmetatable(L, udata); // [udata]
+        
+        this->GetWeakTable(L); // [udata] [weak]
+        lua_pushvalue(L, -2); // [udata] [weak] [udata]
+        int ref = luaL_ref(L, -2); // [udata] [weak]
+        lua_pop(L, 1); // [udata] 
+        m_mapUserdata[this] = ref;
+    }
+    else {
+        this->GetWeakTable(L); // [weak]
+        lua_rawgeti(L, -1, iter->second); // [weak] [udata]
+        lua_remove(L, -2);
+    }
+
 	check.SetReturn(1);
 }
 
@@ -61,6 +78,8 @@ int LuaObject::GetHandle(lua_State *L)
 
 void LuaObject::GetWeakTable( lua_State *L )
 {
+    LuaStackCheck chk(L);
+    chk.SetReturn(1);
 	lua_pushliteral(L, "LuaObjectWeakRef");
 	lua_rawget(L, LUA_REGISTRYINDEX);
 	if (lua_istable(L, -1))
@@ -69,6 +88,7 @@ void LuaObject::GetWeakTable( lua_State *L )
 	}
 	else
 	{
+        lua_pop(L, 1);
 		lua_newtable(L); // 1 local t = {}
 		int ref_table = lua_gettop(L);
 		lua_pushvalue(L, ref_table);     // 2
@@ -113,14 +133,14 @@ int LuaObject::ReleaseReference(lua_State *L)
 int LuaObject::GetEventHandler(lua_State *L)
 {
     LuaObject *thiz = CheckLuaObject<LuaObject>(L, 1);
-    if (LUA_NOREF == thiz->m_refUserData)
+    if (LUA_NOREF == thiz->m_refEventHandler)
     {
         lua_pushnil(L);
         return 1;
     }
     GetWeakTable(L);
     int ref_table = lua_gettop(L);
-    lua_rawgeti(L, ref_table, thiz->m_refUserData);
+    lua_rawgeti(L, ref_table, thiz->m_refEventHandler);
     return 1;
 }
 
@@ -130,12 +150,12 @@ int LuaObject::SetEventHandler(lua_State *L)
     luaL_checktype(L, 2, LUA_TTABLE); // thiz event
     GetWeakTable(L); // thiz event weak
     int ref_table = lua_gettop(L);
-    if (LUA_NOREF != thiz->m_refUserData)
+    if (LUA_NOREF != thiz->m_refEventHandler)
     {
-        luaL_unref(L, ref_table, thiz->m_refUserData);
+        luaL_unref(L, ref_table, thiz->m_refEventHandler);
     }
     lua_pushvalue(L, 2); // thiz event weak event
-    thiz->m_refUserData = luaL_ref(L, ref_table); // thiz event weak
+    thiz->m_refEventHandler = luaL_ref(L, ref_table); // thiz event weak
     lua_pop(L, 1); // for the weak ref_table
     lua_pushvalue(L, 2); // thiz event event
     return 1;
@@ -143,12 +163,12 @@ int LuaObject::SetEventHandler(lua_State *L)
 
 bool LuaObject::CallEventHandler(lua_State *L, const char *name, int nargs, int nresult)
 {
-    if (LUA_NOREF == m_refUserData)
+    if (LUA_NOREF == m_refEventHandler)
     {
         goto failed;
     }
     GetWeakTable(L); // ref_table
-    lua_rawgeti(L, -1, m_refUserData);
+    lua_rawgeti(L, -1, m_refEventHandler);
     int tblMessage = lua_gettop(L); // ref_table, tblMessage
     lua_remove(L, -2); // for ref_table
     if (!lua_istable(L, -1))

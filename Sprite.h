@@ -126,6 +126,7 @@ public:
     static int GetRect(lua_State *L);
     static int SetName(lua_State *L);
     static int GetName(lua_State *L);
+    static int GetWindow(lua_State *L);
 
     BEGIN_LUA_METHOD_MAP(Sprite)
         LUA_METHOD_ENTRY(AddChild)
@@ -133,6 +134,7 @@ public:
         LUA_METHOD_ENTRY(GetRect)
         LUA_METHOD_ENTRY(SetName)
         LUA_METHOD_ENTRY(GetName)
+        LUA_METHOD_ENTRY(GetWindow)
     END_LUA_METHOD_MAP()
 
 #endif // LTK_DISABLE_LUA

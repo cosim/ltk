@@ -36,7 +36,8 @@ public:
 private:
     static void GetWeakTable(lua_State *L);
     
-    int m_refUserData;
+    int m_refEventHandler;
+    static std::unordered_map<LuaObject *, int> m_mapUserdata;
 };
 
 #define BEGIN_LUA_METHOD_MAP(x)  static void RegisterMethods(lua_State *L, int metatable) {

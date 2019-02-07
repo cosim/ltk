@@ -379,6 +379,9 @@ BOOL APIENTRY DllMain(HMODULE hModule,
 
 static int my_panic_func(lua_State *L)
 {
+    const char *msg = lua_tostring(L, -1);
+    printf("%s\nPress any key to continue...", msg);
+    getchar();
     ::TerminateProcess(::GetCurrentProcess(), 1);
     return 0;
 }
@@ -398,8 +401,8 @@ int luaopen_ltk(lua_State *L)
 {
     #pragma LTK_EXPORT_CURRENT_FUNCTION
     
-    size_test();
-    vector_test();
+    //size_test();
+    //vector_test();
 
     lua_atpanic(L, my_panic_func);
 

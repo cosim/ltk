@@ -324,6 +324,7 @@ void Sprite::EnableFocus( bool enable )
 	m_enableFocus = enable;
 }
 
+// return weak ref
 Window * Sprite::GetWindow()
 {
 	Sprite *sp = this;
@@ -701,6 +702,15 @@ int Sprite::GetRect(lua_State *L)
     lua_pushnumber(L, rc.Width);
     lua_pushnumber(L, rc.Height);
     return 4;
+}
+
+int Sprite::GetWindow(lua_State *L)
+{
+    Sprite *thiz = CheckLuaObject<Sprite>(L, 1);
+    Window *wnd = thiz->GetWindow();
+    wnd->PushToLua(L, wnd->TypeNameInstance().c_str());
+    // wnd->Release(); // weak -_-
+    return 1;
 }
 
 #endif // LTK_DISABLE_LUA
