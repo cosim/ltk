@@ -225,6 +225,37 @@ static int l_GetTickCount(lua_State *L)
     return 1;
 }
 
+static int l_PrintEx(lua_State *L)
+{
+    CStringW log;
+    for (int i = 1; i <= lua_gettop(L); i++)
+    {
+        switch (lua_type(L, i))
+        {
+        case LUA_TNUMBER:
+            log.AppendFormat(L"%.2f ", lua_tonumber(L, i));
+            break;
+        case LUA_TSTRING:
+            log.AppendFormat(L"%s ", LuaCheckWString(L, i));
+            break;
+        case LUA_TNIL:
+            log.Append(L"(nil) ");
+            break;
+        default:
+            log.AppendFormat(L"(%S:%p) ", lua_typename(L, lua_type(L, i)), lua_topointer(L, i));
+        }
+    }
+    lua_Debug ar;
+    if (lua_getstack(L, 1, &ar)) {
+        lua_getinfo(L, "Sl", &ar);
+        log.AppendFormat(L"\r\n\t%S:%d:", ar.source, ar.currentline);
+    }
+    //log.Append(L"\r\n");
+    _putws(log);
+    fflush(stdout);
+    return 0;
+}
+
 static const struct luaL_Reg cfunctions[] = {
     { "RunMessageLoop", l_RunMessageLoop },
     { "PostQuitMessage", l_PostQuitMessage },
@@ -237,6 +268,7 @@ static const struct luaL_Reg cfunctions[] = {
     { "GetModuleFileName", l_GetModuleFileName },
     { "SHGetFolderPath", l_SHGetFolderPath },
     { "GetTickCount", l_GetTickCount },
+    { "PrintEx", l_PrintEx },
     { NULL, NULL }
 };
 

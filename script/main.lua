@@ -4,35 +4,19 @@ package.path = [[E:\myworks\ltk\script\?.lua]]
 if jit then
 	jit.off();
 	print(jit.version, " jit.off()")
-	jit = nil;
 else
 	print(_VERSION, " no jit support");
 end
 
-coroutine = nil; -- coroutine is forbidden
 
-function SetupPrintWithLineInfo()
-	local old_print = _G.print;
-	local format = string.format;
-	_G.print = function(...)
-		old_print(...);
-		local info = debug.getinfo(2, "Sl");
-		local path;
-		if info.source:byte(1) == 64 then -- '@'
-			path = info.source:sub(2);
-		else
-			path = info.source;
-		end
-		old_print(format("\t%s:%d:", path, info.currentline));
-		io.flush();
-	end
-end
-
-SetupPrintWithLineInfo();
 
 require("ltk");
 
-LtkApi.Trace("Hi EmmyLua!");
+coroutine = nil; -- coroutine is forbidden
+ffi = nil;
+jit = nil;
+print = LtkApi.PrintEx;
+print("ffff 测试汉字")
 
 -- Dark Scheme
 --[[Ltk.StyleManager:SetColorScheme({
