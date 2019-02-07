@@ -17,7 +17,7 @@ LuaObject::~LuaObject(void)
 
 void LuaObject::PushToLua( lua_State *L, const char* clsName )
 {
-	LuaStackCheck check(L);
+	LuaStackCheck check(L, 1);
     auto iter = m_mapUserdata.find(this);
     if (iter == m_mapUserdata.end()) {
         LuaObject ** ppThis = (LuaObject **)lua_newuserdata(L, sizeof(LuaObject *));
@@ -42,10 +42,11 @@ void LuaObject::PushToLua( lua_State *L, const char* clsName )
     else {
         this->GetWeakTable(L); // [weak]
         lua_rawgeti(L, -1, iter->second); // [weak] [udata]
-        lua_remove(L, -2);
+        lua_remove(L, -2); // [udata]
+        if (!lua_isuserdata(L, -1)) {
+            __debugbreak(); // what if the weak ref has been GCed.
+        }
     }
-
-	check.SetReturn(1);
 }
 
 int LuaObject::GCMethod( lua_State *L )
@@ -78,8 +79,7 @@ int LuaObject::GetHandle(lua_State *L)
 
 void LuaObject::GetWeakTable( lua_State *L )
 {
-    LuaStackCheck chk(L);
-    chk.SetReturn(1);
+    LuaStackCheck chk(L, 1);
 	lua_pushliteral(L, "LuaObjectWeakRef");
 	lua_rawget(L, LUA_REGISTRYINDEX);
 	if (lua_istable(L, -1))

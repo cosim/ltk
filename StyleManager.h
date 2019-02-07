@@ -56,14 +56,16 @@ class AbstractBackground : public LuaObject
 {
 public:
     enum State {Normal, Hover, Normal2Hover, Hover2Normal, Pressed, Disable};
-    virtual void Draw(Window *wnd, ID2D1RenderTarget *targe, const RectF &rc, State state, float blend) = 0;
+    virtual void Draw(Window *wnd, ID2D1RenderTarget *targe, const RectF &rc,
+        State state, float blend) = 0;
 };
 
 class NinePatchBackground : public AbstractBackground
 {
 
 public:
-    virtual void Draw(Window *wnd, ID2D1RenderTarget *targe, const RectF &rc, State state, float blend) override;
+    virtual void Draw(Window *wnd, ID2D1RenderTarget *targe, const RectF &rc,
+        State state, float blend) override;
 
     TextureInfo texNormal;
     TextureInfo texHover;
@@ -74,7 +76,8 @@ public:
 class OnePatchBackground : public AbstractBackground
 {
 public:
-    virtual void Draw(Window *wnd, ID2D1RenderTarget *targe, const RectF &rc, State state, float blend) override;
+    virtual void Draw(Window *wnd, ID2D1RenderTarget *targe, const RectF &rc,
+        State state, float blend) override;
     
     IconInfo iconNormal;
     IconInfo iconHover;
@@ -93,7 +96,8 @@ struct FourStateColor {
 class VectorBackground : public AbstractBackground
 {
 public:
-    virtual void Draw(Window *wnd, ID2D1RenderTarget *targe, const RectF &rc, State state, float blend) override;
+    virtual void Draw(Window *wnd, ID2D1RenderTarget *targe, const RectF &rc,
+        State state, float blend) override;
 
     FourStateColor borderColors;
     FourStateColor backgroundColors;

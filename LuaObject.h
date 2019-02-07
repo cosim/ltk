@@ -132,21 +132,21 @@ T* CheckLuaObject( lua_State *L, int idx)
 class LuaStackCheck
 {
 public:
-    explicit LuaStackCheck(lua_State *L)
+    explicit LuaStackCheck(lua_State *L, int num_ret = 0)
     {
         m_L = L;
-        m_top = lua_gettop(L);
+        m_top = lua_gettop(L) + num_ret;
     }
     ~LuaStackCheck()
     {
         lua_State *L = m_L;
         int top = lua_gettop(L);
-        if (top > m_top)
+        if (top != m_top)
         {
             __debugbreak();
         }
     }
-    int SetReturn(int n)
+    int AdjustReturn(int n)
     {
         m_top += n;
         return n;

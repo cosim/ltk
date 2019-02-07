@@ -76,24 +76,9 @@ void Sprite::SetName(const char *name)
     m_name = strdup(name);
 }
 
-int Sprite::SetName(lua_State *L)
-{
-    Sprite *thiz = CheckLuaObject<Sprite>(L, 1);
-    auto name = luaL_checkstring(L, 2);
-    thiz->SetName(name);
-    return 0;
-}
-
 const char * Sprite::GetName()
 {
     return m_name;
-}
-
-int Sprite::GetName(lua_State *L)
-{
-    Sprite *thiz = CheckLuaObject<Sprite>(L, 1);
-    lua_pushstring(L, thiz->GetName());
-    return 1;
 }
 
 RectF Sprite::GetClientRect()
@@ -711,6 +696,21 @@ int Sprite::GetWindow(lua_State *L)
     wnd->PushToLua(L, wnd->TypeNameInstance().c_str());
     // wnd->Release(); // weak -_-
     return 1;
+}
+
+int Sprite::GetName(lua_State *L)
+{
+    Sprite *thiz = CheckLuaObject<Sprite>(L, 1);
+    lua_pushstring(L, thiz->GetName());
+    return 1;
+}
+
+int Sprite::SetName(lua_State *L)
+{
+    Sprite *thiz = CheckLuaObject<Sprite>(L, 1);
+    auto name = luaL_checkstring(L, 2);
+    thiz->SetName(name);
+    return 0;
 }
 
 #endif // LTK_DISABLE_LUA
