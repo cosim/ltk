@@ -16,7 +16,7 @@ coroutine = nil; -- coroutine is forbidden
 ffi = nil;
 jit = nil;
 print = LtkApi.PrintEx;
-print("fuck<测试汉字>fuck")
+print("test<测试汉字>test")
 
 -- Dark Scheme
 --[[Ltk.StyleManager:SetColorScheme({

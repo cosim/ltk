@@ -227,32 +227,31 @@ static int l_GetTickCount(lua_State *L)
 
 static int l_PrintEx(lua_State *L)
 {
-    CStringW log;
+    CStringA log;
     for (int i = 1; i <= lua_gettop(L); i++)
     {
         switch (lua_type(L, i))
         {
         case LUA_TNUMBER:
-            log.AppendFormat(L"%.2f ", lua_tonumber(L, i));
+            log.AppendFormat("%g ", lua_tonumber(L, i));
             break;
         case LUA_TSTRING:
-            log.AppendFormat(L"%s ", LuaCheckWString(L, i));
+            log.AppendFormat("%s ", lua_tostring(L, i));
             break;
         case LUA_TNIL:
-            log.Append(L"(nil) ");
+            log.Append("(nil) ");
             break;
         default:
-            log.AppendFormat(L"(%S:%p) ", lua_typename(L, lua_type(L, i)), lua_topointer(L, i));
+            log.AppendFormat("(%S:%p) ", lua_typename(L, lua_type(L, i)), lua_topointer(L, i));
         }
     }
     lua_Debug ar;
     if (lua_getstack(L, 1, &ar)) {
         lua_getinfo(L, "Sl", &ar);
-        log.AppendFormat(L"\r\n\t%S:%d:", ar.source, ar.currentline);
+        log.AppendFormat("\r\n\t%s:%d:", ar.source, ar.currentline);
     }
-    log.Append(L"\r\n");
-    CStringA logA = Utf16ToGbk(log, log.GetLength());
-    fwrite((LPCSTR)logA, 1, logA.GetLength(), stdout);
+    log.Append("\r\n");
+    fwrite((LPCSTR)log, 1, log.GetLength(), stdout);
     fflush(stdout);
     return 0;
 }
@@ -277,8 +276,7 @@ namespace ltk {
 
 void ApiBindingInit(lua_State *L)
 {
-    luaL_newlib(L, cfunctions);
-    lua_setglobal(L, "LtkApi");
+    luaL_register(L, "LtkApi", cfunctions);
 }
 
 } // namespace ltk
